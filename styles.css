@@ -93,7 +93,7 @@ button{font:inherit;color:inherit}
 .link{display:inline-block;font-weight:500;font-size:.94rem;color:var(--heat-2);
   text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}
 .link:hover{color:var(--heat-3)}
-.link--block{display:block;text-align:center;margin-top:1em;border:0}
+.link--block{display:block;text-align:center;margin-top:.4em;padding-block:12px;border:0}
 
 /* -------------------------------------------------------------- layout --- */
 .wrap{width:min(100% - var(--gut)*2,var(--wrap));margin-inline:auto}
@@ -260,7 +260,7 @@ button{font:inherit;color:inherit}
   transform:scaleY(-1);transition:background-color .18s linear}
 
 .temp__control{margin-top:clamp(22px,3vw,38px)}
-.temp__range{-webkit-appearance:none;appearance:none;width:100%;height:34px;
+.temp__range{-webkit-appearance:none;appearance:none;width:100%;height:44px;
   background:transparent;cursor:ew-resize;display:block}
 .temp__range::-webkit-slider-runnable-track{height:4px;border-radius:2px;
   background:linear-gradient(90deg,#8E8B84 0%,#6E7C93 14%,#5A3A2A 30%,
@@ -533,6 +533,42 @@ button{font:inherit;color:inherit}
   transition:opacity .8s var(--ease),transform .8s var(--ease);
   transition-delay:calc(var(--i,0) * 65ms)}
 [data-reveal].is-in{opacity:1;transform:none}
+
+/* ------------------------------------------------------------ tap size --- */
+/* Inline links collapse to the height of their text (~16px). That is fine on
+   a desktop and awkward under a thumb, so the ones people actually tap get
+   padding rather than a bigger font. */
+@media (max-width:860px){
+  .foot__col ul{gap:0}
+  .foot__col ul a,.foot__col p a{display:inline-block;padding-block:9px}
+  .foot__col p{margin-bottom:0}
+  .foot__social a{padding-block:8px}
+  .brand{padding-block:10px}
+  /* Phone and email are the most-tapped things on a trade site; on a phone
+     they must not be 16px slivers. */
+  .drawer__meta a{display:inline-block;padding-block:10px}
+  .cinfo__list dd a{display:inline-block;padding-block:12px}
+  .card-person p .link{padding-block:8px}
+}
+
+/* --------------------------------------------------------- narrow fixes --- */
+/* Grid and flex children default to min-width:auto and refuse to shrink below
+   their own content. On a 320px screen that is what pushes long email
+   addresses and form inputs past the right edge. Let them shrink. */
+.foot__in>*,.split>*,.form__row>*,.temp__panel>*,.mat__tools>*,
+.hdr__in>*,.hero__act>*,.band__act>*{min-width:0}
+.form input,.form select,.form textarea{min-width:0}
+
+/* overflow-wrap:break-word keeps a word intact when measuring min-content,
+   so it alone cannot rescue a narrow column. `anywhere` does. Scoped to the
+   long tokens (emails, addresses) so ordinary copy still breaks on spaces. */
+.foot__col a,.cinfo__list dd,.cinfo__list a,.drawer__meta a{overflow-wrap:anywhere}
+
+@media (max-width:400px){
+  .foot__in{grid-template-columns:1fr}
+  .cinfo__list{grid-template-columns:1fr;gap:2px 0}
+  .cinfo__list dd{text-align:left;margin-bottom:.7em}
+}
 
 /* ------------------------------------------------------------ hover-only --- */
 @media (hover:hover){
