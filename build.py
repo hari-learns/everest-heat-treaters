@@ -1,0 +1,719 @@
+#!/usr/bin/env python3
+"""Generate the Everest Heat Treaters concept site.
+
+A generator only. Every human-readable string lives in content.py.
+
+    python3 build.py
+
+Writes .html into the repo root, which is what GitHub Pages serves.
+"""
+import hashlib
+import html
+import os
+
+import content as C
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+IMG_DIR = os.path.join(ROOT, "assets", "img")
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+
+
+def esc(s):
+    return html.escape(str(s), quote=True)
+
+
+def version(path):
+    full = os.path.join(ROOT, path)
+    if not os.path.exists(full):
+        return "0"
+    with open(full, "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()[:12]
+
+
+CSS_V = version("styles.css")
+JS_V = version("script.js")
+
+_dims = {}
+
+
+def dims(slug):
+    if slug in _dims:
+        return _dims[slug]
+    path = os.path.join(IMG_DIR, slug + ".webp")
+    size = None
+    if Image and os.path.exists(path):
+        try:
+            with Image.open(path) as im:
+                size = im.size
+        except Exception:
+            size = None
+    _dims[slug] = size
+    return size
+
+
+def has_img(slug):
+    return os.path.exists(os.path.join(IMG_DIR, slug + ".webp"))
+
+
+def img(slug, alt, cls="", eager=False, sizes=""):
+    """An <img>, or a heat-gradient block if the asset is missing. A broken
+    image icon in the middle of a client pitch is not survivable."""
+    if not has_img(slug):
+        return (f'<div class="img-fallback {cls}" role="img" '
+                f'aria-label="{esc(alt)}"></div>')
+    size = dims(slug)
+    wh = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    loading = "" if eager else ' loading="lazy" decoding="async"'
+    sz = f' sizes="{sizes}"' if sizes else ""
+    cls_attr = f' class="{cls}"' if cls else ""
+    return (f'<img src="assets/img/{slug}.webp" alt="{esc(alt)}"'
+            f'{cls_attr}{wh}{loading}{sz}>')
+
+
+# --------------------------------------------------------------- chrome ----
+
+def nav(current):
+    return "\n        ".join(
+        f'<a href="{h}"{" aria-current=\"page\"" if h == current else ""}>{l}</a>'
+        for h, l in C.NAV)
+
+
+def logo():
+    """The mark from the card: a mountain range over the initials."""
+    return f'''<span class="logo" aria-hidden="true">
+  <svg viewBox="0 0 44 30" width="34" height="24" fill="none">
+    <path d="M2 26 L13 7 L19 16 L24 9 L34 26 Z" fill="currentColor" opacity=".9"/>
+    <path d="M13 7 L16.5 12.4 L13.6 14 L11 11.5 Z" fill="var(--bg)" opacity=".55"/>
+    <path d="M24 9 L27 13.6 L24.6 14.6 L22.4 12.6 Z" fill="var(--bg)" opacity=".55"/>
+    <path d="M28 26 L36 12 L42 26 Z" fill="currentColor" opacity=".55"/>
+  </svg>
+  <b>{C.INITIALS}</b>
+</span>'''
+
+
+def header(current):
+    return f'''<a class="skip" href="#main">Skip to content</a>
+<header class="hdr" data-header>
+  <div class="hdr__in">
+    <a class="brand" href="index.html">
+      {logo()}
+      <span class="brand__txt">
+        <span class="brand__name">{C.NAME}</span>
+        <span class="brand__sub">{C.CERT}</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+        {nav(current)}
+    </nav>
+    <div class="hdr__act">
+      <a class="btn btn--sm" href="contact.html#enquire">Get a quote</a>
+      <button class="burger" type="button" aria-label="Open menu"
+              aria-expanded="false" aria-controls="drawer" data-burger>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="drawer" id="drawer" data-drawer hidden>
+  <button class="drawer__x" type="button" aria-label="Close menu" data-drawer-close>
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M5 5l14 14M19 5L5 19"/>
+    </svg>
+  </button>
+  <nav class="drawer__nav" aria-label="Mobile">
+        {nav(current)}
+  </nav>
+  <a class="btn btn--block" href="contact.html#enquire">Get a quote</a>
+  <div class="drawer__meta">
+    <a href="tel:{C.PHONE_LINK}">{C.PHONE}</a>
+    <a href="mailto:{C.EMAIL}">{C.EMAIL}</a>
+  </div>
+</div>'''
+
+
+def footer():
+    links = "".join(f'<li><a href="{h}">{l}</a></li>' for h, l in C.NAV)
+    procs = "".join(
+        f'<li><a href="process-{p["slug"]}.html">{p["name"]}</a></li>'
+        for p in C.PROCESSES[:6])
+    addr = "<br>".join(C.ADDRESS_LINES)
+    note = (f'<p class="foot__note">{C.FOOTER_NOTE}</p>'
+            if C.SHOW_CONCEPT_NOTE else "")
+    return f'''
+<footer class="foot">
+  <div class="wrap foot__in">
+    <div class="foot__brand">
+      <div class="foot__mark">{logo()}</div>
+      <p class="foot__name">{C.NAME}</p>
+      <p class="foot__tag">{C.TAGLINE}</p>
+      <p class="foot__cert">{C.CERT}</p>
+      <p class="foot__gst">GSTIN <span>{C.GSTIN}</span></p>
+    </div>
+    <div class="foot__col">
+      <h2 class="foot__h">Works</h2>
+      <address>{addr}</address>
+    </div>
+    <div class="foot__col">
+      <h2 class="foot__h">Contact</h2>
+      <p>{C.CONTACT_NAME}, {C.CONTACT_QUALS}<br><span class="foot__role">{C.CONTACT_ROLE}</span></p>
+      <p><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
+      <p><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
+      <p><a href="mailto:{C.EMAIL_ALT}">{C.EMAIL_ALT}</a></p>
+    </div>
+    <div class="foot__col">
+      <h2 class="foot__h">Processes</h2>
+      <ul>{procs}</ul>
+    </div>
+    <div class="foot__col">
+      <h2 class="foot__h">Site</h2>
+      <ul>{links}</ul>
+    </div>
+  </div>
+  <div class="wrap foot__base">
+    <p>&copy; 2026 {C.NAME}</p>
+    {note}
+  </div>
+</footer>
+<a class="wa" href="https://wa.me/{C.WHATSAPP}" target="_blank" rel="noopener"
+   aria-label="Message us on WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.69 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+</a>'''
+
+
+def page(path, title, description, body, current=""):
+    robots = "noindex, nofollow" if C.NOINDEX else "index, follow"
+    doc = f'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(title)}</title>
+<meta name="description" content="{esc(description)}">
+<meta name="robots" content="{robots}">
+<meta property="og:title" content="{esc(title)}">
+<meta property="og:description" content="{esc(description)}">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#080C14">
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css?v={CSS_V}">
+</head>
+<body>
+{header(current)}
+<main id="main">
+{body}
+</main>
+{footer()}
+<script src="script.js?v={JS_V}" defer></script>
+</body>
+</html>'''
+    with open(os.path.join(ROOT, path), "w", encoding="utf-8") as fh:
+        fh.write(doc)
+    return path
+
+
+# -------------------------------------------------------------- helpers ----
+
+def sec_head(eyebrow, title, text="", mid=False):
+    t = f'<p class="lede">{text}</p>' if text else ""
+    return f'''<div class="sec__head{" sec__head--mid" if mid else ""}" data-reveal>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2 class="h2">{title}</h2>
+  {t}
+</div>'''
+
+
+def cta():
+    return f'''
+<section class="band">
+  <div class="wrap band__in" data-reveal>
+    <p class="eyebrow">Get a quote</p>
+    <h2 class="h2">Send us the grade and the hardness.</h2>
+    <p class="lede">Or just describe the problem &mdash; specifying the
+      treatment is part of the job.</p>
+    <div class="band__act">
+      <a class="btn" href="contact.html#enquire">Request a quote</a>
+      <a class="btn btn--ghost" href="https://wa.me/{C.WHATSAPP}"
+         target="_blank" rel="noopener">WhatsApp {C.PHONE}</a>
+    </div>
+  </div>
+</section>'''
+
+
+def subhero(eyebrow, title, text, image=None):
+    media = (f'<div class="subhero__media">{img(image, "", eager=True, sizes="100vw")}</div>'
+             if image else "")
+    return f'''
+<section class="subhero{"" if image else " subhero--plain"}">
+  {media}
+  <div class="wrap subhero__in">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1 class="h1">{title}</h1>
+    <p class="lede">{text}</p>
+  </div>
+</section>'''
+
+
+def process_card(p, i=0):
+    return f'''<a class="pcard" href="process-{p["slug"]}.html" data-reveal style="--i:{i}">
+  <div class="pcard__fig">{img(p["image"], p["name"], sizes="(max-width:800px) 100vw, 33vw")}</div>
+  <div class="pcard__body">
+    <h3 class="pcard__title">{p["name"]}</h3>
+    <p class="pcard__txt">{p["short"]}</p>
+    <dl class="pcard__spec">
+      <dt>Temperature</dt><dd>{p["temp"]}</dd>
+      <dt>Result</dt><dd>{p["result"]}</dd>
+    </dl>
+    <span class="pcard__go">Read the process</span>
+  </div>
+</a>'''
+
+
+def temp_widget():
+    """The centrepiece: a real temperature scale for steel.
+
+    Both colour tables and the band descriptions come from content.py and are
+    serialised into data attributes, so the physics stays editable in one file.
+    """
+    import json
+    data = {
+        "min": C.TEMP_MIN, "max": C.TEMP_MAX,
+        "temper": [[t, c, n] for t, c, n in C.TEMPER_COLOURS],
+        "glow": [[t, c, n] for t, c, n in C.GLOW_COLOURS],
+        "bands": [[a, b, l, d] for a, b, l, d in C.TEMP_BANDS],
+    }
+    payload = html.escape(json.dumps(data, separators=(",", ":")), quote=True)
+    marks = "".join(
+        f'<span class="temp__mark" style="--at:{(t - C.TEMP_MIN) / (C.TEMP_MAX - C.TEMP_MIN)}">'
+        f'<b>{t}</b></span>'
+        for t in (200, 400, 600, 800, 1000, 1200))
+    return f'''
+<section class="temp" data-temp data-scale="{payload}">
+  <div class="wrap">
+    {sec_head("The scale we work on",
+              "Every degree is a different metal.",
+              "Below about 400&deg;C steel does not glow &mdash; the colour you "
+              "see is the oxide film, which is how toolmakers have judged "
+              "tempering by eye for two centuries. Above it, the metal is "
+              "incandescent. Drag through the range.")}
+
+    <div class="temp__stage" data-reveal>
+      <div class="temp__barwrap">
+        <div class="temp__bar" data-temp-bar></div>
+        <div class="temp__reflect" data-temp-reflect></div>
+      </div>
+
+      <div class="temp__control">
+        <input class="temp__range" type="range"
+               min="{C.TEMP_MIN}" max="{C.TEMP_MAX}" value="845" step="5"
+               data-temp-input aria-label="Temperature in degrees Celsius">
+        <div class="temp__marks">{marks}</div>
+      </div>
+
+      <div class="temp__panel">
+        <div class="temp__num">
+          <b data-temp-c>845</b><span>&deg;C</span>
+          <em data-temp-colour>Bright cherry</em>
+        </div>
+        <div class="temp__band">
+          <h3 data-temp-band>Austenitising &amp; hardening</h3>
+          <p data-temp-desc></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>'''
+
+
+def enquiry_form():
+    opts = "".join(f'<option>{p["name"]}</option>' for p in C.PROCESSES)
+    return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}" id="enquire" novalidate>
+  <div class="form__row">
+    <label>Your name<input type="text" name="name" required autocomplete="name"></label>
+    <label>Company<input type="text" name="company" autocomplete="organization"></label>
+  </div>
+  <div class="form__row">
+    <label>Phone<input type="tel" name="phone" required autocomplete="tel"></label>
+    <label>Email<input type="email" name="email" autocomplete="email"></label>
+  </div>
+  <div class="form__row">
+    <label>Material grade<input type="text" name="grade" placeholder="EN31, SAE 8620&hellip;"></label>
+    <label>Treatment<select name="process">
+      <option>Not sure &mdash; please advise</option>{opts}</select></label>
+  </div>
+  <div class="form__row">
+    <label>Quantity<input type="text" name="qty" placeholder="e.g. 250 pcs"></label>
+    <label>Hardness required<input type="text" name="hardness" placeholder="e.g. 58&ndash;62 HRC"></label>
+  </div>
+  <label>Part description or problem<textarea name="message" rows="4"
+    placeholder="What the part does, what it runs against, how it is failing&hellip;"></textarea></label>
+  <button class="btn btn--block" type="submit">Send enquiry</button>
+  <p class="form__note">{C.RFQ_FIELDS_NOTE}</p>
+</form>'''
+
+
+# ---------------------------------------------------------------- pages ----
+
+def build_home():
+    stats = "".join(
+        f'<div class="stat" data-reveal style="--i:{i}">'
+        f'<b><span data-count="{v}">{v}</span><i class="stat__u">{u}</i></b>'
+        f'<span class="stat__l">{l}</span></div>'
+        for i, (v, u, l) in enumerate(C.STATS))
+
+    procs = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES[:6]))
+
+    inds = "".join(
+        f'<div class="ind" data-reveal style="--i:{i}"><h3>{n}</h3><p>{d}</p></div>'
+        for i, (n, d) in enumerate(C.INDUSTRIES[:4]))
+
+    quals = "".join(
+        f'<div class="qtile" data-reveal style="--i:{i}">'
+        f'<div class="qtile__fig">{img(q["image"], q["name"], sizes="(max-width:800px) 100vw, 25vw")}</div>'
+        f'<h3>{q["name"]}</h3><p>{q["text"]}</p></div>'
+        for i, q in enumerate(C.QUALITY))
+
+    tests = "".join(
+        f'<blockquote class="quote" data-reveal style="--i:{i}">'
+        f'<p>{t["text"]}</p><cite>{t["name"]}<span>{t["meta"]}</span></cite></blockquote>'
+        for i, t in enumerate(C.TESTIMONIALS))
+
+    plates = "".join(
+        f'<div class="plate" data-reveal style="--i:{i}">'
+        f'{img(f"plate-{n}", "Etched microstructure of an engineering alloy", sizes="(max-width:800px) 33vw, 16vw")}</div>'
+        for i, n in enumerate([1, 2, 3, 4, 5, 6]))
+
+    body = f'''
+<section class="hero">
+  <div class="hero__media">{img(C.HERO_IMAGE, "", eager=True, sizes="100vw")}</div>
+  <div class="hero__glow" aria-hidden="true"></div>
+  <div class="wrap hero__in">
+    <p class="hero__eyebrow">{C.HERO_EYEBROW}</p>
+    <h1 class="hero__title">{C.HERO_TITLE}</h1>
+    <p class="hero__text">{C.HERO_TEXT}</p>
+    <div class="hero__act">
+      <a class="btn" href="contact.html#enquire">Request a quote</a>
+      <a class="btn btn--ghost" href="processes.html">See the processes</a>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band">
+  <div class="wrap stats">{stats}</div>
+</section>
+
+{temp_widget()}
+
+<section class="sec">
+  <div class="wrap">
+    {sec_head("What we do", "Eight processes, one job card.", C.PROCESSES_INTRO)}
+    <div class="pgrid">{procs}</div>
+    <div class="sec__more" data-reveal>
+      <a class="btn btn--ghost" href="processes.html">All eight processes</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--alt">
+  <div class="wrap">
+    {sec_head("Proof", "You cannot see heat treatment. So we measure it.",
+              C.QUALITY_INTRO, mid=True)}
+    <div class="qgrid">{quals}</div>
+  </div>
+</section>
+
+<section class="sec sec--plates">
+  <div class="wrap">
+    {sec_head("Microstructure", "The evidence is in the grain.",
+              "Etched cross-sections under the microscope &mdash; what the "
+              "process actually did to the metal, rather than what the "
+              "furnace chart claims.", mid=True)}
+    <div class="plates">{plates}</div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap split">
+    <div class="split__text">
+      {sec_head("Who we work with", "Most of what we treat ends up inside something that moves.",
+                C.INDUSTRIES_INTRO)}
+      <a class="btn btn--ghost" href="industries.html" data-reveal>All industries</a>
+    </div>
+    <div class="inds">{inds}</div>
+  </div>
+</section>
+
+<section class="sec sec--alt">
+  <div class="wrap">
+    {sec_head("In their words", "What customers say", mid=True)}
+    <div class="quotes">{tests}</div>
+  </div>
+</section>
+
+{cta()}'''
+    return page("index.html", f"{C.NAME} — Heat treatment in Chennai",
+                C.DESCRIPTION, body, "index.html")
+
+
+def build_processes():
+    cards = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES))
+    body = f'''
+{subhero("Processes", "Eight processes, one job card.", C.PROCESSES_INTRO,
+         "furnace-computer")}
+<section class="sec"><div class="wrap"><div class="pgrid">{cards}</div></div></section>
+{cta()}'''
+    return page("processes.html", f"Heat treatment processes — {C.NAME}",
+                C.PROCESSES_INTRO, body, "processes.html")
+
+
+def build_process_pages():
+    made = []
+    for p in C.PROCESSES:
+        others = [o for o in C.PROCESSES if o["slug"] != p["slug"]][:3]
+        prose = "".join(f"<p>{x}</p>" for x in p["body"])
+        pts = "".join(f"<li>{x}</li>" for x in p["points"])
+        suits = "".join(f'<span class="chip">{s}</span>' for s in p["suits"])
+        body = f'''
+{subhero("Process", p["name"], p["short"], p["image"])}
+
+<section class="sec">
+  <div class="wrap split split--wide">
+    <div class="split__text">
+      <div class="prose" data-reveal>{prose}</div>
+      <h2 class="h3" data-reveal>How we run it</h2>
+      <ul class="ticks" data-reveal>{pts}</ul>
+      <h2 class="h3" data-reveal>Grades we treat this way</h2>
+      <div class="chips" data-reveal>{suits}</div>
+    </div>
+    <aside class="spec" data-reveal>
+      <h2 class="spec__h">At a glance</h2>
+      <dl class="spec__list">
+        <dt>Temperature</dt><dd>{p["temp"]}</dd>
+        <dt>Typical result</dt><dd>{p["result"]}</dd>
+        <dt>Reporting</dt><dd>Hardness report with every batch</dd>
+        <dt>Batch size</dt><dd>Single piece to production</dd>
+      </dl>
+      <a class="btn btn--block" href="contact.html#enquire">Quote this process</a>
+      <a class="link link--block" href="materials.html">Check your grade</a>
+    </aside>
+  </div>
+</section>
+
+<section class="sec sec--alt">
+  <div class="wrap">
+    {sec_head("Related", "Other processes", mid=True)}
+    <div class="pgrid">{"".join(process_card(o, i) for i, o in enumerate(others))}</div>
+  </div>
+</section>
+{cta()}'''
+        made.append(page(f"process-{p['slug']}.html",
+                         f"{p['name']} — {C.NAME}",
+                         p["short"], body, "processes.html"))
+    return made
+
+
+def build_materials():
+    rows = "".join(
+        f'<tr><th scope="row">{g}</th><td>{fam}</td><td>{proc}</td>'
+        f'<td class="mono">{res}</td><td class="mat__note">{note}</td></tr>'
+        for g, fam, proc, res, note in C.MATERIALS)
+    body = f'''
+{subhero("Materials", "Grade reference", C.MATERIALS_INTRO)}
+<section class="sec sec--tight">
+  <div class="wrap">
+    <div class="mat__tools" data-reveal>
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+             stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input type="search" placeholder="Filter by grade, family or process&hellip;"
+               data-mat-search aria-label="Filter the materials table">
+      </label>
+      <p class="mat__count" data-mat-count aria-live="polite"></p>
+    </div>
+    <div class="tablewrap" data-reveal>
+      <table class="mat">
+        <thead><tr>
+          <th scope="col">Grade</th><th scope="col">Family</th>
+          <th scope="col">Usual process</th><th scope="col">Typical result</th>
+          <th scope="col">Notes</th>
+        </tr></thead>
+        <tbody data-mat-body>{rows}</tbody>
+      </table>
+    </div>
+    <p class="mat__empty" data-mat-empty hidden>
+      No grade matches that. Send it to us anyway &mdash;
+      <a href="contact.html#enquire">we will specify it</a>.
+    </p>
+  </div>
+</section>
+{cta()}'''
+    return page("materials.html", f"Material grade reference — {C.NAME}",
+                C.MATERIALS_INTRO, body, "materials.html")
+
+
+def build_quality():
+    tiles = "".join(
+        f'<div class="qtile" data-reveal style="--i:{i}">'
+        f'<div class="qtile__fig">{img(q["image"], q["name"], sizes="(max-width:800px) 100vw, 25vw")}</div>'
+        f'<h3>{q["name"]}</h3><p>{q["text"]}</p></div>'
+        for i, q in enumerate(C.QUALITY))
+    pts = "".join(
+        f'<div class="feat" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
+        for i, (t, d) in enumerate(C.QUALITY_POINTS))
+    body = f'''
+{subhero("Quality", "You cannot see heat treatment.", C.QUALITY_INTRO,
+         "hardness-tester")}
+<section class="sec"><div class="wrap"><div class="qgrid">{tiles}</div></div></section>
+<section class="sec sec--alt">
+  <div class="wrap">
+    {sec_head("The system", "How it is controlled", mid=True)}
+    <div class="feats">{pts}</div>
+  </div>
+</section>
+{cta()}'''
+    return page("quality.html", f"Quality &amp; testing — {C.NAME}",
+                C.QUALITY_INTRO, body, "quality.html")
+
+
+def build_industries():
+    items = "".join(
+        f'<div class="ind ind--lg" data-reveal style="--i:{i}"><h3>{n}</h3><p>{d}</p></div>'
+        for i, (n, d) in enumerate(C.INDUSTRIES))
+    body = f'''
+{subhero("Industries", "Most of what we treat ends up inside something that moves.",
+         C.INDUSTRIES_INTRO, "crankshaft")}
+<section class="sec"><div class="wrap"><div class="indgrid">{items}</div></div></section>
+{cta()}'''
+    return page("industries.html", f"Industries served — {C.NAME}",
+                C.INDUSTRIES_INTRO, body, "industries.html")
+
+
+def build_about():
+    prose = "".join(f"<p>{x}</p>" for x in C.ABOUT_BODY)
+    pillars = "".join(
+        f'<div class="feat" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
+        for i, (t, d) in enumerate(C.ABOUT_PILLARS))
+    body = f'''
+{subhero("About", C.ABOUT_TITLE, "", C.ABOUT_IMAGE)}
+<section class="sec">
+  <div class="wrap split">
+    <div class="split__text"><div class="prose prose--lg" data-reveal>{prose}</div></div>
+    <aside class="card-person" data-reveal>
+      <p class="eyebrow">Who you will deal with</p>
+      <p class="person__name">{C.CONTACT_NAME}</p>
+      <p class="person__quals">{C.CONTACT_QUALS}</p>
+      <p class="person__role">{C.CONTACT_ROLE}</p>
+      <hr>
+      <p><a class="link" href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
+      <p><a class="link" href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
+      <a class="btn btn--block" href="contact.html#enquire">Talk to us</a>
+    </aside>
+  </div>
+</section>
+<section class="sec sec--alt">
+  <div class="wrap">
+    {sec_head("How we work", "Three things we do not compromise on", mid=True)}
+    <div class="feats feats--3">{pillars}</div>
+  </div>
+</section>
+{cta()}'''
+    return page("about.html", f"About — {C.NAME}",
+                "A metallurgist-run commercial heat treatment shop in Chennai.",
+                body, "about.html")
+
+
+def build_contact():
+    faq = "".join(
+        f'<details class="faq"><summary>{q}</summary><p>{a}</p></details>'
+        for q, a in C.FAQ)
+    addr = "<br>".join(C.ADDRESS_LINES)
+    hours = "".join(f"<dt>{d}</dt><dd>{h}</dd>" for d, h in C.HOURS)
+    map_src = ("https://www.google.com/maps?q="
+               + C.MAP_QUERY.replace(" ", "+").replace(",", "%2C") + "&output=embed")
+    body = f'''
+{subhero("Contact", "Get a quote", C.CONTACT_INTRO)}
+
+<section class="sec sec--tight">
+  <div class="wrap split split--wide">
+    <div class="split__text">
+      {sec_head("Enquiry", "Tell us about the part")}
+      {enquiry_form()}
+    </div>
+    <aside class="cinfo" data-reveal>
+      <h2 class="h3">{C.NAME}</h2>
+      <p class="cinfo__cert">{C.CERT}</p>
+      <address>{addr}</address>
+      <dl class="cinfo__list">
+        <dt>Phone</dt><dd><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></dd>
+        <dt>Email</dt><dd><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></dd>
+        <dt>Alt</dt><dd><a href="mailto:{C.EMAIL_ALT}">{C.EMAIL_ALT}</a></dd>
+        <dt>GSTIN</dt><dd class="mono">{C.GSTIN}</dd>
+      </dl>
+      <h3 class="h4">Opening hours</h3>
+      <dl class="cinfo__list">{hours}</dl>
+    </aside>
+  </div>
+</section>
+
+<section class="sec sec--tight">
+  <div class="wrap">
+    <div class="map" data-reveal>
+      <iframe src="{map_src}" title="Map of {esc(C.MAP_QUERY)}"
+              loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--alt">
+  <div class="wrap wrap--narrow">
+    {sec_head("Questions", "Before you ask", mid=True)}
+    <div class="faqs" data-reveal>{faq}</div>
+  </div>
+</section>'''
+    return page("contact.html", f"Contact &amp; quote — {C.NAME}",
+                C.CONTACT_INTRO, body, "contact.html")
+
+
+def build_404():
+    body = '''
+<section class="nf">
+  <div class="wrap nf__in">
+    <p class="eyebrow">404</p>
+    <h1 class="h1">This one got quenched.</h1>
+    <p class="lede">The page is not here. The furnaces still are.</p>
+    <div class="hero__act">
+      <a class="btn" href="index.html">Back to the start</a>
+      <a class="btn btn--ghost" href="processes.html">See the processes</a>
+    </div>
+  </div>
+</section>'''
+    return page("404.html", f"Page not found — {C.NAME}",
+                "That page could not be found.", body)
+
+
+def main():
+    made = [build_home(), build_processes()]
+    made += build_process_pages()
+    made += [build_materials(), build_quality(), build_industries(),
+             build_about(), build_contact(), build_404()]
+
+    missing = sorted({s for s in _dims if _dims[s] is None})
+    print(f"built {len(made)} pages")
+    for p in made:
+        print(f"  {p}")
+    if missing:
+        print(f"\n  ! {len(missing)} image(s) missing, using fallback blocks:")
+        print("    " + ", ".join(missing))
+    if C.NOINDEX:
+        print("\n  noindex is ON (concept build)")
+
+
+if __name__ == "__main__":
+    main()
