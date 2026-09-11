@@ -9,6 +9,7 @@ Writes .html into the repo root, which is what GitHub Pages serves.
 """
 import hashlib
 import html
+import json
 import os
 
 import content as C
@@ -188,8 +189,9 @@ def footer():
 </a>'''
 
 
-def page(path, title, description, body, current=""):
-    robots = "noindex, nofollow" if C.NOINDEX else "index, follow"
+def page(path, title, description, body, current="", noindex=False):
+    # a 404 is never worth indexing, even on a live build
+    robots = "noindex, nofollow" if (C.NOINDEX or noindex) else "index, follow"
     doc = f'''<!doctype html>
 <html lang="en">
 <head>
@@ -202,6 +204,8 @@ def page(path, title, description, body, current=""):
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#080C14">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
 <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css?v={CSS_V}">
 </head>
@@ -282,7 +286,6 @@ def temp_widget():
     Both colour tables and the band descriptions come from content.py and are
     serialised into data attributes, so the physics stays editable in one file.
     """
-    import json
     data = {
         "min": C.TEMP_MIN, "max": C.TEMP_MAX,
         "temper": [[t, c, n] for t, c, n in C.TEMPER_COLOURS],
@@ -368,6 +371,11 @@ def build_home():
         f'<span class="stat__l">{l}</span></div>'
         for i, (v, u, l) in enumerate(C.STATS))
 
+    # only the incandescent stops; the hero word never goes below red heat
+    heat_payload = html.escape(json.dumps(
+        [[t, hexv] for t, hexv, _ in C.GLOW_COLOURS],
+        separators=(",", ":")), quote=True)
+
     procs = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES[:6]))
 
     inds = "".join(
@@ -385,6 +393,16 @@ def build_home():
         f'<p>{t["text"]}</p><cite>{t["name"]}<span>{t["meta"]}</span></cite></blockquote>'
         for i, t in enumerate(C.TESTIMONIALS))
 
+    custs = "".join(
+        f'<li class="cust" data-reveal style="--i:{i}">{n}</li>'
+        for i, n in enumerate(C.CUSTOMERS))
+
+    gallery = "".join(
+        f'<figure class="shot" data-reveal style="--i:{i % 6}">'
+        f'{img(slug, cap, sizes="(max-width:700px) 50vw, 25vw")}'
+        f'<figcaption>{cap}</figcaption></figure>'
+        for i, (slug, cap) in enumerate(C.GALLERY))
+
     plates = "".join(
         f'<div class="plate" data-reveal style="--i:{i}">'
         f'{img(f"plate-{n}", "Etched microstructure of an engineering alloy", sizes="(max-width:800px) 33vw, 16vw")}</div>'
@@ -396,7 +414,8 @@ def build_home():
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="wrap hero__in">
     <p class="hero__eyebrow">{C.HERO_EYEBROW}</p>
-    <h1 class="hero__title">{C.HERO_TITLE}</h1>
+    <h1 class="hero__title" data-heat-scale="{heat_payload}"
+        data-heat-lo="{C.HERO_HEAT_RANGE[0]}" data-heat-hi="{C.HERO_HEAT_RANGE[1]}">{C.HERO_TITLE}</h1>
     <p class="hero__text">{C.HERO_TEXT}</p>
     <div class="hero__act">
       <a class="btn" href="contact.html#enquire">Request a quote</a>
@@ -413,7 +432,7 @@ def build_home():
 
 <section class="sec">
   <div class="wrap">
-    {sec_head("What we do", "Eight processes, one job card.", C.PROCESSES_INTRO)}
+    {sec_head("What we do", C.H_PROCESSES, C.PROCESSES_INTRO)}
     <div class="pgrid">{procs}</div>
     <div class="sec__more" data-reveal>
       <a class="btn btn--ghost" href="processes.html">All eight processes</a>
@@ -423,18 +442,14 @@ def build_home():
 
 <section class="sec sec--alt">
   <div class="wrap">
-    {sec_head("Proof", "You cannot see heat treatment. So we measure it.",
-              C.QUALITY_INTRO, mid=True)}
+    {sec_head("Proof", C.H_PROOF, C.QUALITY_INTRO, mid=True)}
     <div class="qgrid">{quals}</div>
   </div>
 </section>
 
 <section class="sec sec--plates">
   <div class="wrap">
-    {sec_head("Microstructure", "The evidence is in the grain.",
-              "Etched cross-sections under the microscope &mdash; what the "
-              "process actually did to the metal, rather than what the "
-              "furnace chart claims.", mid=True)}
+    {sec_head("Microstructure", C.H_MICRO, C.H_MICRO_TEXT, mid=True)}
     <div class="plates">{plates}</div>
   </div>
 </section>
@@ -442,34 +457,41 @@ def build_home():
 <section class="sec">
   <div class="wrap split">
     <div class="split__text">
-      {sec_head("Who we work with", "Most of what we treat ends up inside something that moves.",
-                C.INDUSTRIES_INTRO)}
+      {sec_head("Who we work with", C.H_INDUSTRIES, C.INDUSTRIES_INTRO)}
       <a class="btn btn--ghost" href="industries.html" data-reveal>All industries</a>
     </div>
     <div class="inds">{inds}</div>
   </div>
 </section>
 
+<section class="sec sec--plates">
+  <div class="wrap">
+    {sec_head("Gallery", C.GALLERY_TITLE, C.GALLERY_INTRO, mid=True)}
+    <div class="shots">{gallery}</div>
+  </div>
+</section>
+
 <section class="sec sec--alt">
   <div class="wrap">
-    {sec_head("In their words", "What customers say", mid=True)}
-    <div class="quotes">{tests}</div>
+    {sec_head("Customers", C.H_CUSTOMERS, C.CUSTOMERS_INTRO, mid=True)}
+    <ul class="custs">{custs}</ul>
+    {f'<div class="quotes quotes--3">{tests}</div>' if C.TESTIMONIALS else ''}
   </div>
 </section>
 
 {cta()}'''
-    return page("index.html", f"{C.NAME} — Heat treatment in Chennai",
+    return page("index.html", f"{C.TAB_NAME} — Heat treatment in Chennai",
                 C.DESCRIPTION, body, "index.html")
 
 
 def build_processes():
     cards = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES))
     body = f'''
-{subhero("Processes", "Eight processes, one job card.", C.PROCESSES_INTRO,
+{subhero("Processes", C.H_PROCESSES, C.PROCESSES_INTRO,
          "furnace-computer")}
 <section class="sec"><div class="wrap"><div class="pgrid">{cards}</div></div></section>
 {cta()}'''
-    return page("processes.html", f"Heat treatment processes — {C.NAME}",
+    return page("processes.html", f"{C.TAB_NAME} — Heat treatment processes",
                 C.PROCESSES_INTRO, body, "processes.html")
 
 
@@ -513,8 +535,10 @@ def build_process_pages():
   </div>
 </section>
 {cta()}'''
+        # p["name"] carries inline HTML entities for on-page display; the
+        # <title> is escaped again downstream, so unescape it once here
         made.append(page(f"process-{p['slug']}.html",
-                         f"{p['name']} — {C.NAME}",
+                         f"{C.TAB_NAME} — {html.unescape(p['name'])}",
                          p["short"], body, "processes.html"))
     return made
 
@@ -554,7 +578,7 @@ def build_materials():
   </div>
 </section>
 {cta()}'''
-    return page("materials.html", f"Material grade reference — {C.NAME}",
+    return page("materials.html", f"{C.TAB_NAME} — Material grade reference",
                 C.MATERIALS_INTRO, body, "materials.html")
 
 
@@ -568,17 +592,26 @@ def build_quality():
         f'<div class="feat" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
         for i, (t, d) in enumerate(C.QUALITY_POINTS))
     body = f'''
-{subhero("Quality", "You cannot see heat treatment.", C.QUALITY_INTRO,
+{subhero("Quality", C.H_QUALITY, C.QUALITY_INTRO,
          "hardness-tester")}
 <section class="sec"><div class="wrap"><div class="qgrid">{tiles}</div></div></section>
 <section class="sec sec--alt">
   <div class="wrap">
-    {sec_head("The system", "How it is controlled", mid=True)}
+    {sec_head("The system", C.H_QUALITY_SYSTEM, mid=True)}
     <div class="feats">{pts}</div>
   </div>
 </section>
+
+<section class="sec">
+  <div class="wrap wrap--narrow">
+    {sec_head("Policy", C.POLICY_TITLE, C.POLICY_INTRO, mid=True)}
+    <ul class="policy" data-reveal>
+      {"".join(f"<li>{t}</li>" for t in C.POLICY_POINTS)}
+    </ul>
+  </div>
+</section>
 {cta()}'''
-    return page("quality.html", f"Quality &amp; testing — {C.NAME}",
+    return page("quality.html", f"{C.TAB_NAME} — Quality & testing",
                 C.QUALITY_INTRO, body, "quality.html")
 
 
@@ -591,7 +624,7 @@ def build_industries():
          C.INDUSTRIES_INTRO, "crankshaft")}
 <section class="sec"><div class="wrap"><div class="indgrid">{items}</div></div></section>
 {cta()}'''
-    return page("industries.html", f"Industries served — {C.NAME}",
+    return page("industries.html", f"{C.TAB_NAME} — Industries served",
                 C.INDUSTRIES_INTRO, body, "industries.html")
 
 
@@ -619,12 +652,28 @@ def build_about():
 </section>
 <section class="sec sec--alt">
   <div class="wrap">
-    {sec_head("How we work", "Three things we do not compromise on", mid=True)}
+    {sec_head("How we work", C.H_ABOUT_PILLARS, mid=True)}
     <div class="feats feats--3">{pillars}</div>
   </div>
 </section>
+
+<section class="sec">
+  <div class="wrap">
+    {sec_head("Where we are going", C.H_VISION, mid=True)}
+    <div class="feats feats--2">
+      <div class="feat" data-reveal style="--i:0">
+        <h3>{C.VISION_TITLE}</h3>
+        {"".join(f"<p>{t}</p>" for t in C.VISION_BODY)}
+      </div>
+      <div class="feat" data-reveal style="--i:1">
+        <h3>{C.MISSION_TITLE}</h3>
+        {"".join(f"<p>{t}</p>" for t in C.MISSION_BODY)}
+      </div>
+    </div>
+  </div>
+</section>
 {cta()}'''
-    return page("about.html", f"About — {C.NAME}",
+    return page("about.html", f"{C.TAB_NAME} — About",
                 "A metallurgist-run commercial heat treatment shop in Chennai.",
                 body, "about.html")
 
@@ -677,7 +726,7 @@ def build_contact():
     <div class="faqs" data-reveal>{faq}</div>
   </div>
 </section>'''
-    return page("contact.html", f"Contact &amp; quote — {C.NAME}",
+    return page("contact.html", f"{C.TAB_NAME} — Contact & quote",
                 C.CONTACT_INTRO, body, "contact.html")
 
 
@@ -694,8 +743,8 @@ def build_404():
     </div>
   </div>
 </section>'''
-    return page("404.html", f"Page not found — {C.NAME}",
-                "That page could not be found.", body)
+    return page("404.html", f"{C.TAB_NAME} — Page not found",
+                "That page could not be found.", body, noindex=True)
 
 
 def main():

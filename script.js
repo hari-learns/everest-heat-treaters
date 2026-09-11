@@ -207,28 +207,165 @@
         input.addEventListener("input", function () { render(+input.value); });
         render(+input.value);
 
-        // Nudge it once on first view so people notice it moves.
+        /* The scale walks itself through the bands so the colour change is
+           the first thing you notice, and it hands over the moment anyone
+           reaches for it.
+
+           It steps rather than sweeps: a slow glide to the next band, then a
+           long hold there. A continuous sweep crossed all ten bands in a few
+           seconds, which looked busy and gave nobody time to read the
+           description that goes with each one. */
         if (!reduced && "IntersectionObserver" in window) {
-          var seen = false;
-          var tio = new IntersectionObserver(function (es) {
-            es.forEach(function (en) {
-              if (!en.isIntersecting || seen) return;
-              seen = true;
-              tio.disconnect();
-              var from = +input.value, to = 1180, t0 = null;
-              var run = function (now) {
-                if (t0 === null) t0 = now;
-                var p = Math.min((now - t0) / 1500, 1);
-                var e = 1 - Math.pow(1 - p, 3);
-                input.value = Math.round(from + (to - from) * e);
-                render(+input.value);
-                if (p < 1) requestAnimationFrame(run);
-              };
-              requestAnimationFrame(run);
+          var GLIDE = 1600;            // ms travelling between two bands
+          var HOLD = 4200;             // ms parked on one, long enough to read
+
+          // the middle of each band, which is where its description is truest
+          var stops = (data.bands || []).map(function (b) {
+            return Math.round((b[0] + Math.min(b[1], data.max)) / 2);
+          }).filter(function (v) { return v >= data.min && v <= data.max; });
+
+          if (stops.length > 1) {
+            // up the scale then back down, so it never jumps end to end
+            var seq = [], i;
+            for (i = 0; i < stops.length; i++) seq.push(i);
+            for (i = stops.length - 2; i > 0; i--) seq.push(i);
+
+            var raf = 0, taken = false;
+            var cur = 0, from = 0, to = 0, holding = true, t0 = 0;
+
+            var smooth = function (p) { return p * p * (3 - 2 * p); };
+
+            var tick = function (now) {
+              if (taken) return;
+              var el = now - t0;
+              if (holding) {
+                if (el >= HOLD) {
+                  from = stops[seq[cur]];
+                  cur = (cur + 1) % seq.length;
+                  to = stops[seq[cur]];
+                  holding = false;
+                  t0 = now;
+                }
+              } else {
+                var p = Math.min(1, el / GLIDE);
+                var v = Math.round(from + (to - from) * smooth(p));
+                input.value = v;
+                render(v);
+                if (p >= 1) { holding = true; t0 = now; }
+              }
+              raf = requestAnimationFrame(tick);
+            };
+
+            var start = function () {
+              if (taken || raf) return;
+              // begin at whichever band the slider is already nearest
+              var at = +input.value, best = 0;
+              for (i = 0; i < stops.length; i++) {
+                if (Math.abs(stops[i] - at) < Math.abs(stops[best] - at)) best = i;
+              }
+              cur = seq.indexOf(best);
+              if (cur < 0) cur = 0;
+              holding = true;
+              t0 = performance.now();
+              raf = requestAnimationFrame(tick);
+            };
+            var pause = function () {
+              if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            };
+            // Any real intent to use the control ends the animation for good.
+            var handOver = function () {
+              if (taken) return;
+              taken = true;
+              pause();
+              temp.removeAttribute("data-temp-auto");
+            };
+
+            ["pointerdown", "touchstart", "keydown", "wheel"].forEach(function (ev) {
+              input.addEventListener(ev, handOver, { passive: true });
             });
-          }, { threshold: 0.45 });
-          tio.observe(temp);
+            input.addEventListener("focus", handOver);
+
+            var tio = new IntersectionObserver(function (es) {
+              es.forEach(function (en) { en.isIntersecting ? start() : pause(); });
+            }, { threshold: 0.35 });
+            tio.observe(temp);
+
+            // stop burning frames in a background tab
+            document.addEventListener("visibilitychange", function () {
+              document.hidden ? pause() : start();
+            });
+
+            temp.setAttribute("data-temp-auto", "");
+          }
         }
+      }
+    }
+  }
+
+  /* ----------------------------------------------- hero: the hot word --- */
+  /* "Metal" sits on the incandescent part of the same scale the temperature
+     control uses, with the reading shown above it. Slow on purpose: it is
+     behind the headline, so it should breathe rather than flicker. */
+  var hw = $("[data-heat-word]");
+  var hTitle = $(".hero__title[data-heat-scale]");
+  if (hw && hTitle) {
+    var hStops = null;
+    try { hStops = JSON.parse(hTitle.getAttribute("data-heat-scale")); }
+    catch (e) { hStops = null; }
+
+    if (hStops && hStops.length > 1) {
+      var hLo = +hTitle.getAttribute("data-heat-lo");
+      var hHi = +hTitle.getAttribute("data-heat-hi");
+      var hLabel = $("[data-heat-temp]", hw);
+
+      var hexToRgb = function (h) {
+        h = h.replace("#", "");
+        return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16),
+                parseInt(h.slice(4, 6), 16)];
+      };
+      var hSample = function (t) {
+        if (t <= hStops[0][0]) return hexToRgb(hStops[0][1]);
+        if (t >= hStops[hStops.length - 1][0])
+          return hexToRgb(hStops[hStops.length - 1][1]);
+        for (var i = 0; i < hStops.length - 1; i++) {
+          var a = hStops[i], b = hStops[i + 1];
+          if (t >= a[0] && t <= b[0]) {
+            var f = (t - a[0]) / (b[0] - a[0]);
+            var ca = hexToRgb(a[1]), cb = hexToRgb(b[1]);
+            return [Math.round(ca[0] + (cb[0] - ca[0]) * f),
+                    Math.round(ca[1] + (cb[1] - ca[1]) * f),
+                    Math.round(ca[2] + (cb[2] - ca[2]) * f)];
+          }
+        }
+        return hexToRgb(hStops[hStops.length - 1][1]);
+      };
+      var hPaint = function (t) {
+        var c = hSample(t);
+        hw.style.color = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
+        if (hLabel) hLabel.textContent = Math.round(t) + "\u00B0C";
+      };
+
+      if (reduced) {
+        hPaint((hLo + hHi) / 2);          // a single settled colour, no motion
+      } else {
+        var H_CYCLE = 9000;               // one climb and fall
+        var hStart = 0, hRaf = 0;
+        var hTick = function (now) {
+          if (!hStart) hStart = now;
+          var p = ((now - hStart) / H_CYCLE) % 1;
+          var e = (1 - Math.cos(p * 2 * Math.PI)) / 2;
+          hPaint(hLo + (hHi - hLo) * e);
+          hRaf = requestAnimationFrame(hTick);
+        };
+        hRaf = requestAnimationFrame(hTick);
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) {
+            if (hRaf) { cancelAnimationFrame(hRaf); hRaf = 0; }
+          } else if (!hRaf) {
+            hStart = 0;
+            hRaf = requestAnimationFrame(hTick);
+          }
+        });
       }
     }
   }

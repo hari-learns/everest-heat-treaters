@@ -26,6 +26,10 @@ FORCE = "--force" in sys.argv
 # whole plate would be a 1 MB asset nothing ever references.
 EXCLUDE = {"micro-colour"}
 
+# Outputs that are generated rather than converted, so there is no file in
+# build_src/ to match them against. Without this they get pruned as stale.
+GENERATED = {"billet-heat"}
+
 MAX_EDGE = 1900          # plenty for a full-bleed image on a 2x display
 WIDE = {"micro-colour", "molten-pour", "furnace-castings", "forge", "molten-ladle"}
 WIDE_EDGE = 2400         # full-bleed banners get a little more room
@@ -107,6 +111,8 @@ def main():
     for f in sorted(os.listdir(OUT)):
         stem = os.path.splitext(f)[0]
         if stem.startswith("plate-"):      # derived by tiles.py, no source file
+            continue
+        if stem in GENERATED:              # rendered by hero.py, no source file
             continue
         if f.endswith(".webp") and stem not in stems:
             os.remove(os.path.join(OUT, f))

@@ -198,6 +198,17 @@ button{font:inherit;color:inherit}
   animation:breathe 7s ease-in-out infinite alternate}
 @keyframes breathe{from{opacity:.62;transform:scale(1)}to{opacity:1;transform:scale(1.1)}}
 .hero__in{position:relative;z-index:2}
+/* the word that runs up and down the heat scale, with its reading above */
+.heat{position:relative;display:inline-block;color:var(--heat);
+  transition:color .5s linear}
+/* the reading sits above the word, so the headline needs room for it or it
+   lands on top of the eyebrow */
+.hero__title:has(.heat){padding-top:1.5rem}
+@supports not selector(:has(*)){ .hero__title{padding-top:1.5rem} }
+.heat__t{position:absolute;left:0;bottom:100%;margin-bottom:.18em;
+  font-family:var(--mono);font-size:.2em;font-weight:500;letter-spacing:.16em;
+  color:inherit;opacity:.85;white-space:nowrap;line-height:1}
+@media (max-width:560px){ .heat__t{font-size:.24em;letter-spacing:.12em} }
 .hero__eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;
   text-transform:uppercase;color:var(--heat-2);margin:0 0 1.2em}
 .hero__title{font-family:var(--display);font-weight:700;line-height:.98;
@@ -325,6 +336,12 @@ button{font:inherit;color:inherit}
 /* --------------------------------------------------------------- feats --- */
 .feats{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.6vw,36px)}
 .feats--3{grid-template-columns:repeat(3,1fr)}
+.feats--2{grid-template-columns:repeat(2,1fr)}
+.policy{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.policy li{position:relative;padding:16px 18px 16px 46px;background:var(--surface);color:var(--muted);line-height:1.55}
+.policy li:first-child{border-radius:var(--r) var(--r) 0 0}
+.policy li:last-child{border-radius:0 0 var(--r) var(--r)}
+.policy li::before{content:"";position:absolute;left:20px;top:25px;width:8px;height:8px;background:var(--heat);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .feat{padding-top:18px;border-top:2px solid var(--heat)}
 .feat h3{font-family:var(--display);font-weight:600;font-size:1.08rem;margin:0 0 .5em;
   letter-spacing:-.015em}
@@ -359,6 +376,37 @@ button{font:inherit;color:inherit}
 .ind--lg h3{font-size:1.1rem}
 
 /* --------------------------------------------------------------- quotes --- */
+/* the works gallery — the client's own photographs, used at tile size */
+.shots{display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(10px,1.4vw,18px)}
+.shot{margin:0;position:relative;border-radius:var(--r);overflow:hidden;
+  background:var(--surface);border:1px solid var(--line-soft)}
+.shot img{display:block;width:100%;height:100%;aspect-ratio:3/2;
+  object-fit:cover;border-radius:0;
+  filter:saturate(1.06) contrast(1.04);transition:transform .6s var(--ease)}
+.shot figcaption{position:absolute;inset:auto 0 0 0;padding:26px 14px 11px;
+  font-size:.78rem;line-height:1.35;color:#EDF1F8;
+  background:linear-gradient(transparent,rgba(6,9,15,.88) 62%);
+  opacity:0;transform:translateY(6px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease)}
+@media (hover:hover){
+  .shot:hover img{transform:scale(1.05)}
+  .shot:hover figcaption{opacity:1;transform:none}
+}
+@media (hover:none){ .shot figcaption{opacity:1;transform:none} }
+.quotes--3{grid-template-columns:repeat(3,1fr);margin-top:clamp(24px,3vw,40px)}
+@media (max-width:900px){ .shots{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:640px){
+  .shots{grid-template-columns:repeat(2,1fr)}
+  .quotes--3{grid-template-columns:1fr}
+}
+.custs{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;
+  justify-content:center;gap:clamp(12px,1.6vw,20px)}
+.cust{flex:1 1 200px;max-width:300px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  min-height:92px;padding:18px 20px;background:var(--surface);
+  border:1px solid var(--line-soft);border-radius:var(--r);
+  font-weight:600;letter-spacing:-.01em;line-height:1.35}
 .quotes{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,30px)}
 .quote{margin:0;padding:clamp(24px,3vw,38px);background:var(--surface);
   border-radius:var(--r);border:1px solid var(--line-soft);position:relative}
@@ -601,6 +649,7 @@ button{font:inherit;color:inherit}
   .nav{display:none}
   .burger{display:flex}
   .feats--3{grid-template-columns:repeat(2,1fr)}
+  .feats--2{grid-template-columns:1fr}
 }
 @media (max-width:760px){
   .foot__in{grid-template-columns:1fr 1fr}

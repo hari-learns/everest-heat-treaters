@@ -73,7 +73,8 @@ def check_pages():
             fail(f"{name}: no meta description")
         if C.NOINDEX and "noindex" not in p.robots:
             fail(f"{name}: NOINDEX on but robots={p.robots!r}")
-        if not C.NOINDEX and "noindex" in p.robots:
+        # 404 opts out on purpose, even on a live build
+        if not C.NOINDEX and "noindex" in p.robots and name != "404.html":
             fail(f"{name}: NOINDEX off but page still says noindex")
         titles.setdefault(p.title.strip(), []).append(name)
         descs.setdefault(p.desc.strip(), []).append(name)
