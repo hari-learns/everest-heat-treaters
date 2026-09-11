@@ -36,7 +36,7 @@ TAGLINE = "Heat treatment for ferrous &amp; non-ferrous metals"
 CERT = "An ISO 9001:2015 certified company"
 DESCRIPTION = (
     "Commercial heat treatment in Ambattur, Chennai — hardening and tempering, "
-    "case hardening, carbonitriding, annealing, normalising, stress relieving "
+    "case hardening, annealing, normalising, stress relieving "
     "and solution treatment for ferrous and non-ferrous components. "
     "ISO 9001:2015 certified, working to ASTM standards."
 )
@@ -45,10 +45,9 @@ CONTACT_NAME = "S. Aravindth"
 CONTACT_QUALS = "B.E., M.E."
 CONTACT_ROLE = "Metallurgist"
 
-# The works numbers from the 2025 company profile.
-PHONE = "+91 80561 58579"
-PHONE_LINK = "+918056158579"
-WHATSAPP = "918056158579"
+PHONE = "+91 6379 547 322"
+PHONE_LINK = "+916379547322"
+WHATSAPP = "916379547322"
 EMAIL = "everest_heattreaters@yahoo.co.in"
 EMAIL_ALT = "amtheat@hotmail.com"
 GSTIN = "33ANNPS4415M1ZK"
@@ -171,10 +170,10 @@ TEMP_BANDS = [
     (350, 500, "High-temperature tempering",
      "For dies and shafts that have to survive shock. Toughness climbs "
      "sharply and hardness settles into the 40s HRC."),
-    (500, 580, "Carbonitriding &amp; stress relieving",
-     "Nitrogen and carbon diffuse into the surface together, giving a hard "
-     "skin with very little movement, because the part stays below the "
-     "temperature at which it would transform."),
+    (500, 580, "Stress relieving",
+     "Welding and machining stress is let go while the structure stays "
+     "exactly as it was, because the part never approaches the temperature "
+     "at which it would transform."),
     (580, 720, "Sub-critical annealing",
      "Below the critical point. Machining stresses are erased and the "
      "structure softens while the part keeps its existing hardness state."),
@@ -250,32 +249,6 @@ PROCESSES = [
                 "Core hardness reported alongside case",
                 "Tempered after quench to stabilise"],
         suits=["SAE 8620", "16MnCr5", "20MnCr5", "EN36", "EN353", "EN354"],
-    ),
-    dict(
-        slug="carbonitriding",
-        name="Carbonitriding",
-        short="Carbon and nitrogen together, for a hard surface with very "
-              "little movement on the part.",
-        temp="500&ndash;580&deg;C",
-        result="Up to 1100 HV surface, 0.1&ndash;0.6 mm case",
-        image="micro-duplex",
-        body=[
-            "Nitrogen and carbon diffuse into the surface at around 520&deg;C "
-            "and form hard nitrides with the chromium, aluminium and "
-            "molybdenum already present in the steel. The cycle runs well "
-            "below the critical temperature and needs no quench.",
-            "That is the whole advantage. Movement is negligible, so finished "
-            "and even ground components can be treated and go straight back "
-            "into assembly. The surface that results is harder than anything "
-            "through-hardening can reach, and it holds that hardness at "
-            "service temperatures that would temper a conventionally hardened "
-            "part straight back down.",
-        ],
-        points=["Treat finished and ground components",
-                "Negligible distortion &mdash; no quench",
-                "Strong wear and galling resistance",
-                "Holds hardness at elevated service temperature"],
-        suits=["EN41B", "H13", "EN19", "EN24", "Nitralloy", "Die steels"],
     ),
     dict(
         slug="annealing",
@@ -430,7 +403,7 @@ PROCESSES = [
 ]
 
 PROCESSES_INTRO = (
-    "Nine processes cover almost everything that comes through the door, for "
+    "Eight processes cover almost everything that comes through the door, for "
     "ferrous and non-ferrous metals alike, all of it to ASTM standards. If "
     "your drawing calls for something else, or does not specify at all, send "
     "it over &mdash; working out the right treatment is part of the job."
@@ -459,15 +432,13 @@ MATERIALS = [
      "58&ndash;62 HRC case", "Automotive transmission"),
     ("20MnCr5", "Case hardening", "Case harden &amp; temper",
      "58&ndash;62 HRC case", "Deeper case than 16MnCr5"),
-    ("EN41B", "Nitriding steel", "Carbonitride", "up to 1100 HV",
-     "Aluminium-bearing, made for nitriding"),
     ("D2 / X153CrMoV12", "Cold work tool", "Harden &amp; temper",
      "58&ndash;62 HRC", "Blanking and forming dies"),
     ("D3", "Cold work tool", "Harden &amp; temper", "58&ndash;62 HRC",
      "High wear, lower toughness"),
     ("O1", "Oil hardening tool", "Harden, temper &amp; stabilise",
      "58&ndash;62 HRC", "Low distortion, gauges and cutters"),
-    ("H13 / X40CrMoV5-1", "Hot work tool", "Harden &amp; temper / carbonitride",
+    ("H13 / X40CrMoV5-1", "Hot work tool", "Harden &amp; temper",
      "44&ndash;52 HRC", "Die casting and extrusion dies"),
     ("M2 HSS", "High speed steel", "Harden &amp; triple temper",
      "62&ndash;65 HRC", "Tight control through the cycle"),
@@ -591,7 +562,7 @@ INDUSTRIES = [
     ("Pumps &amp; fluid handling", "Shafts, impellers and wear parts in both "
      "carbon steel and stainless."),
     ("Dies, moulds &amp; tooling", "Cold and hot work tool steels, press "
-     "tools, and carbonitrided die surfaces."),
+     "tools, and hardened die faces."),
     ("General engineering", "Job work, one-offs, prototypes and the awkward "
      "parts nobody else wants to quote."),
 ]
@@ -678,17 +649,23 @@ POLICY_POINTS = [
 ]
 
 # --------------------------------------------------------------- reviews ---
-# Real customer words, as published on amtheat.com.
+# Real customer words, as published on amtheat.com, quoted as written.
 #
-# Two further testimonials on that site (G. Mathi and Hariharan Rathinakumar)
-# name "Ambattur Metal Treaters" inside the quote itself. Rewriting a
-# customer's words to say a different company name would be a fabrication, so
-# they are held back until the client either confirms the wording or supplies
-# testimonials of their own. Add them here when that happens.
+# Two of them name "Ambattur Metal Treat" inside the quote. That is left
+# exactly as the customer wrote it rather than edited to read "Everest" —
+# changing someone's words is not ours to do. If the client wants the name to
+# match, ask them for a reworded version rather than editing it here.
 TESTIMONIALS = [
     dict(text="Excellent workmanship and timely delivery. Their heat treatment "
               "quality has consistently exceeded our expectations.",
          name="Adhithi Meenakshi", meta="Customer"),
+    dict(text="Reliable service, skilled team, and outstanding results. We "
+              "trust Ambattur Metal Treat for all our heat treatment "
+              "requirements.",
+         name="HariHaran Rathinakumar", meta="Customer"),
+    dict(text="Ambattur Metal Treat is the best heat treatment company in "
+              "Chennai. Excellent quality and on-time delivery.",
+         name="G. Mathi", meta="Customer"),
 ]
 
 # --------------------------------------------------------------- gallery ---
@@ -733,7 +710,7 @@ FAQ = [
      "so &mdash; that is a solvable problem and we deal with it often."),
     ("What is the usual turnaround?",
      "Most conventional work runs two to three days. Long-cycle processes "
-     "like deep case hardening and carbonitriding take longer, and we will "
+     "like deep case hardening take longer, and we will "
      "give you a realistic date when we quote."),
     ("Do you handle small quantities?",
      "Yes. Single pieces, prototypes and trial batches are all normal work "

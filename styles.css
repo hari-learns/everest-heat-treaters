@@ -441,11 +441,37 @@ button{font:inherit;color:inherit}
 }
 .custs{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;
   justify-content:center;gap:clamp(12px,1.6vw,20px)}
-.cust{flex:1 1 200px;max-width:300px;
+.cust{flex:1 1 200px;max-width:300px;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;text-align:center;
   min-height:92px;padding:18px 20px;background:var(--surface);
   border:1px solid var(--line-soft);border-radius:var(--r);
-  font-weight:600;letter-spacing:-.01em;line-height:1.35}
+  font-weight:600;letter-spacing:-.01em;line-height:1.35;
+  transition:transform .45s var(--ease),border-color .45s var(--ease),
+             box-shadow .45s var(--ease)}
+/* A heat pass. A warm band travels the row tile by tile, the way work comes
+   up to temperature down the length of a furnace — the stagger comes from
+   the same --i the reveal uses, so the two read as one movement. */
+.cust::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 34%,
+    rgba(255,107,24,.16) 47%,rgba(255,180,90,.24) 50%,
+    rgba(255,107,24,.16) 53%,transparent 66%);
+  transform:translateX(-120%);
+  animation:heatpass 7.5s cubic-bezier(.5,0,.5,1) infinite;
+  animation-delay:calc(var(--i,0) * .42s)}
+/* and a hairline that warms with it */
+.cust::after{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--heat),transparent);
+  opacity:0;transition:opacity .45s var(--ease)}
+@keyframes heatpass{
+  0%{transform:translateX(-120%)}
+  42%{transform:translateX(120%)}
+  100%{transform:translateX(120%)}
+}
+@media (hover:hover){
+  .cust:hover{transform:translateY(-4px);border-color:rgba(255,107,24,.55);
+    box-shadow:0 14px 34px -18px rgba(255,107,24,.55)}
+  .cust:hover::after{opacity:1}
+}
 .quotes{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,30px)}
 .quote{margin:0;padding:clamp(24px,3vw,38px);background:var(--surface);
   border-radius:var(--r);border:1px solid var(--line-soft);position:relative}
@@ -716,6 +742,7 @@ button{font:inherit;color:inherit}
 
 /* ------------------------------------------------------- reduced motion --- */
 @media (prefers-reduced-motion:reduce){
+  .cust::before{animation:none;display:none}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
     transition-duration:.01ms!important;scroll-behavior:auto!important}
