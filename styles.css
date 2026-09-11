@@ -120,13 +120,15 @@ button{font:inherit;color:inherit}
 .hdr.is-stuck{background:rgba(8,12,20,.96)}
 .hdr__in{width:min(100% - var(--gut)*2,var(--wrap));margin-inline:auto;
   display:flex;align-items:center;gap:22px;min-height:clamp(62px,6.5vw,80px)}
-.brand{display:flex;align-items:center;gap:11px;text-decoration:none;margin-right:auto}
-.logo{display:flex;align-items:center;gap:7px;color:var(--heat)}
-.logo svg{display:block}
-.logo b{font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;color:var(--ink)}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;margin-right:auto}
+.logo{display:flex;align-items:center;gap:9px;color:var(--heat)}
+.logo svg{display:block;width:46px;height:32px}
+.logo b{font-family:var(--mono);font-size:.92rem;letter-spacing:.14em;color:var(--ink)}
 .brand__txt{display:flex;flex-direction:column;line-height:1.2}
-.brand__name{font-weight:700;font-size:1.02rem;letter-spacing:-.02em}
-.brand__sub{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;
+.brand__name{font-weight:800;font-size:1.32rem;letter-spacing:-.025em;
+  color:var(--heat);transition:color .5s linear;
+  text-shadow:0 0 22px rgba(255,107,24,.22)}
+.brand__sub{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--faint)}
 .nav{display:flex;gap:clamp(12px,1.6vw,26px)}
 .nav a{text-decoration:none;font-size:.88rem;color:var(--muted);position:relative;
@@ -138,6 +140,17 @@ button{font:inherit;color:inherit}
 .nav a:hover::after,.nav a[aria-current]::after{transform:scaleX(1);transform-origin:left}
 .nav a[aria-current]{color:var(--ink)}
 .hdr__act{display:flex;align-items:center;gap:10px}
+@media (max-width:860px){
+  .logo svg{width:40px;height:28px}
+  .logo b{font-size:.82rem}
+  .brand__name{font-size:1.12rem}
+}
+@media (max-width:430px){
+  .brand{gap:10px}
+  .logo svg{width:34px;height:24px}
+  .logo b{display:none}
+  .brand__name{font-size:1.02rem}
+}
 
 .burger{display:none;align-items:center;justify-content:center;width:44px;height:44px;
   padding:0;background:none;border:0;cursor:pointer;color:var(--ink);

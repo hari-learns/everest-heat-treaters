@@ -91,8 +91,16 @@ HERO_EYEBROW = "Ambattur, Chennai &middot; ISO 9001:2015"
 HERO_TITLE = ('<span class="heat" data-heat-word>'
               '<span class="heat__t" data-heat-temp aria-hidden="true"></span>'
               'Metal</span>, the way<br>you want it to be.')
-# the stretch of the scale the word travels, in degrees C
-HERO_HEAT_RANGE = (560, 1180)
+# The stretch of the scale the word travels, in degrees C. The floor is set
+# by legibility rather than taste: below about 715C the incandescent colours
+# fall under 3:1 against the dark ground and the word starts to disappear.
+# verify.py enforces this.
+HERO_HEAT_RANGE = (740, 1250)
+# The header brand runs half a cycle out of step, so when the hero word is at
+# red the name is at orange and the two never sit on the same colour. Its
+# floor is higher because the name drops to 16px on a phone, where it is no
+# longer "large text" and needs 4.5:1 rather than 3:1.
+BRAND_HEAT_RANGE = (840, 1250)
 HERO_TEXT = (
     "Heat treatment rewrites the crystal structure of the steel itself, so a "
     "component comes back harder, tougher or softer all the way through. We "

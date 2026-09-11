@@ -96,6 +96,13 @@ def logo():
 </span>'''
 
 
+# The incandescent stops, handed to anything that paints itself from the
+# heat scale. Escaped once here rather than per page.
+HEAT_STOPS = html.escape(json.dumps(
+    [[t, hexv] for t, hexv, _ in C.GLOW_COLOURS],
+    separators=(",", ":")), quote=True)
+
+
 def header(current):
     return f'''<a class="skip" href="#main">Skip to content</a>
 <header class="hdr" data-header>
@@ -103,7 +110,10 @@ def header(current):
     <a class="brand" href="index.html">
       {logo()}
       <span class="brand__txt">
-        <span class="brand__name">{C.NAME}</span>
+        <span class="brand__name" data-heat-brand
+              data-heat-scale="{HEAT_STOPS}"
+              data-heat-lo="{C.BRAND_HEAT_RANGE[0]}"
+              data-heat-hi="{C.BRAND_HEAT_RANGE[1]}">{C.NAME}</span>
         <span class="brand__sub">{C.CERT}</span>
       </span>
     </a>
@@ -371,11 +381,6 @@ def build_home():
         f'<span class="stat__l">{l}</span></div>'
         for i, (v, u, l) in enumerate(C.STATS))
 
-    # only the incandescent stops; the hero word never goes below red heat
-    heat_payload = html.escape(json.dumps(
-        [[t, hexv] for t, hexv, _ in C.GLOW_COLOURS],
-        separators=(",", ":")), quote=True)
-
     procs = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES[:6]))
 
     inds = "".join(
@@ -414,7 +419,7 @@ def build_home():
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="wrap hero__in">
     <p class="hero__eyebrow">{C.HERO_EYEBROW}</p>
-    <h1 class="hero__title" data-heat-scale="{heat_payload}"
+    <h1 class="hero__title" data-heat-scale="{HEAT_STOPS}"
         data-heat-lo="{C.HERO_HEAT_RANGE[0]}" data-heat-hi="{C.HERO_HEAT_RANGE[1]}">{C.HERO_TITLE}</h1>
     <p class="hero__text">{C.HERO_TEXT}</p>
     <div class="hero__act">

@@ -302,73 +302,87 @@
     }
   }
 
-  /* ----------------------------------------------- hero: the hot word --- */
-  /* "Metal" sits on the incandescent part of the same scale the temperature
-     control uses, with the reading shown above it. Slow on purpose: it is
-     behind the headline, so it should breathe rather than flicker. */
-  var hw = $("[data-heat-word]");
-  var hTitle = $(".hero__title[data-heat-scale]");
-  if (hw && hTitle) {
-    var hStops = null;
-    try { hStops = JSON.parse(hTitle.getAttribute("data-heat-scale")); }
-    catch (e) { hStops = null; }
-
-    if (hStops && hStops.length > 1) {
-      var hLo = +hTitle.getAttribute("data-heat-lo");
-      var hHi = +hTitle.getAttribute("data-heat-hi");
-      var hLabel = $("[data-heat-temp]", hw);
-
-      var hexToRgb = function (h) {
-        h = h.replace("#", "");
-        return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16),
-                parseInt(h.slice(4, 6), 16)];
-      };
-      var hSample = function (t) {
-        if (t <= hStops[0][0]) return hexToRgb(hStops[0][1]);
-        if (t >= hStops[hStops.length - 1][0])
-          return hexToRgb(hStops[hStops.length - 1][1]);
-        for (var i = 0; i < hStops.length - 1; i++) {
-          var a = hStops[i], b = hStops[i + 1];
-          if (t >= a[0] && t <= b[0]) {
-            var f = (t - a[0]) / (b[0] - a[0]);
-            var ca = hexToRgb(a[1]), cb = hexToRgb(b[1]);
-            return [Math.round(ca[0] + (cb[0] - ca[0]) * f),
-                    Math.round(ca[1] + (cb[1] - ca[1]) * f),
-                    Math.round(ca[2] + (cb[2] - ca[2]) * f)];
-          }
-        }
-        return hexToRgb(hStops[hStops.length - 1][1]);
-      };
-      var hPaint = function (t) {
-        var c = hSample(t);
-        hw.style.color = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
-        if (hLabel) hLabel.textContent = Math.round(t) + "\u00B0C";
-      };
-
-      if (reduced) {
-        hPaint((hLo + hHi) / 2);          // a single settled colour, no motion
-      } else {
-        var H_CYCLE = 9000;               // one climb and fall
-        var hStart = 0, hRaf = 0;
-        var hTick = function (now) {
-          if (!hStart) hStart = now;
-          var p = ((now - hStart) / H_CYCLE) % 1;
-          var e = (1 - Math.cos(p * 2 * Math.PI)) / 2;
-          hPaint(hLo + (hHi - hLo) * e);
-          hRaf = requestAnimationFrame(hTick);
-        };
-        hRaf = requestAnimationFrame(hTick);
-        document.addEventListener("visibilitychange", function () {
-          if (document.hidden) {
-            if (hRaf) { cancelAnimationFrame(hRaf); hRaf = 0; }
-          } else if (!hRaf) {
-            hStart = 0;
-            hRaf = requestAnimationFrame(hTick);
-          }
-        });
-      }
+  /* ------------------------------------------- text that runs on heat --- */
+  /* Two things paint themselves from the incandescent scale: the word in the
+     headline, and the company name in the header. They run half a cycle
+     apart, so when one is at red heat the other is at orange and the pair
+     never sit on the same colour. */
+  (function () {
+    var targets = [];
+    var word = $("[data-heat-word]");
+    var heroSrc = $(".hero__title[data-heat-scale]");
+    if (word && heroSrc) {
+      targets.push({ el: word, src: heroSrc, phase: 0,
+                     label: $("[data-heat-temp]", word) });
     }
-  }
+    $$("[data-heat-brand]").forEach(function (el) {
+      targets.push({ el: el, src: el, phase: 0.5, label: null });
+    });
+    if (!targets.length) return;
+
+    var hexToRgb = function (h) {
+      h = h.replace("#", "");
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16),
+              parseInt(h.slice(4, 6), 16)];
+    };
+    var sampleStops = function (stops, t) {
+      if (t <= stops[0][0]) return hexToRgb(stops[0][1]);
+      var last = stops[stops.length - 1];
+      if (t >= last[0]) return hexToRgb(last[1]);
+      for (var i = 0; i < stops.length - 1; i++) {
+        var a = stops[i], b = stops[i + 1];
+        if (t >= a[0] && t <= b[0]) {
+          var f = (t - a[0]) / (b[0] - a[0]);
+          var ca = hexToRgb(a[1]), cb = hexToRgb(b[1]);
+          return [Math.round(ca[0] + (cb[0] - ca[0]) * f),
+                  Math.round(ca[1] + (cb[1] - ca[1]) * f),
+                  Math.round(ca[2] + (cb[2] - ca[2]) * f)];
+        }
+      }
+      return hexToRgb(last[1]);
+    };
+
+    var live = [];
+    targets.forEach(function (t) {
+      var stops = null;
+      try { stops = JSON.parse(t.src.getAttribute("data-heat-scale")); }
+      catch (e) { return; }
+      if (!stops || stops.length < 2) return;
+      t.stops = stops;
+      t.lo = +t.src.getAttribute("data-heat-lo");
+      t.hi = +t.src.getAttribute("data-heat-hi");
+      t.paint = function (temp) {
+        var c = sampleStops(t.stops, temp);
+        t.el.style.color = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
+        if (t.label) t.label.textContent = Math.round(temp) + "\u00B0C";
+      };
+      live.push(t);
+    });
+    if (!live.length) return;
+
+    if (reduced) {
+      live.forEach(function (t) { t.paint((t.lo + t.hi) / 2); });
+      return;
+    }
+
+    var CYCLE = 9000;                 // one climb and fall
+    var origin = 0, raf = 0;
+    var tick = function (now) {
+      if (!origin) origin = now;
+      live.forEach(function (t) {
+        var p = ((now - origin) / CYCLE + t.phase) % 1;
+        var e = (1 - Math.cos(p * 2 * Math.PI)) / 2;
+        t.paint(t.lo + (t.hi - t.lo) * e);
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      } else if (!raf) { origin = 0; raf = requestAnimationFrame(tick); }
+    });
+  })();
 
   /* ------------------------------------------------- materials filter --- */
   var matBody = $("[data-mat-body]");

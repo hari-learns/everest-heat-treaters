@@ -177,6 +177,52 @@ def check_temperature_data():
           f"{C.TEMP_MIN}-{C.TEMP_MAX}degC continuously")
 
 
+def check_heat_text_contrast():
+    """The hero word and the header brand paint themselves from the glow scale.
+    Nothing in the stylesheet pins those colours, so the only thing keeping
+    them readable is where each range starts. A floor set too low makes the
+    company name fade into the header for part of every cycle."""
+    def lin(v):
+        v /= 255.0
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+
+    def lum(c):
+        return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
+
+    def ratio(a, b):
+        la, lb = lum(a), lum(b)
+        hi, lo = max(la, lb), min(la, lb)
+        return (hi + 0.05) / (lo + 0.05)
+
+    def hx(h):
+        h = h.lstrip("#")
+        return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+    def sample(t):
+        stops = [(k, hx(v)) for k, v, _ in C.GLOW_COLOURS]
+        if t <= stops[0][0]:
+            return stops[0][1]
+        if t >= stops[-1][0]:
+            return stops[-1][1]
+        for (t0, c0), (t1, c1) in zip(stops, stops[1:]):
+            if t0 <= t <= t1:
+                f = (t - t0) / (t1 - t0)
+                return tuple(round(a + (b - a) * f) for a, b in zip(c0, c1))
+        return stops[-1][1]
+
+    GROUND = (8, 12, 20)           # --bg, behind both the hero and the header
+    # 3:1 for the headline (large text); 4.5:1 for the brand, which drops to
+    # 16px on a phone and stops counting as large text there.
+    for label, rng, need in [("hero word", C.HERO_HEAT_RANGE, 3.0),
+                             ("header brand", C.BRAND_HEAT_RANGE, 4.5)]:
+        worst = min(ratio(sample(t), GROUND)
+                    for t in range(rng[0], rng[1] + 1, 5))
+        if worst < need:
+            fail(f"{label}: {rng[0]}-{rng[1]}degC drops to {worst:.2f}:1 "
+                 f"against the ground, needs {need}:1 — raise the lower bound")
+    print("  heat-driven text stays legible across its whole cycle")
+
+
 def check_media():
     referenced = ({C.HERO_IMAGE, C.ABOUT_IMAGE}
                   | {p["image"] for p in C.PROCESSES}
@@ -204,6 +250,7 @@ if __name__ == "__main__":
     check_contrast()
     check_single_source()
     check_temperature_data()
+    check_heat_text_contrast()
     check_media()
     print()
     if problems:
