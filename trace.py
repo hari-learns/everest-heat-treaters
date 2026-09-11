@@ -18,8 +18,10 @@ from PIL import Image
 
 SRC = "assets/img/logo-mark.png"
 LEVEL = 0.5          # alpha midpoint
-EPS = 0.55           # RDP tolerance, in source pixels
-MIN_RING = 26        # drop specks
+EPS = 0.70           # RDP tolerance: smooths the pixel staircase
+                     # without losing a peak or a tree
+MIN_RING = 7         # low, so the pine trees survive
+MIN_BLOB = 12        # pixels; drops scanning specks, keeps the trees
 VIEW_W = 340         # the viewBox the paths are written against
 
 
@@ -130,20 +132,85 @@ def rdp(pts, eps):
     return rdp(pts[:at + 1], eps)[:-1] + rdp(pts[at:], eps)
 
 
+def components(w, h, g):
+    """Split the foreground into separate blobs.
+
+    The mark is not one shape: the crevasse slivers inside the peaks, each
+    pine tree and the lower sweep are all detached. Tracing the whole grid at
+    once let the walk hop between them wherever two contours passed close, and
+    everything but the outer boundary was swallowed. Labelling first keeps
+    them apart, and each blob is then traced on a grid of its own.
+    """
+    seen = [[False] * w for _ in range(h)]
+    blobs = []
+    for sy in range(h):
+        for sx in range(w):
+            if seen[sy][sx] or g[sy][sx] <= LEVEL:
+                continue
+            stack = [(sx, sy)]
+            seen[sy][sx] = True
+            cells = []
+            while stack:
+                x, y = stack.pop()
+                cells.append((x, y))
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1),
+                               (1, 1), (1, -1), (-1, 1), (-1, -1)):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < w and 0 <= ny < h and not seen[ny][nx] \
+                            and g[ny][nx] > LEVEL:
+                        seen[ny][nx] = True
+                        stack.append((nx, ny))
+            if len(cells) >= MIN_BLOB:
+                blobs.append(cells)
+    return blobs
+
+
+def rdp_closed(ring, eps):
+    """Simplify a closed ring.
+
+    Plain RDP cannot do this: on a loop the first and last point coincide, so
+    the baseline it measures against has zero length, every distance comes out
+    as zero and it hands back two points. Split the ring at the point furthest
+    from its start, simplify the two open chains, then rejoin.
+    """
+    pts = ring[:-1] if len(ring) > 1 and ring[0] == ring[-1] else ring[:]
+    if len(pts) < 4:
+        return pts
+    ax, ay = pts[0]
+    far, at = -1.0, 0
+    for i, (x, y) in enumerate(pts):
+        d = (x - ax) ** 2 + (y - ay) ** 2
+        if d > far:
+            far, at = d, i
+    first = rdp(pts[:at + 1], eps)
+    second = rdp(pts[at:] + [pts[0]], eps)
+    return first[:-1] + second[:-1]
+
+
 def main():
     w, h, g = grid(SRC)
-    loops = rings(segments(w, h, g))
     scale = VIEW_W / w
     paths = []
-    for loop in loops:
-        pts = rdp(loop, EPS)
-        if len(pts) < 4:
-            continue
-        d = "M" + " L".join(f"{x * scale:.1f},{y * scale:.1f}" for x, y in pts) + "Z"
-        paths.append(d)
+    for cells in components(w, h, g):
+        xs = [c[0] for c in cells]
+        ys = [c[1] for c in cells]
+        # a 1px margin so the blob never touches the edge of its own grid
+        x0, x1 = min(xs) - 1, max(xs) + 2
+        y0, y1 = min(ys) - 1, max(ys) + 2
+        bw, bh = x1 - x0, y1 - y0
+        sub = [[0.0] * bw for _ in range(bh)]
+        for x, y in cells:
+            sub[y - y0][x - x0] = 1.0
+        for loop in rings(segments(bw, bh, sub)):
+            pts = rdp_closed(loop, EPS)
+            if len(pts) < 4:
+                continue
+            d = "M" + " L".join(
+                f"{(x + x0) * scale:.1f},{(y + y0) * scale:.1f}"
+                for x, y in pts) + "Z"
+            paths.append(d)
     paths.sort(key=len, reverse=True)
 
-    sys.setrecursionlimit(10000)
     print('"""Vector outlines of the company mark, produced by trace.py.')
     print()
     print("Do not hand-edit: re-run `python3 trace.py > mark_paths.py` instead.")
@@ -153,8 +220,8 @@ def main():
     for d in paths:
         print(f'    "{d}",')
     print("]")
-    total = sum(len(d) for d in paths)
-    print(f"# {len(paths)} rings, {total} chars", file=sys.stderr)
+    print(f"# {len(paths)} rings, {sum(len(d) for d in paths)} chars",
+          file=sys.stderr)
 
 
 if __name__ == "__main__":

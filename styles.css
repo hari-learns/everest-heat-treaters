@@ -235,14 +235,14 @@ button{font:inherit;color:inherit}
    a little left of the edge so it reads as part of the composition rather
    than something stuck to the corner. */
 .hero__mark{position:absolute;z-index:1;pointer-events:none;
-  right:clamp(36px,9vw,190px);top:50%;transform:translateY(-52%);
-  width:clamp(330px,46vw,780px);height:auto;overflow:visible}
+  right:clamp(14px,3.5vw,74px);top:50%;transform:translateY(-50%);
+  width:clamp(330px,45vw,760px);height:auto;overflow:visible}
 .hero__mark__art path{
   fill:none;stroke:url(#markheat);stroke-width:1.7;
   stroke-linejoin:round;stroke-linecap:round;
   vector-effect:non-scaling-stroke;
   stroke-dasharray:var(--len);stroke-dashoffset:var(--len);
-  animation:markdraw 2.6s cubic-bezier(.22,1,.28,1) .35s forwards;
+  animation:markdraw 2.4s cubic-bezier(.22,1,.28,1) calc(.3s + var(--d,0s)) forwards;
   filter:drop-shadow(0 0 18px rgba(255,107,24,.34))}
 @keyframes markdraw{to{stroke-dashoffset:0}}
 

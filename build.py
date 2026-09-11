@@ -106,8 +106,10 @@ def hero_mark():
     about a kilobyte.
     """
     w, h = MARK.VIEW
+    # the rings draw in order, biggest first, each a beat behind the last
     paths = "".join(
-        f'<path d="{d}" style="--len:{len(d) * 3}"/>' for d in MARK.PATHS)
+        f'<path d="{d}" style="--len:{len(d) * 3};--d:{i * 0.16:.2f}s"/>'
+        for i, d in enumerate(MARK.PATHS))
     return f'''<svg class="hero__mark" viewBox="0 0 {w} {h}"
      preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
   <defs>
