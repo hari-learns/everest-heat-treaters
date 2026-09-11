@@ -148,6 +148,8 @@ button{font:inherit;color:inherit}
 .drawer{position:fixed;inset:0;z-index:120;background:var(--bg);
   padding:clamp(70px,12vw,96px) var(--gut) var(--gut);
   display:flex;flex-direction:column;gap:18px;
+  overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
   transform:translateX(100%);visibility:hidden;
   transition:transform .45s var(--ease),visibility 0s linear .45s}
 .drawer.is-open{transform:none;visibility:visible;transition-delay:0s}
@@ -161,6 +163,13 @@ button{font:inherit;color:inherit}
 .drawer__meta{display:flex;flex-direction:column;gap:6px;margin-top:auto;
   color:var(--muted);font-size:.92rem}
 .drawer__meta a{text-decoration:none}
+/* landscape phone: very little height, so give the menu back its room */
+@media (max-height:560px) and (orientation:landscape){
+  .drawer{padding-top:62px;gap:10px}
+  .drawer__nav a{font-size:clamp(1.1rem,.9rem + 1.2vw,1.35rem);
+    padding:11px 0;min-height:44px;display:flex;align-items:center}
+  .drawer__meta{margin-top:14px;font-size:.84rem}
+}
 
 /* -------------------------------------------------------------- button --- */
 .btn{display:inline-flex;align-items:center;justify-content:center;
