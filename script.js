@@ -384,6 +384,105 @@
     });
   })();
 
+  /* ------------------------------------------------ reviews, one up --- */
+  (function () {
+    var box = $("[data-quotes]");
+    if (!box) return;
+    var slides = $$(".quote", box);
+    var dots = $$("[data-quote-dot]", box);
+    if (slides.length < 2) { box.setAttribute("data-single", ""); return; }
+
+    var at = 0, timer = 0;
+    var show = function (i) {
+      at = (i + slides.length) % slides.length;
+      slides.forEach(function (s, n) {
+        s.classList.toggle("is-on", n === at);
+        s.setAttribute("aria-hidden", n === at ? "false" : "true");
+      });
+      dots.forEach(function (d, n) {
+        d.classList.toggle("is-on", n === at);
+        d.setAttribute("aria-selected", n === at ? "true" : "false");
+      });
+    };
+    var stop = function () { if (timer) { clearInterval(timer); timer = 0; } };
+    var play = function () {
+      if (reduced || timer) return;
+      timer = setInterval(function () { show(at + 1); }, 5000);
+    };
+
+    dots.forEach(function (d, n) {
+      d.addEventListener("click", function () { stop(); show(n); play(); });
+    });
+    // hold still while someone is reading or tabbing through
+    box.addEventListener("mouseenter", stop);
+    box.addEventListener("mouseleave", play);
+    box.addEventListener("focusin", stop);
+    box.addEventListener("focusout", play);
+    document.addEventListener("visibilitychange", function () {
+      document.hidden ? stop() : play();
+    });
+
+    show(0);
+    play();
+  })();
+
+  /* --------------------------------------------- pick a grade, enquire --- */
+  (function () {
+    var body = $("[data-mat-body]");
+    var act = $("[data-mat-act]");
+    if (!body || !act) return;
+    var label = $("[data-mat-act-grade]", act);
+    var link = $("[data-mat-act-link]", act);
+    var clear = $("[data-mat-clear]", act);
+    var table = body.closest("table");
+
+    var pick = function (row) {
+      $$("tr", body).forEach(function (r) { r.classList.remove("is-picked"); });
+      row.classList.add("is-picked");
+      table.classList.add("is-picking");
+      var grade = row.getAttribute("data-grade") || "";
+      label.textContent = grade;
+      // carried to the quote form, which fills the Material grade field
+      link.href = "contact.html?grade=" + encodeURIComponent(grade) + "#enquire";
+      act.hidden = false;
+    };
+    var drop = function () {
+      $$("tr", body).forEach(function (r) { r.classList.remove("is-picked"); });
+      table.classList.remove("is-picking");
+      act.hidden = true;
+    };
+
+    body.addEventListener("click", function (e) {
+      var row = e.target.closest("tr[data-grade]");
+      if (!row) return;
+      row.classList.contains("is-picked") ? drop() : pick(row);
+    });
+    body.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var row = e.target.closest("tr[data-grade]");
+      if (!row) return;
+      e.preventDefault();
+      row.classList.contains("is-picked") ? drop() : pick(row);
+    });
+    clear.addEventListener("click", drop);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") drop();
+    });
+  })();
+
+  /* ------------------------------- arrive at the form with a grade set --- */
+  (function () {
+    var field = $('[data-enquiry] input[name="grade"]');
+    if (!field) return;
+    var grade = new URLSearchParams(location.search).get("grade");
+    if (!grade) return;
+    field.value = grade;
+    field.classList.add("is-prefilled");
+    // land on the form with the first empty field ready, not the filled one
+    var name = $('[data-enquiry] input[name="name"]');
+    if (name) setTimeout(function () { name.focus({ preventScroll: true }); }, 260);
+  })();
+
   /* ------------------------------------------------- materials filter --- */
   var matBody = $("[data-mat-body]");
   var matSearch = $("[data-mat-search]");

@@ -110,9 +110,12 @@ HERO_TEXT = (
 # temperature control further down the page.
 HERO_IMAGE = "billet-heat"
 
-# The band under the hero. Figures from the company profile.
+# The band under the hero. Every figure here comes from the Everest Heat
+# Treaters 2025 company profile — 2005, 200,000 kg a month, 100+ customers,
+# 800-1000 kg charges. Do not take figures from amtheat.com: that is a
+# different company with a different founding year and headcount.
 STATS = [
-    ("22", "years", "Treating metal in Chennai"),
+    ("21", "years", "Treating metal in Chennai"),
     ("200", "tonnes", "Through the furnaces monthly"),
     ("100", "+", "Manufacturers served"),
     ("1,000", "kg", "Per furnace charge"),
@@ -467,10 +470,8 @@ MATERIALS = [
 ]
 
 MATERIALS_INTRO = (
-    "A working reference for the grades we see most often, with the treatment "
-    "usually specified and the hardness it typically lands at. Your drawing "
-    "always takes precedence &mdash; treat this as a good place to start the "
-    "conversation."
+    "The grades we treat most, and what they usually land at. "
+    "Tap any grade to enquire about it."
 )
 
 # --------------------------------------------------------------- quality ---
@@ -575,21 +576,21 @@ INDUSTRIES_INTRO = (
 
 # ---------------------------------------------------------------- about ----
 
-ABOUT_TITLE = "Twenty-two years of getting metal to behave"
+ABOUT_TITLE = "Twenty-one years of getting metal to behave"
 ABOUT_IMAGE = "forge"
 ABOUT_BODY = [
     "Everest Heat Treaters is a commercial heat treatment works on the "
     "western edge of Chennai. Manufacturers across the city send us "
     "components and we return them harder, tougher or softer &mdash; whatever "
     "the drawing asks for &mdash; with the documentation to prove it. We have "
-    "been doing this since 2004, for ferrous and non-ferrous metals alike.",
+    "been doing this since 2005, for ferrous and non-ferrous metals alike.",
     "The plant runs automated sealed-quench and pit furnaces taking charges "
     "of 800 to 1,000 kg, a bogie hearth three metres long for the big "
     "fabrications, and dedicated tempering furnaces alongside them. Two-tonne "
     "cranes move the work and 24&times;7 diesel generators sit behind "
     "everything, which is what lets a twelve-hour carburising cycle finish "
     "exactly as it started. Around 200 tonnes a month goes through.",
-    "Fifty people work here, led by a management team that has been together "
+    "Twenty people work here, led by a management team that has been together "
     "since the beginning: R. Sathyamoorthy as managing director, T. R. "
     "Thiyagarajan running production, A. Selvam on quality and S. Aravindth "
     "as our metallurgist. That last role is the one customers notice most.",
@@ -675,22 +676,44 @@ TESTIMONIALS = [
 
 GALLERY_TITLE = "Inside the works"
 GALLERY_INTRO = (
-    "The plant, the laboratory and a few of the components that have been "
-    "through it."
+    "The furnaces, the cranes and the laboratory, photographed on the floor "
+    "at Nazarathpettai."
 )
+# The client's own photographs, lifted from their 2025 profile — see plant.py.
+# The originals are 150-275px, so these are used at tile size only.
 GALLERY = [
-    ("amt-draw-hot", "Work drawn from the furnace at temperature"),
-    ("amt-loading", "Loading a gear ring into a pit furnace"),
-    ("amt-furnace-line", "The continuous mesh belt furnace line"),
-    ("amt-pit-bays", "Pit furnace bays on the shop floor"),
-    ("amt-optical", "Optical hardness testers in the laboratory"),
-    ("amt-lab-press", "Mounting press and sample preparation"),
-    ("amt-part-1", "Treated fasteners"),
-    ("amt-part-2", "Hardened hex keys"),
-    ("amt-part-3", "Bar stock ready for treatment"),
-    ("amt-part-4", "Stainless lifting eyes"),
-    ("amt-part-5", "Pressed steel clips"),
-    ("amt-part-6", "Bolt and nut assembly, hardened and tempered"),
+    ("kit-bogie-furnace", "Work at temperature in the bogie hearth"),
+    ("kit-pit-carburising", "Sealed pit furnace for gas carburising"),
+    ("kit-pit-tempering", "Pit furnace on the tempering line"),
+    ("kit-crane", "Two-tonne overhead crane"),
+    ("kit-rockwell", "Rockwell hardness tester"),
+    ("kit-optical", "Optical Brinell-cum-Rockwell tester"),
+    ("kit-brinell", "Brinell hardness tester"),
+    ("kit-portable", "Portable tester, for work too big for the bench"),
+    ("kit-microscope", "Metallurgical microscope, up to 500x"),
+    ("kit-cutoff", "Abrasive cut-off saw for test pieces"),
+    ("kit-mounting", "Mounting press for microsections"),
+    ("kit-polisher", "Twin-disc grinder and polisher"),
+]
+
+# ---------------------------------------------------------- certificates ---
+# Cropped from page 11 of the company profile by plant.py.
+CERTS_TITLE = "On the record"
+CERTS_INTRO = (
+    "The registration and the certificate, as issued. ISO 9001:2015 through "
+    "BSI, held since 2006 and audited every year since."
+)
+CERTIFICATES = [
+    ("cert-iso", "ISO 9001:2015",
+     "BSI certificate FS 617633, for heat treatment of ferrous and "
+     "non-ferrous metals. Valid to 18 July 2026.",
+     "Certificate of Registration, ISO 9001:2015, issued by BSI to "
+     "Everest Heat Treaters"),
+    ("cert-gst", "GST registration",
+     "Form GST REG-25, trade name Everest Heat Treaters, "
+     "GSTIN 33ANNPS4415M1ZK.",
+     "Government of India GST certificate of provisional registration for "
+     "Everest Heat Treaters"),
 ]
 
 # --------------------------------------------------------------- contact ---

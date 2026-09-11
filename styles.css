@@ -125,9 +125,13 @@ button{font:inherit;color:inherit}
 .hdr__in{width:min(100% - var(--gut)*2,var(--wrap));margin-inline:auto;
   display:flex;align-items:center;gap:22px;min-height:clamp(62px,6.5vw,80px)}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;margin-right:auto}
-.logo{display:flex;align-items:center;gap:9px;color:var(--heat)}
-.logo svg{display:block;width:46px;height:32px}
-.logo b{font-family:var(--mono);font-size:.92rem;letter-spacing:.14em;color:var(--ink)}
+.logo{display:flex;align-items:center;color:var(--heat)}
+/* The mark is a mask, not an image, so it inherits colour from .logo and
+   stays crisp against either ground. */
+.logo__mark{display:block;width:52px;aspect-ratio:340/129;
+  background:currentColor;
+  -webkit-mask:url(assets/img/logo-mark.png) center/contain no-repeat;
+  mask:url(assets/img/logo-mark.png) center/contain no-repeat}
 .brand__txt{display:flex;flex-direction:column;line-height:1.2}
 .brand__name{font-weight:800;font-size:1.32rem;letter-spacing:-.025em;
   color:var(--heat);transition:color .5s linear;
@@ -150,14 +154,12 @@ button{font:inherit;color:inherit}
    so it goes first. */
 @media (max-width:1080px){ .brand__sub{display:none} }
 @media (max-width:1000px){
-  .logo svg{width:40px;height:28px}
-  .logo b{font-size:.82rem}
+  .logo__mark{width:46px}
   .brand__name{font-size:1.12rem}
 }
 @media (max-width:430px){
   .brand{gap:10px}
-  .logo svg{width:34px;height:24px}
-  .logo b{display:none}
+  .logo__mark{width:40px}
   .brand__name{font-size:1.02rem}
 }
 
@@ -411,6 +413,25 @@ button{font:inherit;color:inherit}
 
 /* --------------------------------------------------------------- quotes --- */
 /* the works gallery — the client's own photographs, used at tile size */
+/* the two certificates, shown as sheets rather than decoration */
+.certs{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.6vw,34px)}
+.cert{margin:0}
+.cert__sheet{display:block;background:#fff;border-radius:var(--r);
+  overflow:hidden;border:1px solid var(--line-soft);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.cert__sheet img{display:block;width:100%;height:auto;border-radius:0;
+  aspect-ratio:auto}
+@media (hover:hover){
+  .cert__sheet:hover{transform:translateY(-4px);
+    box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+}
+.cert figcaption{display:block;margin-top:14px}
+.cert figcaption b{display:block;font-size:1rem;letter-spacing:-.01em;
+  color:var(--ink);margin-bottom:5px}
+.cert figcaption span{display:block;font-size:.88rem;color:var(--muted);
+  line-height:1.5}
+@media (max-width:640px){ .certs{grid-template-columns:1fr} }
+
 .shots{display:grid;grid-template-columns:repeat(4,1fr);
   gap:clamp(10px,1.4vw,18px)}
 .shot{margin:0;position:relative;border-radius:var(--r);overflow:hidden;
@@ -472,7 +493,25 @@ button{font:inherit;color:inherit}
     box-shadow:0 14px 34px -18px rgba(255,107,24,.55)}
   .cust:hover::after{opacity:1}
 }
-.quotes{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,30px)}
+/* One review at a time. The track keeps the tallest slide's height so the
+   section does not jump as they cycle. */
+.quotes{position:relative;max-width:760px;margin-inline:auto}
+.quotes__track{display:grid}
+.quotes__track > .quote{grid-area:1/1;opacity:0;visibility:hidden;
+  transform:translateY(8px);
+  transition:opacity .55s var(--ease),transform .55s var(--ease),
+             visibility 0s linear .55s}
+.quotes__track > .quote.is-on{opacity:1;visibility:visible;transform:none;
+  transition-delay:0s}
+.quotes[data-single] .quotes__track > .quote{opacity:1;visibility:visible;
+  transform:none}
+.quotes[data-single] .quotes__dots{display:none}
+.quotes__dots{display:flex;justify-content:center;gap:9px;margin-top:22px}
+.quotes__dots button{width:30px;height:3px;padding:0;border:0;cursor:pointer;
+  background:var(--line);border-radius:2px;
+  transition:background .35s var(--ease)}
+.quotes__dots button.is-on{background:var(--heat)}
+.quotes__dots button:hover{background:var(--heat-2)}
 .quote{margin:0;padding:clamp(24px,3vw,38px);background:var(--surface);
   border-radius:var(--r);border:1px solid var(--line-soft);position:relative}
 .quote::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
@@ -509,6 +548,21 @@ button{font:inherit;color:inherit}
 .mat td.mono{color:var(--heat-2);white-space:nowrap}
 .mat tbody tr{transition:background .2s var(--ease)}
 .mat tbody tr:hover{background:var(--surface-2)}
+.mat tbody tr[data-grade]{cursor:pointer}
+/* pick one and the rest step back, so the choice is unmistakable */
+.mat.is-picking tbody tr{opacity:.3;transition:opacity .3s var(--ease)}
+.mat.is-picking tbody tr.is-picked{opacity:1;background:var(--surface-2);
+  box-shadow:inset 3px 0 0 var(--heat)}
+.mat tbody tr:focus-visible{outline:2px solid var(--heat);outline-offset:-2px}
+.mat__act{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:14px;margin-top:18px;padding:16px 20px;
+  background:var(--surface);border:1px solid rgba(255,107,24,.4);
+  border-radius:var(--r)}
+.mat__act__grade{margin:0;color:var(--muted);font-size:.92rem}
+.mat__act__grade b{color:var(--ink)}
+.mat__act__btns{display:flex;gap:10px;flex-wrap:wrap}
+.form input.is-prefilled{border-color:rgba(255,107,24,.55);
+  background:rgba(255,107,24,.06)}
 .mat__note{font-size:.85rem;color:var(--faint)}
 .mat__empty{margin:26px 0 0;text-align:center;color:var(--muted)}
 
@@ -546,6 +600,7 @@ button{font:inherit;color:inherit}
 /* ----------------------------------------------------------------- form --- */
 .form{display:grid;gap:15px;max-width:660px}
 .form__row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.req{font-style:normal;color:var(--heat);letter-spacing:.1em}
 .form label{display:grid;gap:6px;font-family:var(--mono);font-size:.68rem;
   letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
 .form input,.form select,.form textarea{font-family:var(--body);font-size:.97rem;

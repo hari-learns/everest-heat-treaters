@@ -84,16 +84,9 @@ def nav(current):
 
 
 def logo():
-    """The mark from the card: a mountain range over the initials."""
-    return f'''<span class="logo" aria-hidden="true">
-  <svg viewBox="0 0 44 30" width="34" height="24" fill="none">
-    <path d="M2 26 L13 7 L19 16 L24 9 L34 26 Z" fill="currentColor" opacity=".9"/>
-    <path d="M13 7 L16.5 12.4 L13.6 14 L11 11.5 Z" fill="var(--bg)" opacity=".55"/>
-    <path d="M24 9 L27 13.6 L24.6 14.6 L22.4 12.6 Z" fill="var(--bg)" opacity=".55"/>
-    <path d="M28 26 L36 12 L42 26 Z" fill="currentColor" opacity=".55"/>
-  </svg>
-  <b>{C.INITIALS}</b>
-</span>'''
+    """The company's own mark, from the 2025 profile — see logo.py. Carried as
+    an alpha mask rather than a picture so it takes the brand colour."""
+    return '<span class="logo" aria-hidden="true"><i class="logo__mark"></i></span>'
 
 
 # The incandescent stops, handed to anything that paints itself from the
@@ -214,8 +207,8 @@ def page(path, title, description, body, current="", noindex=False):
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#080C14">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="favicon.svg">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css?v={CSS_V}">
 </head>
@@ -349,11 +342,11 @@ def enquiry_form():
     opts = "".join(f'<option>{p["name"]}</option>' for p in C.PROCESSES)
     return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}" id="enquire" novalidate>
   <div class="form__row">
-    <label>Your name<input type="text" name="name" required autocomplete="name"></label>
+    <label>Your name <i class="req">required</i><input type="text" name="name" required autocomplete="name"></label>
     <label>Company<input type="text" name="company" autocomplete="organization"></label>
   </div>
   <div class="form__row">
-    <label>Phone<input type="tel" name="phone" required autocomplete="tel"></label>
+    <label>Phone <i class="req">required</i><input type="tel" name="phone" required autocomplete="tel"></label>
     <label>Email<input type="email" name="email" autocomplete="email"></label>
   </div>
   <div class="form__row">
@@ -368,7 +361,7 @@ def enquiry_form():
   <label>Part description or problem<textarea name="message" rows="4"
     placeholder="What the part does, what it runs against, how it is failing&hellip;"></textarea></label>
   <button class="btn btn--block" type="submit">Send enquiry</button>
-  <p class="form__note">{C.RFQ_FIELDS_NOTE}</p>
+  <p class="form__note">Name and phone are all we need. Everything else is optional. {C.RFQ_FIELDS_NOTE}</p>
 </form>'''
 
 
@@ -480,8 +473,13 @@ def build_home():
   <div class="wrap">
     {sec_head("Customers", C.H_CUSTOMERS, C.CUSTOMERS_INTRO, mid=True)}
     <ul class="custs">{custs}</ul>
-    {f'<div class="quotes quotes--{min(len(C.TESTIMONIALS), 3)}">{tests}</div>'
-     if C.TESTIMONIALS else ''}
+    {f"""<div class="quotes" data-quotes>
+      <div class="quotes__track">{tests}</div>
+      <div class="quotes__dots" role="tablist" aria-label="Customer reviews">{
+        "".join(f'<button type="button" role="tab" data-quote-dot="{i}"'
+                f' aria-label="Review {i + 1}"></button>'
+                for i in range(len(C.TESTIMONIALS)))}</div>
+    </div>""" if C.TESTIMONIALS else ''}
   </div>
 </section>
 
@@ -551,7 +549,9 @@ def build_process_pages():
 
 def build_materials():
     rows = "".join(
-        f'<tr><th scope="row">{g}</th><td>{fam}</td><td>{proc}</td>'
+        f'<tr data-grade="{esc(html.unescape(g))}" tabindex="0" role="button"'
+        f' aria-label="Enquire about {esc(html.unescape(g))}">'
+        f'<th scope="row">{g}</th><td>{fam}</td><td>{proc}</td>'
         f'<td class="mono">{res}</td><td class="mat__note">{note}</td></tr>'
         for g, fam, proc, res, note in C.MATERIALS)
     body = f'''
@@ -576,6 +576,13 @@ def build_materials():
         </tr></thead>
         <tbody data-mat-body>{rows}</tbody>
       </table>
+    </div>
+    <div class="mat__act" data-mat-act hidden aria-live="polite">
+      <p class="mat__act__grade">Selected: <b data-mat-act-grade></b></p>
+      <div class="mat__act__btns">
+        <a class="btn btn--sm" data-mat-act-link href="contact.html#enquire">Enquire about this grade</a>
+        <button class="btn btn--ghost btn--sm" type="button" data-mat-clear>Clear</button>
+      </div>
     </div>
     <p class="mat__empty" data-mat-empty hidden>
       No grade matches that. Send it to us anyway &mdash;
@@ -660,6 +667,21 @@ def build_about():
   <div class="wrap">
     {sec_head("How we work", C.H_ABOUT_PILLARS, mid=True)}
     <div class="feats feats--3">{pillars}</div>
+  </div>
+</section>
+
+<section class="sec sec--alt">
+  <div class="wrap wrap--narrow">
+    {sec_head("Certification", C.CERTS_TITLE, C.CERTS_INTRO, mid=True)}
+    <div class="certs">
+      {"".join(
+        f'<figure class="cert" data-reveal style="--i:{i}">'
+        f'<a class="cert__sheet" href="assets/img/{slug}.webp" target="_blank" '
+        f'rel="noopener" aria-label="Open the {esc(name)} certificate full size">'
+        f'{img(slug, alt, sizes="(max-width:700px) 90vw, 40vw")}</a>'
+        f'<figcaption><b>{name}</b><span>{note}</span></figcaption></figure>'
+        for i, (slug, name, note, alt) in enumerate(C.CERTIFICATES))}
+    </div>
   </div>
 </section>
 
