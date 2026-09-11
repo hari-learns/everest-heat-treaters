@@ -109,9 +109,9 @@ HERO_TEXT = (
     "treat to the hardness your drawing asks for, and every batch leaves here "
     "with a report that says so."
 )
-# Rendered, not photographed — see hero.py. Same colour scale as the
-# temperature control further down the page.
-HERO_IMAGE = "billet-heat"
+# No photograph behind the hero. The mark is drawn as line art instead —
+# see trace.py and mark_paths.py.
+HERO_IMAGE = None
 
 # The band under the hero. Every figure here comes from the Everest Heat
 # Treaters 2025 company profile — 2005, 200,000 kg a month, 100+ customers,
@@ -686,6 +686,17 @@ CONTACT_INTRO = (
     "Send the grade, the drawing and the hardness you need. "
     "We will reach out to you soon."
 )
+
+# ----------------------------------------------------------- form wiring ---
+# Where enquiries go. Leave empty and everything falls back to WhatsApp, which
+# is what ships today. Set this to an endpoint (Formspree, a Worker, your own
+# mailer) and both the quote form and the one-tap grade enquiry POST JSON to
+# it as well, so nothing has to be rewired later.
+#
+# The POST body is flat JSON: source, grade, phone, name, email, company,
+# process, qty, hardness, message, page.
+FORM_ENDPOINT = ""
+FORM_EMAIL = "everest_heattreaters@yahoo.co.in"
 
 RFQ_FIELDS_NOTE = "We will reach out to you soon."
 

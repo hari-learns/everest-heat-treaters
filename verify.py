@@ -211,7 +211,7 @@ def check_heat_text_contrast():
 
 
 def check_media():
-    referenced = ({C.HERO_IMAGE, C.ABOUT_IMAGE}
+    referenced = ({s for s in (C.HERO_IMAGE, C.ABOUT_IMAGE) if s}
                   | {p["image"] for p in C.PROCESSES}
                   | {q["image"] for q in C.QUALITY}
                   | {f"plate-{n}" for n in range(1, 7)})

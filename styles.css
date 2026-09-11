@@ -214,8 +214,8 @@ button{font:inherit;color:inherit}
 
 /* ---------------------------------------------------------------- hero --- */
 .hero{position:relative;overflow:hidden;display:flex;align-items:flex-end;
-  min-height:min(92svh,880px);
-  padding-block:clamp(90px,13vw,150px) clamp(46px,7vw,92px)}
+  min-height:min(74svh,680px);
+  padding-block:clamp(64px,8vw,104px) clamp(34px,4.5vw,62px)}
 .hero__media{position:absolute;inset:0;z-index:0}
 .hero__media img,.hero__media .img-fallback{width:100%;height:100%;object-fit:cover;
   aspect-ratio:auto;border-radius:0;
@@ -230,34 +230,30 @@ button{font:inherit;color:inherit}
   background:radial-gradient(circle,rgba(255,107,24,.30) 0%,rgba(255,107,24,.10) 38%,transparent 68%);
   animation:breathe 7s ease-in-out infinite alternate}
 @keyframes breathe{from{opacity:.62;transform:scale(1)}to{opacity:1;transform:scale(1.1)}}
-/* The company's mark on the open side of the hero, filled with a heat
-   gradient that travels through it. The mark is a mask, so what animates is
-   the gradient behind it rather than the artwork. */
+/* The mark, drawn. The outlines come from trace.py; they draw themselves in
+   once and then carry a heat gradient that travels along the ridge. Sitting
+   a little left of the edge so it reads as part of the composition rather
+   than something stuck to the corner. */
 .hero__mark{position:absolute;z-index:1;pointer-events:none;
-  right:clamp(-40px,-2vw,0px);top:50%;transform:translateY(-54%);
-  width:clamp(300px,42vw,720px);aspect-ratio:340/129;
-  -webkit-mask:url(assets/img/logo-mark.png) center/contain no-repeat;
-  mask:url(assets/img/logo-mark.png) center/contain no-repeat;
-  background:linear-gradient(100deg,
-    #2A1206 0%, #7E1B05 18%, #D14405 34%, #FF9420 50%,
-    #FFD26B 62%, #D14405 78%, #7E1B05 92%, #2A1206 100%);
-  background-size:260% 100%;
-  opacity:.62;
-  animation:markheat 14s ease-in-out infinite}
-@keyframes markheat{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-/* On a phone the headline needs the whole width, so the mark drops behind it
-   and sits low, well clear of the copy. */
+  right:clamp(36px,9vw,190px);top:50%;transform:translateY(-52%);
+  width:clamp(330px,46vw,780px);height:auto;overflow:visible}
+.hero__mark__art path{
+  fill:none;stroke:url(#markheat);stroke-width:1.7;
+  stroke-linejoin:round;stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);
+  animation:markdraw 2.6s cubic-bezier(.22,1,.28,1) .35s forwards;
+  filter:drop-shadow(0 0 18px rgba(255,107,24,.34))}
+@keyframes markdraw{to{stroke-dashoffset:0}}
+
 @media (max-width:900px){
-  .hero__mark{width:min(105vw,560px);right:-14vw;top:auto;bottom:2%;
-    transform:none;opacity:.26}
+  .hero__mark{width:min(100% - 24px,600px);right:auto;left:50%;top:auto;
+    bottom:3%;transform:translateX(-50%);opacity:.4}
+  .hero__mark__art path{stroke-width:1.3}
 }
-@media (max-width:560px){ .hero__mark{bottom:0;opacity:.2} }
+@media (max-width:560px){ .hero__mark{bottom:1%;opacity:.32} }
 @media (prefers-reduced-motion:reduce){
-  .hero__mark{animation:none;background-position:50% 50%}
+  .hero__mark__art path{animation:none;stroke-dashoffset:0}
 }
 .hero__in{position:relative;z-index:2}
 /* the word that runs up and down the heat scale, with its reading above */
@@ -285,12 +281,12 @@ button{font:inherit;color:inherit}
 
 /* ------------------------------------------------------------- subhero --- */
 .subhero{position:relative;overflow:hidden;display:flex;align-items:flex-end;
-  min-height:min(50svh,440px);
-  padding-block:clamp(90px,12vw,130px) clamp(34px,5vw,64px)}
-/* The plain page header ran 170px of air above the eyebrow against 40px
-   below it, which read as a gap rather than a header. Closer to balanced. */
+  min-height:min(32svh,300px);
+  padding-block:clamp(62px,7vw,86px) clamp(26px,3.4vw,42px)}
+/* A page header, not a screen of its own: enough air to separate it from the
+   sticky bar and no more. */
 .subhero--plain{min-height:0;
-  padding-block:clamp(72px,8vw,104px) clamp(32px,4vw,58px);
+  padding-block:clamp(54px,5.5vw,72px) clamp(24px,3vw,40px);
   border-bottom:1px solid var(--line-soft)}
 .subhero__media{position:absolute;inset:0;z-index:0}
 .subhero__media img,.subhero__media .img-fallback{width:100%;height:100%;object-fit:cover;
@@ -584,13 +580,31 @@ button{font:inherit;color:inherit}
 .mat.is-picking tbody tr.is-picked{opacity:1;background:var(--surface-2);
   box-shadow:inset 3px 0 0 var(--heat)}
 .mat tbody tr:focus-visible{outline:2px solid var(--heat);outline-offset:-2px}
-.mat__act{display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:14px;margin-top:18px;padding:16px 20px;
-  background:var(--surface);border:1px solid rgba(255,107,24,.4);
-  border-radius:var(--r)}
-.mat__act__grade{margin:0;color:var(--muted);font-size:.92rem}
-.mat__act__grade b{color:var(--ink)}
-.mat__act__btns{display:flex;gap:10px;flex-wrap:wrap}
+/* the enquiry opens inside the table, under the row it belongs to */
+.mat__ask td{padding:0;border-bottom:1px solid var(--line-soft);
+  background:var(--surface-2)}
+.mat.is-picking tbody tr.mat__ask{opacity:1}
+.ask{display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px;
+  max-width:100%;padding:18px 16px;box-shadow:inset 3px 0 0 var(--heat)}
+.ask__lead{margin:0;color:var(--muted);font-size:.92rem}
+.ask__lead b{color:var(--ink)}
+.ask__step{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.ask__full{font-size:.86rem;color:var(--faint)}
+.ask__field{display:flex;align-items:center;gap:10px;margin:0;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint)}
+.ask__field input{font-family:var(--body);font-size:.95rem;text-transform:none;
+  letter-spacing:0;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r);padding:10px 13px;
+  min-height:44px;min-width:0;flex:1 1 180px;max-width:260px}
+.ask__field input:focus-visible{outline:2px solid var(--heat);outline-offset:1px}
+.ask__done{margin:0;color:var(--heat-2);font-size:.94rem}
+@media (max-width:900px){
+  .ask{flex-direction:column;align-items:flex-start}
+  .ask__field{flex-direction:column;align-items:flex-start;gap:6px;width:100%}
+  .ask__field input{width:100%;max-width:none}
+  .ask__form{width:100%}
+}
 .form input.is-prefilled{border-color:rgba(255,107,24,.55);
   background:rgba(255,107,24,.06)}
 .mat__note{font-size:.85rem;color:var(--faint)}

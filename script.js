@@ -196,6 +196,38 @@
     });
   })();
 
+  /* --------------------------------------------------------- delivery --- */
+  /* One place that knows how an enquiry leaves the site. Today that is
+     WhatsApp. The moment an endpoint is set in content.py the same payload is
+     POSTed as JSON too, so wiring email up later needs no changes here. */
+  function deliver(payload, opts) {
+    opts = opts || {};
+    var endpoint = opts.endpoint;
+    var sent = Promise.resolve();
+    if (endpoint) {
+      sent = fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(function () { /* never block the handover on a bad endpoint */ });
+    }
+    if (opts.whatsapp !== false && opts.wa) {
+      var labels = {
+        name: "Name", company: "Company", phone: "Phone", email: "Email",
+        grade: "Material", process: "Treatment", qty: "Quantity",
+        hardness: "Hardness required", message: "Details"
+      };
+      var lines = ["Heat treatment enquiry", ""];
+      Object.keys(labels).forEach(function (k) {
+        var v = (payload[k] || "").toString().trim();
+        if (v) lines.push(labels[k] + ": " + v);
+      });
+      window.open("https://wa.me/" + opts.wa + "?text=" +
+        encodeURIComponent(lines.join("\n")), "_blank", "noopener");
+    }
+    return sent;
+  }
+
   /* ------------------------------------------------ reviews, one up --- */
   (function () {
     var box = $("[data-quotes]");
@@ -239,46 +271,99 @@
   })();
 
   /* --------------------------------------------- pick a grade, enquire --- */
+  /* The enquiry opens in the table, directly under the grade that was
+     clicked. A button at the foot of a 26-row table is a button nobody sees.
+     One tap asks for a number and nothing else, because a phone number given
+     in two seconds beats a nine-field form nobody fills in. */
   (function () {
     var body = $("[data-mat-body]");
-    var act = $("[data-mat-act]");
-    if (!body || !act) return;
-    var label = $("[data-mat-act-grade]", act);
-    var link = $("[data-mat-act-link]", act);
-    var clear = $("[data-mat-clear]", act);
+    if (!body) return;
     var table = body.closest("table");
+    // read at send time, not at load, so the endpoint can be swapped in
+    // without caring when the script happened to run
+    var endpoint = function () { return table.getAttribute("data-endpoint") || ""; };
+    var wa = function () { return table.getAttribute("data-wa") || ""; };
+    var COLS = $$("thead th", table).length || 5;
+    var open = null;
 
-    var pick = function (row) {
-      $$("tr", body).forEach(function (r) { r.classList.remove("is-picked"); });
-      row.classList.add("is-picked");
-      table.classList.add("is-picking");
-      var grade = row.getAttribute("data-grade") || "";
-      label.textContent = grade;
-      // carried to the quote form, which fills the Material grade field
-      link.href = "contact.html?grade=" + encodeURIComponent(grade) + "#enquire";
-      act.hidden = false;
-    };
-    var drop = function () {
+    var close = function () {
+      if (open) { open.remove(); open = null; }
       $$("tr", body).forEach(function (r) { r.classList.remove("is-picked"); });
       table.classList.remove("is-picking");
-      act.hidden = true;
+    };
+
+    var rowFor = function (grade) {
+      var tr = document.createElement("tr");
+      tr.className = "mat__ask";
+      tr.innerHTML =
+        '<td colspan="' + COLS + '">' +
+          '<div class="ask">' +
+            '<p class="ask__lead">Enquire about <b></b></p>' +
+            '<div class="ask__step" data-ask-step="start">' +
+              '<button class="btn btn--sm" type="button" data-ask-go>Enquire</button>' +
+              '<a class="link ask__full" href="contact.html?grade=' +
+                 encodeURIComponent(grade) + '#enquire">or use the full form</a>' +
+            '</div>' +
+            '<form class="ask__step ask__form" data-ask-form hidden novalidate>' +
+              '<label class="ask__field">Your phone' +
+                '<input type="tel" name="phone" required autocomplete="tel" ' +
+                'placeholder="Phone number" inputmode="tel"></label>' +
+              '<button class="btn btn--sm" type="submit">Send</button>' +
+              '<button class="btn btn--ghost btn--sm" type="button" data-ask-cancel>Cancel</button>' +
+            '</form>' +
+            '<p class="ask__done" data-ask-done hidden>Thank you. We will reach out to you soon.</p>' +
+          '</div>' +
+        '</td>';
+      $("b", $(".ask__lead", tr)).textContent = grade;
+      return tr;
+    };
+
+    var pick = function (row) {
+      var grade = row.getAttribute("data-grade") || "";
+      var wasOpen = open && open.previousElementSibling === row;
+      close();
+      if (wasOpen) return;
+      row.classList.add("is-picked");
+      table.classList.add("is-picking");
+      open = rowFor(grade);
+      row.after(open);
+
+      var start = $('[data-ask-step="start"]', open);
+      var form = $("[data-ask-form]", open);
+      var done = $("[data-ask-done]", open);
+
+      $("[data-ask-go]", open).addEventListener("click", function () {
+        start.hidden = true;
+        form.hidden = false;
+        $("input", form).focus();
+      });
+      $("[data-ask-cancel]", form).addEventListener("click", close);
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        deliver({
+          source: "grade-row", grade: grade,
+          phone: $("input", form).value.trim(),
+          page: location.pathname
+        }, { endpoint: endpoint(), wa: wa() });
+        form.hidden = true;
+        done.hidden = false;
+      });
     };
 
     body.addEventListener("click", function (e) {
       var row = e.target.closest("tr[data-grade]");
-      if (!row) return;
-      row.classList.contains("is-picked") ? drop() : pick(row);
+      if (row) pick(row);
     });
     body.addEventListener("keydown", function (e) {
       if (e.key !== "Enter" && e.key !== " ") return;
       var row = e.target.closest("tr[data-grade]");
       if (!row) return;
       e.preventDefault();
-      row.classList.contains("is-picked") ? drop() : pick(row);
+      pick(row);
     });
-    clear.addEventListener("click", drop);
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") drop();
+      if (e.key === "Escape") close();
     });
   })();
 
@@ -329,18 +414,15 @@
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
       var d = new FormData(form);
-      var labels = {
-        name: "Name", company: "Company", phone: "Phone", email: "Email",
-        grade: "Material", process: "Treatment", qty: "Quantity",
-        hardness: "Hardness required", message: "Details"
-      };
-      var lines = ["Heat treatment enquiry", ""];
-      Object.keys(labels).forEach(function (k) {
-        var v = (d.get(k) || "").toString().trim();
-        if (v) lines.push(labels[k] + ": " + v);
+      var payload = { source: "quote-form", page: location.pathname };
+      ["name", "company", "phone", "email", "grade", "process", "qty",
+       "hardness", "message"].forEach(function (k) {
+        payload[k] = (d.get(k) || "").toString().trim();
       });
-      window.open("https://wa.me/" + form.getAttribute("data-wa") +
-        "?text=" + encodeURIComponent(lines.join("\n")), "_blank", "noopener");
+      deliver(payload, {
+        endpoint: form.getAttribute("data-endpoint") || "",
+        wa: form.getAttribute("data-wa")
+      });
     });
   }
 })();

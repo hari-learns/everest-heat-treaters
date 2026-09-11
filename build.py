@@ -13,6 +13,7 @@ import json
 import os
 
 import content as C
+import mark_paths as MARK
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 IMG_DIR = os.path.join(ROOT, "assets", "img")
@@ -94,6 +95,36 @@ def logo():
 HEAT_STOPS = html.escape(json.dumps(
     [[t, hexv] for t, hexv, _ in C.GLOW_COLOURS],
     separators=(",", ":")), quote=True)
+
+
+def hero_mark():
+    """The company mark, drawn rather than pasted.
+
+    trace.py walks the logo bitmap and hands back outlines; they are stroked
+    here so the ridgeline can draw itself in and carry a travelling heat
+    gradient. Nothing is rasterised, so it stays sharp at any size and costs
+    about a kilobyte.
+    """
+    w, h = MARK.VIEW
+    paths = "".join(
+        f'<path d="{d}" style="--len:{len(d) * 3}"/>' for d in MARK.PATHS)
+    return f'''<svg class="hero__mark" viewBox="0 0 {w} {h}"
+     preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="markheat" x1="-0.6" y1="0" x2="0.4" y2="0">
+      <stop offset="0%" stop-color="#7E1B05"/>
+      <stop offset="28%" stop-color="#D14405"/>
+      <stop offset="50%" stop-color="#FF9420"/>
+      <stop offset="72%" stop-color="#FFD26B"/>
+      <stop offset="100%" stop-color="#7E1B05"/>
+      <animate attributeName="x1" values="-0.6;1.0;-0.6" dur="13s"
+               repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0.4;2.0;0.4" dur="13s"
+               repeatCount="indefinite"/>
+    </linearGradient>
+  </defs>
+  <g class="hero__mark__art">{paths}</g>
+</svg>'''
 
 
 def header(current):
@@ -285,7 +316,8 @@ def process_card(p, i=0):
 
 def enquiry_form():
     opts = "".join(f'<option>{p["name"]}</option>' for p in C.PROCESSES)
-    return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}" id="enquire" novalidate>
+    return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}"
+      data-endpoint="{esc(C.FORM_ENDPOINT)}" id="enquire" novalidate>
   <div class="form__row">
     <label>Your name <i class="req">required</i><input type="text" name="name" required autocomplete="name"></label>
     <label>Company<input type="text" name="company" autocomplete="organization"></label>
@@ -353,9 +385,8 @@ def build_home():
 
     body = f'''
 <section class="hero">
-  <div class="hero__media">{img(C.HERO_IMAGE, "", eager=True, sizes="100vw")}</div>
   <div class="hero__glow" aria-hidden="true"></div>
-  <div class="hero__mark" aria-hidden="true"></div>
+  {hero_mark()}
   <div class="wrap hero__in">
     <p class="hero__eyebrow">{C.HERO_EYEBROW}</p>
     <h1 class="hero__title" data-heat-scale="{HEAT_STOPS}"
@@ -513,7 +544,7 @@ def build_materials():
       <p class="mat__count" data-mat-count aria-live="polite"></p>
     </div>
     <div class="tablewrap" data-reveal>
-      <table class="mat">
+      <table class="mat" data-endpoint="{esc(C.FORM_ENDPOINT)}" data-wa="{C.WHATSAPP}">
         <thead><tr>
           <th scope="col">Grade</th><th scope="col">Family</th>
           <th scope="col">Usual process</th><th scope="col">Typical result</th>
@@ -521,13 +552,6 @@ def build_materials():
         </tr></thead>
         <tbody data-mat-body>{rows}</tbody>
       </table>
-    </div>
-    <div class="mat__act" data-mat-act hidden aria-live="polite">
-      <p class="mat__act__grade">Selected: <b data-mat-act-grade></b></p>
-      <div class="mat__act__btns">
-        <a class="btn btn--sm" data-mat-act-link href="contact.html#enquire">Enquire about this grade</a>
-        <button class="btn btn--ghost btn--sm" type="button" data-mat-clear>Clear</button>
-      </div>
     </div>
     <p class="mat__empty" data-mat-empty hidden>
       No grade matches that. Send it to us anyway &mdash;
