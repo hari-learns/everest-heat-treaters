@@ -26,12 +26,12 @@ SHOW_CONCEPT_NOTE = False
 
 # ---------------------------------------------------------------- brand ----
 
-NAME = "Everest Metal Treaters"
-SHORT_NAME = "Everest Metal Treaters"
-INITIALS = "EMT"
+NAME = "Everest Heat Treaters"
+SHORT_NAME = "Everest Heat Treaters"
+INITIALS = "EHT"
 # What shows in the browser tab. "Everest" leads so the tab stays
 # identifiable even where the title is truncated.
-TAB_NAME = "Everest Metal Treaters"
+TAB_NAME = "Everest Heat Treaters"
 TAGLINE = "Heat treatment for ferrous &amp; non-ferrous metals"
 CERT = "An ISO 9001:2015 certified company"
 DESCRIPTION = (
@@ -607,7 +607,7 @@ INDUSTRIES_INTRO = (
 ABOUT_TITLE = "Twenty-two years of getting metal to behave"
 ABOUT_IMAGE = "forge"
 ABOUT_BODY = [
-    "Everest Metal Treaters is a commercial heat treatment works on the "
+    "Everest Heat Treaters is a commercial heat treatment works on the "
     "western edge of Chennai. Manufacturers across the city send us "
     "components and we return them harder, tougher or softer &mdash; whatever "
     "the drawing asks for &mdash; with the documentation to prove it. We have "
@@ -667,7 +667,7 @@ POLICY_INTRO = (
     "expect, through standard practice and a process we keep improving."
 )
 POLICY_POINTS = [
-    "Deliver exactly what the customer specifies, and stay competitive doing it.",
+    "Deliver precisely what the customer needs.",
     "Provide heat treatment services of consistently high quality.",
     "Determine, understand and consistently meet every statutory and "
     "regulatory requirement that applies to the customer's work.",

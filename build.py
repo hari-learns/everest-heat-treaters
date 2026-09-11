@@ -359,7 +359,7 @@ def enquiry_form():
   <div class="form__row">
     <label>Material grade<input type="text" name="grade" placeholder="EN31, SAE 8620&hellip;"></label>
     <label>Treatment<select name="process">
-      <option>Not sure &mdash; please advise</option>{opts}</select></label>
+      <option>General</option>{opts}</select></label>
   </div>
   <div class="form__row">
     <label>Quantity<input type="text" name="qty" placeholder="e.g. 250 pcs"></label>

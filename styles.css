@@ -100,6 +100,10 @@ button{font:inherit;color:inherit}
 .wrap--narrow{width:min(100% - var(--gut)*2,var(--narrow))}
 .sec{padding-block:clamp(60px,8vw,120px)}
 .sec--tight{padding-block:clamp(44px,5.5vw,80px)}
+/* The contact page runs two tight sections back to back — the enquiry and
+   the map. Both paid full padding, which left about 160px of dead space
+   between them. The second one picks up where the first left off. */
+.sec--tight + .sec--tight{padding-top:0}
 .sec--alt{background:var(--bg-2);border-block:1px solid var(--line-soft)}
 .sec--plates{background:var(--bg-2);border-block:1px solid var(--line-soft)}
 .sec__head{max-width:64ch;margin-bottom:clamp(30px,4vw,54px)}
@@ -140,7 +144,12 @@ button{font:inherit;color:inherit}
 .nav a:hover::after,.nav a[aria-current]::after{transform:scaleX(1);transform-origin:left}
 .nav a[aria-current]{color:var(--ink)}
 .hdr__act{display:flex;align-items:center;gap:10px}
-@media (max-width:860px){
+.brand__sub{white-space:nowrap}
+/* Between about 900 and 1080 the nav, the brand and the quote button are all
+   competing. The certification line is the least load-bearing of the three,
+   so it goes first. */
+@media (max-width:1080px){ .brand__sub{display:none} }
+@media (max-width:1000px){
   .logo svg{width:40px;height:28px}
   .logo b{font-size:.82rem}
   .brand__name{font-size:1.12rem}
@@ -247,7 +256,10 @@ button{font:inherit;color:inherit}
 .subhero{position:relative;overflow:hidden;display:flex;align-items:flex-end;
   min-height:min(50svh,440px);
   padding-block:clamp(90px,12vw,130px) clamp(34px,5vw,64px)}
-.subhero--plain{min-height:0;padding-block:clamp(112px,14vw,170px) clamp(20px,3vw,40px);
+/* The plain page header ran 170px of air above the eyebrow against 40px
+   below it, which read as a gap rather than a header. Closer to balanced. */
+.subhero--plain{min-height:0;
+  padding-block:clamp(72px,8vw,104px) clamp(32px,4vw,58px);
   border-bottom:1px solid var(--line-soft)}
 .subhero__media{position:absolute;inset:0;z-index:0}
 .subhero__media img,.subhero__media .img-fallback{width:100%;height:100%;object-fit:cover;
@@ -532,9 +544,15 @@ button{font:inherit;color:inherit}
 .cinfo__list a{color:var(--ink);text-decoration:none}
 .cinfo__list a:hover{color:var(--heat-2)}
 
+/* The Google embed is a cross-origin iframe, so its own styling is out of
+   reach. Inverting and rotating the hue turns the light map dark while
+   leaving the road and water hues roughly where they belong — the standard
+   trick, and the only one available without a Maps API key. */
 .map{border-radius:var(--r);overflow:hidden;border:1px solid var(--line-soft);
-  aspect-ratio:21/9;background:var(--surface);filter:grayscale(.35) contrast(1.05)}
-.map iframe{width:100%;height:100%;border:0;display:block}
+  aspect-ratio:21/9;background:var(--surface)}
+.map iframe{width:100%;height:100%;border:0;display:block;
+  filter:invert(1) hue-rotate(180deg) saturate(.72) brightness(.92) contrast(1.04)}
+@media (prefers-reduced-transparency:reduce){ .map iframe{filter:none} }
 
 /* ------------------------------------------------------------------ faq --- */
 .faqs{display:grid}
@@ -672,7 +690,7 @@ button{font:inherit;color:inherit}
   .temp__panel{grid-template-columns:1fr;gap:20px}
   .quotes{grid-template-columns:1fr}
 }
-@media (max-width:860px){
+@media (max-width:1000px){
   .nav{display:none}
   .burger{display:flex}
   .feats--3{grid-template-columns:repeat(2,1fr)}
