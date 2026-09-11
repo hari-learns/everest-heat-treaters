@@ -283,61 +283,6 @@ def process_card(p, i=0):
 </a>'''
 
 
-def temp_widget():
-    """The centrepiece: a real temperature scale for steel.
-
-    Both colour tables and the band descriptions come from content.py and are
-    serialised into data attributes, so the physics stays editable in one file.
-    """
-    data = {
-        "min": C.TEMP_MIN, "max": C.TEMP_MAX,
-        "temper": [[t, c, n] for t, c, n in C.TEMPER_COLOURS],
-        "glow": [[t, c, n] for t, c, n in C.GLOW_COLOURS],
-        "bands": [[a, b, l, d] for a, b, l, d in C.TEMP_BANDS],
-    }
-    payload = html.escape(json.dumps(data, separators=(",", ":")), quote=True)
-    marks = "".join(
-        f'<span class="temp__mark" style="--at:{(t - C.TEMP_MIN) / (C.TEMP_MAX - C.TEMP_MIN)}">'
-        f'<b>{t}</b></span>'
-        for t in (200, 400, 600, 800, 1000, 1200))
-    return f'''
-<section class="temp" data-temp data-scale="{payload}">
-  <div class="wrap">
-    {sec_head("The scale we work on",
-              "Every degree is a different metal.",
-              "Below about 400&deg;C steel does not glow &mdash; the colour you "
-              "see is the oxide film, which is how toolmakers have judged "
-              "tempering by eye for two centuries. Above it, the metal is "
-              "incandescent. Drag through the range.")}
-
-    <div class="temp__stage" data-reveal>
-      <div class="temp__barwrap">
-        <div class="temp__bar" data-temp-bar></div>
-        <div class="temp__reflect" data-temp-reflect></div>
-      </div>
-
-      <div class="temp__control">
-        <input class="temp__range" type="range"
-               min="{C.TEMP_MIN}" max="{C.TEMP_MAX}" value="845" step="5"
-               data-temp-input aria-label="Temperature in degrees Celsius">
-        <div class="temp__marks">{marks}</div>
-      </div>
-
-      <div class="temp__panel">
-        <div class="temp__num">
-          <b data-temp-c>845</b><span>&deg;C</span>
-          <em data-temp-colour>Bright cherry</em>
-        </div>
-        <div class="temp__band">
-          <h3 data-temp-band>Austenitising &amp; hardening</h3>
-          <p data-temp-desc></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>'''
-
-
 def enquiry_form():
     opts = "".join(f'<option>{p["name"]}</option>' for p in C.PROCESSES)
     return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}" id="enquire" novalidate>
@@ -410,6 +355,7 @@ def build_home():
 <section class="hero">
   <div class="hero__media">{img(C.HERO_IMAGE, "", eager=True, sizes="100vw")}</div>
   <div class="hero__glow" aria-hidden="true"></div>
+  <div class="hero__mark" aria-hidden="true"></div>
   <div class="wrap hero__in">
     <p class="hero__eyebrow">{C.HERO_EYEBROW}</p>
     <h1 class="hero__title" data-heat-scale="{HEAT_STOPS}"
@@ -426,7 +372,6 @@ def build_home():
   <div class="wrap stats">{stats}</div>
 </section>
 
-{temp_widget()}
 
 <section class="sec">
   <div class="wrap">

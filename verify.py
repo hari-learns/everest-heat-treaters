@@ -164,27 +164,16 @@ def check_temperature_data():
             if not (C.TEMP_MIN <= t <= C.TEMP_MAX):
                 fail(f"{name}: {t}degC is outside the scale range")
 
-    # bands must tile the whole range with no gap and no overlap
-    bands = sorted(C.TEMP_BANDS, key=lambda b: b[0])
-    if bands[0][0] > C.TEMP_MIN:
-        fail(f"TEMP_BANDS starts at {bands[0][0]}, leaving {C.TEMP_MIN} uncovered")
-    if bands[-1][1] <= C.TEMP_MAX:
-        fail(f"TEMP_BANDS ends at {bands[-1][1]}, leaving {C.TEMP_MAX} uncovered")
-    for i in range(len(bands) - 1):
-        if bands[i][1] != bands[i + 1][0]:
-            fail(f"TEMP_BANDS gap/overlap between {bands[i][1]} and {bands[i + 1][0]}")
-    print(f"  temperature scale: {len(bands)} bands cover "
-          f"{C.TEMP_MIN}-{C.TEMP_MAX}degC continuously")
+    print(f"  colour tables span {C.TEMP_MIN}-{C.TEMP_MAX}degC")
 
 
 def check_heat_text_contrast():
     """The hero word and the header brand paint themselves from the glow scale.
     Nothing in the stylesheet pins those colours, so the only thing keeping
-    them readable is where each range starts. A floor set too low makes the
-    company name fade into the header for part of every cycle."""
-    def lin(v):
-        v /= 255.0
-        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    them readable is where each range starts."""
+    def lin(x):
+        x /= 255.0
+        return x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4
 
     def lum(c):
         return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
@@ -199,7 +188,7 @@ def check_heat_text_contrast():
         return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
     def sample(t):
-        stops = [(k, hx(v)) for k, v, _ in C.GLOW_COLOURS]
+        stops = [(k, hx(val)) for k, val, _ in C.GLOW_COLOURS]
         if t <= stops[0][0]:
             return stops[0][1]
         if t >= stops[-1][0]:
@@ -210,9 +199,7 @@ def check_heat_text_contrast():
                 return tuple(round(a + (b - a) * f) for a, b in zip(c0, c1))
         return stops[-1][1]
 
-    GROUND = (8, 12, 20)           # --bg, behind both the hero and the header
-    # 3:1 for the headline (large text); 4.5:1 for the brand, which drops to
-    # 16px on a phone and stops counting as large text there.
+    GROUND = (8, 12, 20)
     for label, rng, need in [("hero word", C.HERO_HEAT_RANGE, 3.0),
                              ("header brand", C.BRAND_HEAT_RANGE, 4.5)]:
         worst = min(ratio(sample(t), GROUND)

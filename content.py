@@ -64,7 +64,10 @@ ADDRESS_LINES = [
 ]
 ADDRESS_ONE_LINE = ("S. No. 315/1, Meppur Road, Malayambakkam, "
                     "Nazarathpettai, Ambattur, Chennai 600123")
-MAP_QUERY = "Ambattur, Chennai, Tamil Nadu"
+# Points at the works itself rather than the Ambattur district. The
+# business has a Google listing, so the name resolves to the right pin.
+MAP_QUERY = ("Everest Heat Treaters, Meppur Road, Malayambakkam, "
+             "Nazarathpettai, Chennai 600123")
 
 HOURS = [("Monday &ndash; Saturday", "9:00 AM &ndash; 7:00 PM"),
          ("Sunday", "By prior arrangement")]
@@ -159,42 +162,6 @@ GLOW_COLOURS = [
     (1100, "#FFB63F", "Yellow"),
     (1200, "#FFD26B", "Light yellow"),
     (1300, "#FFE9A8", "White heat"),
-]
-
-# (from C, to C, label, what is happening) — read out as the slider moves.
-TEMP_BANDS = [
-    (150, 200, "Low-temperature tempering",
-     "Stress comes out of a freshly quenched part while almost all of its "
-     "hardness stays in. This is where case-hardened gears and springs are "
-     "finished."),
-    (200, 350, "Tempering &mdash; tool range",
-     "Hardness is traded for toughness a few degrees at a time. On clean "
-     "steel the oxide colour is a direct readout of the temperature reached."),
-    (350, 500, "High-temperature tempering",
-     "For dies and shafts that have to survive shock. Toughness climbs "
-     "sharply and hardness settles into the 40s HRC."),
-    (500, 580, "Stress relieving",
-     "Welding and machining stress is let go while the structure stays "
-     "exactly as it was, because the part never approaches the temperature "
-     "at which it would transform."),
-    (580, 720, "Sub-critical annealing",
-     "Below the critical point. Machining stresses are erased and the "
-     "structure softens while the part keeps its existing hardness state."),
-    (720, 800, "Into the critical range",
-     "The steel begins converting to austenite. Cross this line and the "
-     "structure can be reset entirely."),
-    (800, 880, "Austenitising &amp; hardening",
-     "Fully austenitic. Quench from here and carbon is trapped in place as "
-     "martensite &mdash; this is the moment hardness is created."),
-    (880, 950, "Case hardening &amp; normalising",
-     "Carbon is driven into the surface of low-carbon steel to build a hard "
-     "case over a tough core. This is also where forged grain is refined."),
-    (950, 1150, "Solution annealing",
-     "Carbides and alloying elements dissolve back into solution &mdash; "
-     "stainless steels and aluminium alloys are prepared for ageing here."),
-    (1150, 1301, "Forging heat",
-     "Beyond treatment and into forming. Grain grows fast at these "
-     "temperatures; time at heat matters as much as the heat itself."),
 ]
 
 # --------------------------------------------------------------- process ---
@@ -477,10 +444,7 @@ MATERIALS_INTRO = (
 # --------------------------------------------------------------- quality ---
 
 QUALITY_INTRO = (
-    "Heat treatment is invisible from the outside. A correctly hardened part "
-    "and a badly hardened one look identical right up until one of them fails "
-    "in service. Everything below is how we show you which one you are "
-    "getting, on every batch."
+    "How we show you which one you are getting, on every batch."
 )
 
 QUALITY = [
@@ -520,7 +484,7 @@ QUALITY_POINTS = [
 # Section headlines. They live here so build.py stays a pure generator.
 
 H_PROCESSES = "The process of transformation."
-H_PROOF = "Heat treatment is invisible. So we measure it."
+H_PROOF = "We measure the treatment"
 H_QUALITY = "How we prove the treatment landed."
 H_QUALITY_SYSTEM = "How it is controlled"
 H_MICRO = "The evidence is in the grain."
@@ -719,18 +683,16 @@ CERTIFICATES = [
 # --------------------------------------------------------------- contact ---
 
 CONTACT_INTRO = (
-    "Send the grade, the drawing and the hardness you need &mdash; or just "
-    "describe the problem and we will work out the treatment with you."
+    "Send the grade, the drawing and the hardness you need. "
+    "We will reach out to you soon."
 )
 
-RFQ_FIELDS_NOTE = ("Goes straight to WhatsApp with your details filled in. "
-                   "No account, no form to chase.")
+RFQ_FIELDS_NOTE = "We will reach out to you soon."
 
 FAQ = [
     ("What information do you need to quote?",
      "Material grade, quantity, rough size and weight, and the hardness or "
-     "case depth required. A drawing is ideal. If the grade is a mystery, say "
-     "so &mdash; that is a solvable problem and we deal with it often."),
+     "case depth required. A drawing is ideal."),
     ("What is the usual turnaround?",
      "Most conventional work runs two to three days. Long-cycle processes "
      "like deep case hardening take longer, and we will "

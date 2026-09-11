@@ -230,6 +230,35 @@ button{font:inherit;color:inherit}
   background:radial-gradient(circle,rgba(255,107,24,.30) 0%,rgba(255,107,24,.10) 38%,transparent 68%);
   animation:breathe 7s ease-in-out infinite alternate}
 @keyframes breathe{from{opacity:.62;transform:scale(1)}to{opacity:1;transform:scale(1.1)}}
+/* The company's mark on the open side of the hero, filled with a heat
+   gradient that travels through it. The mark is a mask, so what animates is
+   the gradient behind it rather than the artwork. */
+.hero__mark{position:absolute;z-index:1;pointer-events:none;
+  right:clamp(-40px,-2vw,0px);top:50%;transform:translateY(-54%);
+  width:clamp(300px,42vw,720px);aspect-ratio:340/129;
+  -webkit-mask:url(assets/img/logo-mark.png) center/contain no-repeat;
+  mask:url(assets/img/logo-mark.png) center/contain no-repeat;
+  background:linear-gradient(100deg,
+    #2A1206 0%, #7E1B05 18%, #D14405 34%, #FF9420 50%,
+    #FFD26B 62%, #D14405 78%, #7E1B05 92%, #2A1206 100%);
+  background-size:260% 100%;
+  opacity:.62;
+  animation:markheat 14s ease-in-out infinite}
+@keyframes markheat{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+/* On a phone the headline needs the whole width, so the mark drops behind it
+   and sits low, well clear of the copy. */
+@media (max-width:900px){
+  .hero__mark{width:min(105vw,560px);right:-14vw;top:auto;bottom:2%;
+    transform:none;opacity:.26}
+}
+@media (max-width:560px){ .hero__mark{bottom:0;opacity:.2} }
+@media (prefers-reduced-motion:reduce){
+  .hero__mark{animation:none;background-position:50% 50%}
+}
 .hero__in{position:relative;z-index:2}
 /* the word that runs up and down the heat scale, with its reading above */
 .heat{position:relative;display:inline-block;color:var(--heat);
@@ -461,10 +490,10 @@ button{font:inherit;color:inherit}
   .quotes--2,.quotes--3{grid-template-columns:1fr}
 }
 .custs{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;
-  justify-content:center;gap:clamp(12px,1.6vw,20px)}
+  justify-content:center;gap:clamp(14px,2vw,24px)}
 .cust{flex:1 1 200px;max-width:300px;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  min-height:92px;padding:18px 20px;background:var(--surface);
+  min-height:104px;padding:22px 24px;background:var(--surface);
   border:1px solid var(--line-soft);border-radius:var(--r);
   font-weight:600;letter-spacing:-.01em;line-height:1.35;
   transition:transform .45s var(--ease),border-color .45s var(--ease),
@@ -495,7 +524,8 @@ button{font:inherit;color:inherit}
 }
 /* One review at a time. The track keeps the tallest slide's height so the
    section does not jump as they cycle. */
-.quotes{position:relative;max-width:760px;margin-inline:auto}
+.quotes{position:relative;max-width:760px;margin-inline:auto;
+  margin-top:clamp(42px,6vw,78px)}
 .quotes__track{display:grid}
 .quotes__track > .quote{grid-area:1/1;opacity:0;visibility:hidden;
   transform:translateY(8px);
@@ -681,10 +711,14 @@ button{font:inherit;color:inherit}
 .foot__gst{margin:.9em 0 0;font-size:.78rem;color:var(--faint)}
 .foot__gst span{font-family:var(--mono)}
 .foot__h{font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;
-  text-transform:uppercase;color:var(--faint);margin:0 0 1.2em;font-weight:500}
+  text-transform:uppercase;color:var(--faint);margin:0;font-weight:500}
 .foot__col address{font-style:normal;color:var(--muted);font-size:.88rem}
-.foot__col p{margin:0 0 .55em;font-size:.88rem;color:var(--muted)}
-.foot__role{color:var(--faint);font-size:.82rem}
+.foot__col{display:flex;flex-direction:column;align-items:flex-start;
+  gap:.62em}
+.foot__col p{margin:0;font-size:.88rem;color:var(--muted)}
+.foot__col > :first-child{margin-bottom:.35em}
+.foot__role{display:inline-block;margin-top:.25em;color:var(--faint);
+  font-size:.82rem}
 .foot__col a{color:var(--muted);text-decoration:none;overflow-wrap:break-word}
 .foot__col a:hover{color:var(--heat-2)}
 .foot__col ul{list-style:none;margin:0;padding:0;display:grid;gap:.55em;font-size:.88rem}
@@ -713,9 +747,10 @@ button{font:inherit;color:inherit}
    a desktop and awkward under a thumb, so the ones people actually tap get
    padding rather than a bigger font. */
 @media (max-width:860px){
-  .foot__col ul{gap:0}
-  .foot__col ul a,.foot__col p a{display:inline-block;padding-block:9px}
-  .foot__col p{margin-bottom:0}
+  .foot__col{gap:.2em}
+  .foot__col ul{gap:.2em}
+  .foot__col ul a,.foot__col p a{display:inline-flex;align-items:center;
+    min-height:44px;padding-block:0}
   .foot__social a{padding-block:8px}
   .brand{padding-block:10px}
   /* Phone and email are the most-tapped things on a trade site; on a phone
