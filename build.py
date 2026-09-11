@@ -475,7 +475,8 @@ def build_home():
   <div class="wrap">
     {sec_head("Customers", C.H_CUSTOMERS, C.CUSTOMERS_INTRO, mid=True)}
     <ul class="custs">{custs}</ul>
-    {f'<div class="quotes quotes--3">{tests}</div>' if C.TESTIMONIALS else ''}
+    {f'<div class="quotes quotes--{min(len(C.TESTIMONIALS), 3)}">{tests}</div>'
+     if C.TESTIMONIALS else ''}
   </div>
 </section>
 

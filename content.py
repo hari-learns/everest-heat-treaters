@@ -5,8 +5,8 @@
 edit a sentence, a temperature or a phone number anywhere else, that is a bug.
 
 SOURCES FOR THIS CONTENT
-  - Ambattur Metal Treaters, amtheat.com (name, founding year, headcount,
-    process list, contact details)
+  - amtheat.com (founding year, headcount, process list, gallery photographs
+    and one customer testimonial)
   - "Everest Heat Treaters Profile 2025" PDF (furnace and lab equipment,
     monthly tonnage, customer list, team, ISO history, works address)
 
@@ -26,12 +26,12 @@ SHOW_CONCEPT_NOTE = False
 
 # ---------------------------------------------------------------- brand ----
 
-NAME = "Ambattur Metal Treaters"
-SHORT_NAME = "Ambattur Metal Treaters"
-INITIALS = "AMT"
-# What shows in the browser tab. Kept short so it survives truncation —
-# a tab reading "About — Ambattur Metal Trea…" identifies nothing.
-TAB_NAME = "Metal Treaters"
+NAME = "Everest Metal Treaters"
+SHORT_NAME = "Everest Metal Treaters"
+INITIALS = "EMT"
+# What shows in the browser tab. "Everest" leads so the tab stays
+# identifiable even where the title is truncated.
+TAB_NAME = "Everest Metal Treaters"
 TAGLINE = "Heat treatment for ferrous &amp; non-ferrous metals"
 CERT = "An ISO 9001:2015 certified company"
 DESCRIPTION = (
@@ -45,15 +45,18 @@ CONTACT_NAME = "S. Aravindth"
 CONTACT_QUALS = "B.E., M.E."
 CONTACT_ROLE = "Metallurgist"
 
-# From amtheat.com. The 2025 profile PDF lists 8056158579 / 9444412784 for the
-# Nazarathpettai works — confirm which number should be the one on the site.
-PHONE = "+91 98410 35501"
-PHONE_LINK = "+919841035501"
-WHATSAPP = "919841035501"
-EMAIL = "amtheat@hotmail.com"
-EMAIL_ALT = "everest_heattreaters@yahoo.co.in"
+# The works numbers from the 2025 company profile.
+PHONE = "+91 80561 58579"
+PHONE_LINK = "+918056158579"
+WHATSAPP = "918056158579"
+EMAIL = "everest_heattreaters@yahoo.co.in"
+EMAIL_ALT = "amtheat@hotmail.com"
 GSTIN = "33ANNPS4415M1ZK"
 
+# Ambattur leads because that is the name people in Chennai actually know;
+# the Nazarathpettai post office name stays in the full address so post
+# still arrives.
+LOCALITY = "Ambattur, Chennai"
 ADDRESS_LINES = [
     "S. No. 315/1, Meppur Road",
     "Malayambakkam, Nazarathpettai",
@@ -596,7 +599,7 @@ INDUSTRIES_INTRO = (
 ABOUT_TITLE = "Twenty-two years of getting metal to behave"
 ABOUT_IMAGE = "forge"
 ABOUT_BODY = [
-    "Ambattur Metal Treaters is a commercial heat treatment works on the "
+    "Everest Metal Treaters is a commercial heat treatment works on the "
     "western edge of Chennai. Manufacturers across the city send us "
     "components and we return them harder, tougher or softer &mdash; whatever "
     "the drawing asks for &mdash; with the documentation to prove it. We have "
@@ -668,17 +671,16 @@ POLICY_POINTS = [
 
 # --------------------------------------------------------------- reviews ---
 # Real customer words, as published on amtheat.com.
+#
+# Two further testimonials on that site (G. Mathi and Hariharan Rathinakumar)
+# name "Ambattur Metal Treaters" inside the quote itself. Rewriting a
+# customer's words to say a different company name would be a fabrication, so
+# they are held back until the client either confirms the wording or supplies
+# testimonials of their own. Add them here when that happens.
 TESTIMONIALS = [
-    dict(text="Ambattur Metal Treaters is the best heat treatment company in "
-              "Chennai. Excellent quality and on-time delivery.",
-         name="G. Mathi", meta="Customer"),
     dict(text="Excellent workmanship and timely delivery. Their heat treatment "
               "quality has consistently exceeded our expectations.",
          name="Adhithi Meenakshi", meta="Customer"),
-    dict(text="Reliable service, skilled team, and outstanding results. We "
-              "trust Ambattur Metal Treaters for all our heat treatment "
-              "requirements.",
-         name="Hariharan Rathinakumar", meta="Customer"),
 ]
 
 # --------------------------------------------------------------- gallery ---
