@@ -600,10 +600,20 @@ button{font:inherit;color:inherit}
 .ask__field input:focus-visible{outline:2px solid var(--heat);outline-offset:1px}
 .ask__done{margin:0;color:var(--heat-2);font-size:.94rem}
 @media (max-width:900px){
-  .ask{flex-direction:column;align-items:flex-start}
-  .ask__field{flex-direction:column;align-items:flex-start;gap:6px;width:100%}
-  .ask__field input{width:100%;max-width:none}
-  .ask__form{width:100%}
+  /* The table is 840px wide and scrolls inside its own box, so a cell that
+     fills its width puts the enquiry off the side of a phone. Pinning the
+     panel to the left of the scroll box keeps it on screen wherever the
+     table happens to be scrolled to. */
+  .mat__ask td{padding:0}
+  .ask{position:sticky;left:0;
+    width:min(calc(100vw - var(--gut) * 2), 460px);
+    flex-direction:column;align-items:stretch;gap:12px}
+  .ask__field{flex-direction:column;align-items:stretch;gap:6px;width:100%}
+  /* flex:1 1 180px is a WIDTH basis in the row layout and a HEIGHT basis
+     here, which is what turned a phone field into a 180px-tall box. */
+  .ask__field input{flex:0 0 auto;width:100%;max-width:none;height:48px}
+  .ask__form{width:100%;flex-direction:column;align-items:stretch;gap:10px}
+  .ask__form .btn{width:100%}
 }
 .form input.is-prefilled{border-color:rgba(255,107,24,.55);
   background:rgba(255,107,24,.06)}
