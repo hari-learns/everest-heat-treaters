@@ -205,17 +205,26 @@
     var endpoint = opts.endpoint;
     var sent = Promise.resolve();
     if (endpoint) {
-      sent = fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload)
-      }).catch(function () { /* never block the handover on a bad endpoint */ });
+      var req = { method: "POST", headers: { "Accept": "application/json" } };
+      if (opts.file) {
+        // a drawing cannot ride in JSON, so send the lot as a form
+        var fd = new FormData();
+        Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+        fd.append("drawing", opts.file, opts.file.name);
+        req.body = fd;
+      } else {
+        req.headers["Content-Type"] = "application/json";
+        req.body = JSON.stringify(payload);
+      }
+      sent = fetch(endpoint, req)
+        .catch(function () { /* never block the handover on a bad endpoint */ });
     }
     if (opts.whatsapp !== false && opts.wa) {
       var labels = {
         name: "Name", company: "Company", phone: "Phone", email: "Email",
-        grade: "Material", process: "Treatment", qty: "Quantity",
-        hardness: "Hardness required", message: "Details"
+        grade: "Material", process: "Treatment", weight: "Weight",
+        size: "Size", hardness: "Hardness required", drawing: "Drawing",
+        message: "Details"
       };
       var lines = ["Heat treatment enquiry", ""];
       Object.keys(labels).forEach(function (k) {
@@ -367,6 +376,79 @@
     });
   })();
 
+  /* ----------------------------------------------------------- lightbox --- */
+  /* Gallery photos open full size over the page. Arrow keys and swipes move
+     through the photos on the page; videos play in place and are skipped. */
+  (function () {
+    var links = $$("[data-lightbox]");
+    if (!links.length) return;
+    var box = document.createElement("div");
+    box.className = "lb";
+    box.hidden = true;
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
+    box.setAttribute("aria-label", "Photo viewer");
+    box.innerHTML =
+      '<figure class="lb__fig"><img class="lb__img" alt=""><figcaption class="lb__cap"></figcaption></figure>' +
+      '<button class="lb__btn lb__x" type="button" aria-label="Close">&times;</button>' +
+      '<button class="lb__btn lb__prev" type="button" aria-label="Previous photo">&lsaquo;</button>' +
+      '<button class="lb__btn lb__next" type="button" aria-label="Next photo">&rsaquo;</button>' +
+      '<p class="lb__n" aria-live="polite"></p>';
+    document.body.appendChild(box);
+    var im = $(".lb__img", box), cap = $(".lb__cap", box), num = $(".lb__n", box);
+    var at = 0, back = null;
+    var show = function (i) {
+      at = (i + links.length) % links.length;
+      var a = links[at], pic = $("img", a);
+      im.src = a.getAttribute("href");
+      im.alt = pic ? pic.alt : "";
+      var fc = a.parentNode.querySelector("figcaption");
+      cap.textContent = fc ? fc.textContent : (pic ? pic.alt : "");
+      num.textContent = (at + 1) + " / " + links.length;
+    };
+    var open = function (i) {
+      back = document.activeElement;
+      show(i);
+      box.hidden = false;
+      document.documentElement.classList.add("lb-open");
+      $(".lb__x", box).focus();
+    };
+    var close = function () {
+      box.hidden = true;
+      document.documentElement.classList.remove("lb-open");
+      im.removeAttribute("src");
+      if (back) back.focus();
+    };
+    links.forEach(function (a, i) {
+      a.addEventListener("click", function (e) { e.preventDefault(); open(i); });
+    });
+    $(".lb__x", box).addEventListener("click", close);
+    $(".lb__prev", box).addEventListener("click", function () { show(at - 1); });
+    $(".lb__next", box).addEventListener("click", function () { show(at + 1); });
+    box.addEventListener("click", function (e) {
+      if (e.target === box || e.target.classList.contains("lb__fig")) close();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (box.hidden) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowLeft") show(at - 1);
+      else if (e.key === "ArrowRight") show(at + 1);
+    });
+    var x0 = null;
+    box.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    box.addEventListener("touchend", function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(at + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+  })();
+
+  /* ------------------------------------------- one video plays at a time --- */
+  document.addEventListener("play", function (e) {
+    $$("video").forEach(function (v) { if (v !== e.target) v.pause(); });
+  }, true);
+
   /* ------------------------------- arrive at the form with a grade set --- */
   (function () {
     var field = $('[data-enquiry] input[name="grade"]');
@@ -415,13 +497,18 @@
       if (!form.checkValidity()) { form.reportValidity(); return; }
       var d = new FormData(form);
       var payload = { source: "quote-form", page: location.pathname };
-      ["name", "company", "phone", "email", "grade", "process", "qty",
-       "hardness", "message"].forEach(function (k) {
+      ["name", "company", "phone", "email", "grade", "process", "weight",
+       "size", "hardness", "message"].forEach(function (k) {
         payload[k] = (d.get(k) || "").toString().trim();
       });
+      var file = d.get("drawing");
+      if (!(file && file.size)) file = null;
+      // WhatsApp links carry text only, so name the file and ask for it there
+      if (file) payload.drawing = file.name + " (I will send it in this chat)";
       deliver(payload, {
         endpoint: form.getAttribute("data-endpoint") || "",
-        wa: form.getAttribute("data-wa")
+        wa: form.getAttribute("data-wa"),
+        file: file
       });
     });
   }

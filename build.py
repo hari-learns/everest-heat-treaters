@@ -76,6 +76,33 @@ def img(slug, alt, cls="", eager=False, sizes=""):
             f'{cls_attr}{wh}{loading}{sz}>')
 
 
+def video(slug, caption, cls=""):
+    """A phone video from media.py. Nothing downloads until it is played:
+    the poster is a small WebP and preload is off."""
+    cls_attr = f' class="{cls}"' if cls else ""
+    wh = ""
+    poster = os.path.join(ROOT, "assets", "video", slug + ".webp")
+    if Image and os.path.exists(poster):
+        with Image.open(poster) as im:
+            wh = f' width="{im.size[0]}" height="{im.size[1]}"'
+    return (f'<video{cls_attr} src="assets/video/{slug}.mp4" '
+            f'poster="assets/video/{slug}.webp"{wh} preload="none" controls '
+            f'playsinline aria-label="{esc(caption)}"></video>')
+
+
+def tile(entry, i=0, sizes="(max-width:700px) 50vw, 25vw"):
+    """One gallery item. Photos open in the lightbox; videos play in place."""
+    slug, cap = entry[0], entry[1]
+    if len(entry) > 2 and entry[2] == "video":
+        return (f'<figure class="shot shot--video" data-reveal style="--i:{i % 6}">'
+                f'{video(slug, cap)}'
+                f'<figcaption><span class="shot__tag">Video</span>{cap}</figcaption></figure>')
+    return (f'<figure class="shot" data-reveal style="--i:{i % 6}">'
+            f'<a href="assets/img/{slug}.webp" data-lightbox aria-label="Open: {esc(cap)}">'
+            f'{img(slug, cap, sizes=sizes)}</a>'
+            f'<figcaption>{cap}</figcaption></figure>')
+
+
 # --------------------------------------------------------------- chrome ----
 
 def nav(current):
@@ -147,7 +174,7 @@ def header(current):
         {nav(current)}
     </nav>
     <div class="hdr__act">
-      <a class="btn btn--sm" href="contact.html#enquire">Get a quote</a>
+      <a class="btn btn--sm" href="contact.html"{" aria-current=\"page\"" if current == "contact.html" else ""}>Contact</a>
       <button class="burger" type="button" aria-label="Open menu"
               aria-expanded="false" aria-controls="drawer" data-burger>
         <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"
@@ -168,7 +195,7 @@ def header(current):
   <nav class="drawer__nav" aria-label="Mobile">
         {nav(current)}
   </nav>
-  <a class="btn btn--block" href="contact.html#enquire">Get a quote</a>
+  <a class="btn btn--block" href="contact.html">Contact</a>
   <div class="drawer__meta">
     <a href="tel:{C.PHONE_LINK}">{C.PHONE}</a>
     <a href="mailto:{C.EMAIL}">{C.EMAIL}</a>
@@ -177,7 +204,8 @@ def header(current):
 
 
 def footer():
-    links = "".join(f'<li><a href="{h}">{l}</a></li>' for h, l in C.NAV)
+    links = "".join(f'<li><a href="{h}">{l}</a></li>'
+                    for h, l in C.NAV + [C.CONTACT_PAGE])
     procs = "".join(
         f'<li><a href="process-{p["slug"]}.html">{p["name"]}</a></li>'
         for p in C.PROCESSES[:6])
@@ -203,7 +231,6 @@ def footer():
       <p>{C.CONTACT_NAME}, {C.CONTACT_QUALS}<br><span class="foot__role">{C.CONTACT_ROLE}</span></p>
       <p><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
       <p><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
-      <p><a href="mailto:{C.EMAIL_ALT}">{C.EMAIL_ALT}</a></p>
     </div>
     <div class="foot__col">
       <h2 class="foot__h">Processes</h2>
@@ -274,12 +301,12 @@ def cta():
     return f'''
 <section class="band">
   <div class="wrap band__in" data-reveal>
-    <p class="eyebrow">Get a quote</p>
+    <p class="eyebrow">Contact</p>
     <h2 class="h2">Send us the grade and the hardness.</h2>
     <p class="lede">Or just describe the problem &mdash; specifying the
       treatment is part of the job.</p>
     <div class="band__act">
-      <a class="btn" href="contact.html#enquire">Request a quote</a>
+      <a class="btn" href="contact.html#enquire">Contact us</a>
       <a class="btn btn--ghost" href="https://wa.me/{C.WHATSAPP}"
          target="_blank" rel="noopener">WhatsApp {C.PHONE}</a>
     </div>
@@ -308,7 +335,6 @@ def process_card(p, i=0):
     <h3 class="pcard__title">{p["name"]}</h3>
     <p class="pcard__txt">{p["short"]}</p>
     <dl class="pcard__spec">
-      <dt>Temperature</dt><dd>{p["temp"]}</dd>
       <dt>Result</dt><dd>{p["result"]}</dd>
     </dl>
     <span class="pcard__go">Read the process</span>
@@ -334,8 +360,13 @@ def enquiry_form():
       <option>General</option>{opts}</select></label>
   </div>
   <div class="form__row">
-    <label>Quantity<input type="text" name="qty" placeholder="e.g. 250 pcs"></label>
+    <label>Weight<input type="text" name="weight" placeholder="e.g. 400 kg"></label>
+    <label>Size<input type="text" name="size" placeholder="e.g. 60 dia &times; 450 mm"></label>
+  </div>
+  <div class="form__row">
     <label>Hardness required<input type="text" name="hardness" placeholder="e.g. 58&ndash;62 HRC"></label>
+    <label class="file">Drawing<input type="file" name="drawing"
+      accept=".pdf,.png,.jpg,.jpeg,.webp,.dwg,.dxf"><span class="file__hint">PDF, image or DWG</span></label>
   </div>
   <label>Part description or problem<textarea name="message" rows="4"
     placeholder="What the part does, what it runs against, how it is failing&hellip;"></textarea></label>
@@ -356,8 +387,10 @@ def build_home():
     procs = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES[:6]))
 
     inds = "".join(
-        f'<div class="ind" data-reveal style="--i:{i}"><h3>{n}</h3><p>{d}</p></div>'
-        for i, (n, d) in enumerate(C.INDUSTRIES[:4]))
+        f'<a class="ind ind--pic" href="industries.html#{slugify(d["name"])}" data-reveal style="--i:{i}">'
+        f'<div class="ind__fig">{img(d["image"], d["alt"], sizes="(max-width:800px) 100vw, 33vw")}</div>'
+        f'<h3>{d["name"]}</h3><p>{d["body"][0]}</p></a>'
+        for i, d in enumerate(C.INDUSTRIES))
 
     quals = "".join(
         f'<div class="qtile" data-reveal style="--i:{i}">'
@@ -371,14 +404,13 @@ def build_home():
         for i, t in enumerate(C.TESTIMONIALS))
 
     custs = "".join(
-        f'<li class="cust" data-reveal style="--i:{i}">{n}</li>'
-        for i, n in enumerate(C.CUSTOMERS))
+        f'<li class="cust" data-reveal style="--i:{i}">'
+        f'<span class="cust__plate"><img class="cust__logo" src="assets/logos/{logo_file}" alt="{esc(html.unescape(n))} logo" loading="lazy"></span>'
+        f'<span class="cust__name">{n}</span></li>'
+        for i, (n, logo_file) in enumerate(C.CUSTOMERS))
 
-    gallery = "".join(
-        f'<figure class="shot" data-reveal style="--i:{i % 6}">'
-        f'{img(slug, cap, sizes="(max-width:700px) 50vw, 25vw")}'
-        f'<figcaption>{cap}</figcaption></figure>'
-        for i, (slug, cap) in enumerate(C.GALLERY))
+    by_slug = {e[0]: e for e in C.GALLERY}
+    gallery = "".join(tile(by_slug[s], i) for i, s in enumerate(C.GALLERY_HOME))
 
     plates = "".join(
         f'<div class="plate" data-reveal style="--i:{i}">'
@@ -395,7 +427,7 @@ def build_home():
         data-heat-lo="{C.HERO_HEAT_RANGE[0]}" data-heat-hi="{C.HERO_HEAT_RANGE[1]}">{C.HERO_TITLE}</h1>
     <p class="hero__text">{C.HERO_TEXT}</p>
     <div class="hero__act">
-      <a class="btn" href="contact.html#enquire">Request a quote</a>
+      <a class="btn" href="contact.html#enquire">Contact us</a>
       <a class="btn btn--ghost" href="processes.html">See the processes</a>
     </div>
   </div>
@@ -431,19 +463,19 @@ def build_home():
 </section>
 
 <section class="sec">
-  <div class="wrap split">
-    <div class="split__text">
-      {sec_head("Who we work with", C.H_INDUSTRIES, C.INDUSTRIES_INTRO)}
-      <a class="btn btn--ghost" href="industries.html" data-reveal>All industries</a>
-    </div>
-    <div class="inds">{inds}</div>
+  <div class="wrap">
+    {sec_head("Industries", C.H_INDUSTRIES, C.INDUSTRIES_INTRO, mid=True)}
+    <div class="inds inds--pic">{inds}</div>
   </div>
 </section>
 
 <section class="sec sec--plates">
   <div class="wrap">
     {sec_head("Gallery", C.GALLERY_TITLE, C.GALLERY_INTRO, mid=True)}
-    <div class="shots">{gallery}</div>
+    <div class="shots shots--home">{gallery}</div>
+    <div class="sec__more" data-reveal>
+      <a class="btn btn--ghost" href="gallery.html">See the full gallery</a>
+    </div>
   </div>
 </section>
 
@@ -470,7 +502,7 @@ def build_processes():
     cards = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES))
     body = f'''
 {subhero("Processes", C.H_PROCESSES, C.PROCESSES_INTRO,
-         "furnace-computer")}
+         "g-pit-furnaces")}
 <section class="sec"><div class="wrap"><div class="pgrid">{cards}</div></div></section>
 {cta()}'''
     return page("processes.html", f"{C.TAB_NAME} — Heat treatment processes",
@@ -504,7 +536,7 @@ def build_process_pages():
         <dt>Reporting</dt><dd>Hardness report with every batch</dd>
         <dt>Batch size</dt><dd>Single piece to production</dd>
       </dl>
-      <a class="btn btn--block" href="contact.html#enquire">Quote this process</a>
+      <a class="btn btn--block" href="contact.html#enquire">Enquire about this process</a>
       <a class="link link--block" href="materials.html">Check your grade</a>
     </aside>
   </div>
@@ -577,7 +609,7 @@ def build_quality():
         for i, (t, d) in enumerate(C.QUALITY_POINTS))
     body = f'''
 {subhero("Quality", C.H_QUALITY, C.QUALITY_INTRO,
-         "hardness-tester")}
+         "g-lab")}
 <section class="sec"><div class="wrap"><div class="qgrid">{tiles}</div></div></section>
 <section class="sec sec--alt">
   <div class="wrap">
@@ -599,14 +631,27 @@ def build_quality():
                 C.QUALITY_INTRO, body, "quality.html")
 
 
+def slugify(name):
+    return "".join(c if c.isalnum() else "-"
+                   for c in html.unescape(name).lower()).strip("-").replace("--", "-").replace("--", "-")
+
+
 def build_industries():
-    items = "".join(
-        f'<div class="ind ind--lg" data-reveal style="--i:{i}"><h3>{n}</h3><p>{d}</p></div>'
-        for i, (n, d) in enumerate(C.INDUSTRIES))
+    blocks = []
+    for i, d in enumerate(C.INDUSTRIES):
+        prose = "".join(f"<p>{x}</p>" for x in d["body"])
+        chips = "".join(f'<span class="chip">{x}</span>' for x in d["points"])
+        blocks.append(f'''<article class="sector{" sector--flip" if i % 2 else ""}" id="{slugify(d["name"])}">
+  <div class="sector__fig" data-reveal>{img(d["image"], d["alt"], sizes="(max-width:800px) 100vw, 50vw")}</div>
+  <div class="sector__text" data-reveal>
+    <h2 class="h2">{d["name"]}</h2>
+    <div class="prose">{prose}</div>
+    <div class="chips">{chips}</div>
+  </div>
+</article>''')
     body = f'''
-{subhero("Industries", "Most of what we treat ends up inside something that moves.",
-         C.INDUSTRIES_INTRO, "crankshaft")}
-<section class="sec"><div class="wrap"><div class="indgrid">{items}</div></div></section>
+{subhero("Industries", C.H_INDUSTRIES, C.INDUSTRIES_INTRO, "g-dispatch")}
+<section class="sec"><div class="wrap sectors">{"".join(blocks)}</div></section>
 {cta()}'''
     return page("industries.html", f"{C.TAB_NAME} — Industries served",
                 C.INDUSTRIES_INTRO, body, "industries.html")
@@ -634,6 +679,49 @@ def build_about():
     </aside>
   </div>
 </section>
+<section class="sec sec--alt">
+  <div class="wrap">
+    {sec_head("The team", C.TEAM_TITLE, C.TEAM_INTRO, mid=True)}
+    <figure class="teamshot" data-reveal>{img(C.TEAM_IMAGE[0], C.TEAM_IMAGE[1], sizes="(max-width:1100px) 100vw, 1100px")}</figure>
+    <ul class="team">{"".join(
+        f'<li class="member" data-reveal style="--i:{i}"><b>{n}</b><span>{r}</span></li>'
+        for i, (n, r) in enumerate(C.TEAM))}</ul>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap wrap--narrow">
+    {sec_head("The plant", C.PLANT_TITLE, C.PLANT_INTRO, mid=True)}
+    <div class="tablewrap" data-reveal>
+      <table class="plant">
+        <thead><tr><th scope="col">Equipment</th><th scope="col">Size</th><th scope="col">Used for</th></tr></thead>
+        <tbody>{"".join(
+          f'<tr><th scope="row">{n}</th><td class="mono">{sz}</td><td>{u}</td></tr>'
+          for n, sz, u in C.PLANT)}</tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--alt" id="safety">
+  <div class="wrap split split--media">
+    <figure class="safety__fig" data-reveal>{img(C.SAFETY_IMAGE[0], C.SAFETY_IMAGE[1], sizes="(max-width:800px) 100vw, 40vw")}</figure>
+    <div class="split__text">
+      {sec_head("Safety", C.SAFETY_TITLE, C.SAFETY_INTRO)}
+      <div class="feats feats--2 feats--flat">{"".join(
+        f'<div class="feat" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
+        for i, (t, d) in enumerate(C.SAFETY_POINTS))}</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="visits">
+  <div class="wrap">
+    {sec_head("Industrial visits", C.VISITS_TITLE, C.VISITS_BODY, mid=True)}
+    <div class="shots shots--visits">{"".join(tile(v, i, "(max-width:700px) 100vw, 33vw") for i, v in enumerate(C.VISITS))}{tile((C.VISITS_VIDEO, "Industrial visit", "video"), 3)}</div>
+  </div>
+</section>
+
 <section class="sec sec--alt">
   <div class="wrap">
     {sec_head("How we work", C.H_ABOUT_PILLARS, mid=True)}
@@ -677,6 +765,35 @@ def build_about():
                 body, "about.html")
 
 
+def build_gallery():
+    lead, rest = C.GALLERY[0], C.GALLERY[1:]
+    body = f'''
+<section class="gal-lead">
+  <div class="wrap gal-lead__in">
+    <figure class="gal-lead__fig shot">
+      <a href="assets/img/{lead[0]}.webp" data-lightbox aria-label="Open: {esc(lead[1])}">
+        {img(lead[0], lead[1], eager=True, sizes="(max-width:900px) 100vw, 60vw")}
+      </a>
+      <figcaption>{lead[1]}</figcaption>
+    </figure>
+    <div class="gal-lead__text">
+      <p class="eyebrow">Gallery</p>
+      <h1 class="h1">{C.GALLERY_TITLE}</h1>
+      <p class="lede">{C.GALLERY_INTRO}</p>
+      <p class="gal-lead__count">{sum(1 for e in C.GALLERY if len(e) < 3)} photographs &middot; {sum(1 for e in C.GALLERY if len(e) > 2)} videos</p>
+    </div>
+  </div>
+</section>
+<section class="sec sec--tight">
+  <div class="wrap">
+    <div class="masonry">{"".join(tile(e, i, "(max-width:600px) 50vw, (max-width:1000px) 33vw, 25vw") for i, e in enumerate(rest))}</div>
+  </div>
+</section>
+{cta()}'''
+    return page("gallery.html", f"{C.TAB_NAME} — Gallery", C.GALLERY_INTRO,
+                body, "gallery.html")
+
+
 def build_contact():
     faq = "".join(
         f'<details class="faq"><summary>{q}</summary><p>{a}</p></details>'
@@ -686,7 +803,7 @@ def build_contact():
     map_src = ("https://www.google.com/maps?q="
                + C.MAP_QUERY.replace(" ", "+").replace(",", "%2C") + "&output=embed")
     body = f'''
-{subhero("Contact", "Get a quote", C.CONTACT_INTRO)}
+{subhero("Contact", "Contact", C.CONTACT_INTRO)}
 
 <section class="sec sec--tight">
   <div class="wrap split split--wide">
@@ -701,7 +818,6 @@ def build_contact():
       <dl class="cinfo__list">
         <dt>Phone</dt><dd><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></dd>
         <dt>Email</dt><dd><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></dd>
-        <dt>Alt</dt><dd><a href="mailto:{C.EMAIL_ALT}">{C.EMAIL_ALT}</a></dd>
         <dt>GSTIN</dt><dd class="mono">{C.GSTIN}</dd>
       </dl>
       <h3 class="h4">Opening hours</h3>
@@ -725,7 +841,7 @@ def build_contact():
     <div class="faqs" data-reveal>{faq}</div>
   </div>
 </section>'''
-    return page("contact.html", f"{C.TAB_NAME} — Contact & quote",
+    return page("contact.html", f"{C.TAB_NAME} — Contact",
                 C.CONTACT_INTRO, body, "contact.html")
 
 
@@ -750,7 +866,7 @@ def main():
     made = [build_home(), build_processes()]
     made += build_process_pages()
     made += [build_materials(), build_quality(), build_industries(),
-             build_about(), build_contact(), build_404()]
+             build_about(), build_gallery(), build_contact(), build_404()]
 
     missing = sorted({s for s in _dims if _dims[s] is None})
     print(f"built {len(made)} pages")

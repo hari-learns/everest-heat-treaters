@@ -35,7 +35,7 @@ TAB_NAME = "Everest Heat Treaters"
 TAGLINE = "Heat treatment for ferrous &amp; non-ferrous metals"
 CERT = "An ISO 9001:2015 certified company"
 DESCRIPTION = (
-    "Commercial heat treatment in Ambattur, Chennai — hardening and tempering, "
+    "Commercial heat treatment in Chennai — hardening and tempering, "
     "case hardening, annealing, normalising, stress relieving "
     "and solution treatment for ferrous and non-ferrous components. "
     "ISO 9001:2015 certified, working to ASTM standards."
@@ -49,23 +49,21 @@ PHONE = "+91 6379 547 322"
 PHONE_LINK = "+916379547322"
 WHATSAPP = "916379547322"
 EMAIL = "everest_heattreaters@yahoo.co.in"
-EMAIL_ALT = "amtheat@hotmail.com"
 GSTIN = "33ANNPS4415M1ZK"
 
-# Ambattur leads because that is the name people in Chennai actually know;
-# the Nazarathpettai post office name stays in the full address so post
-# still arrives.
-LOCALITY = "Ambattur, Chennai"
+# The postal address, as it appears on the company profile and the GST
+# registration. The client asked for Ambattur to be left out of it.
+LOCALITY = "Nazarathpettai, Chennai"
 ADDRESS_LINES = [
     "S. No. 315/1, Meppur Road",
     "Malayambakkam, Nazarathpettai",
-    "Ambattur, Chennai &ndash; 600 123",
+    "Chennai &ndash; 600 123",
     "Tamil Nadu, India",
 ]
 ADDRESS_ONE_LINE = ("S. No. 315/1, Meppur Road, Malayambakkam, "
-                    "Nazarathpettai, Ambattur, Chennai 600123")
-# Points at the works itself rather than the Ambattur district. The
-# business has a Google listing, so the name resolves to the right pin.
+                    "Nazarathpettai, Chennai 600123")
+# Points at the works itself. The business has a Google listing, so the
+# name resolves to the right pin.
 MAP_QUERY = ("Everest Heat Treaters, Meppur Road, Malayambakkam, "
              "Nazarathpettai, Chennai 600123")
 
@@ -80,9 +78,13 @@ NAV = [
     ("materials.html", "Materials"),
     ("quality.html", "Quality"),
     ("industries.html", "Industries"),
+    ("gallery.html", "Gallery"),
     ("about.html", "About"),
-    ("contact.html", "Contact"),
 ]
+# Contact sits outside NAV: it is the button at the end of the header, so
+# listing it twice would put two routes to one page side by side. Quote
+# requests and general contact are the same page.
+CONTACT_PAGE = ("contact.html", "Contact")
 
 # ----------------------------------------------------------------- hero ----
 
@@ -104,10 +106,10 @@ HERO_HEAT_RANGE = (740, 1250)
 # longer "large text" and needs 4.5:1 rather than 3:1.
 BRAND_HEAT_RANGE = (840, 1250)
 HERO_TEXT = (
-    "Heat treatment rewrites the crystal structure of the steel itself, so a "
-    "component comes back harder, tougher or softer all the way through. We "
-    "treat to the hardness your drawing asks for, and every batch leaves here "
-    "with a report that says so."
+    "ISO 9001:2015 certified for the heat treatment of ferrous and "
+    "non-ferrous metals. We work to your specification and reach the "
+    "hardness you ask for, and every batch leaves here with a report that "
+    "says so."
 )
 # No photograph behind the hero. The mark is drawn as line art instead —
 # see trace.py and mark_paths.py.
@@ -165,218 +167,208 @@ GLOW_COLOURS = [
 ]
 
 # --------------------------------------------------------------- process ---
-# The nine processes named in the company profile. The first six also appear
-# on the homepage, so the order here is the order of importance.
+# The eight processes, described the way the plant actually runs them. The
+# temperatures and times are the client's own figures (September 2026); where
+# a figure depends on the grade, the text says so rather than inventing one.
+# The first six also appear on the homepage, so the order is the order of
+# importance.
 
 PROCESSES = [
     dict(
         slug="hardening-tempering",
         name="Hardening &amp; Tempering",
-        short="The core process. Heat into the austenitic range, quench, then "
-              "temper back to the hardness the part actually needs.",
-        temp="820&ndash;870&deg;C, tempered 150&ndash;600&deg;C",
-        result="25&ndash;62 HRC depending on grade and temper",
-        image="furnace-castings",
+        short="Heat, quench in oil, then temper back to the hardness the part "
+              "needs. The temperature is set by the material.",
+        temp="Set by grade. EN24 hardens at 840&ndash;860&deg;C",
+        result="The hardness your drawing specifies",
+        image="g-charge-lift",
         body=[
-            "The part goes above its critical temperature until the structure "
-            "is fully austenitic, holds there long enough to be uniform "
-            "through section, then quenches fast enough to trap the carbon in "
-            "place. What comes out is martensite &mdash; extremely hard, and "
-            "far too brittle to put into service.",
-            "Tempering is what makes it usable. A second, lower heat lets some "
-            "of that trapped carbon precipitate out, trading a little hardness "
-            "for a great deal of toughness. We pick the tempering temperature "
-            "from the hardness your drawing calls for, and it is the single "
-            "most important number on the job card.",
+            "Every material has its own hardening temperature, so the cycle "
+            "starts from the grade. Take EN24: it goes up to 840&ndash;860&deg;C, "
+            "holds until the whole section has reached temperature, and is "
+            "then quenched in oil. The quench locks the steel into its "
+            "hardest structure.",
+            "Straight out of the quench the part is too brittle to use. "
+            "Tempering at a lower temperature brings it back to the hardness "
+            "you asked for, and that number is what the tempering cycle is "
+            "set to.",
         ],
-        points=["Oil, polymer and air quench",
-                "Section-appropriate soak times",
-                "Tempered to a specified HRC band",
-                "Double tempering on tool steels"],
-        suits=["EN8", "EN9", "EN19", "EN24", "EN31", "C45", "D2", "H13", "O1"],
+        points=["Hardening temperature set by grade",
+                "Oil quenching",
+                "Tempered to the hardness you ask for",
+                "Hardness checked before dispatch"],
+        suits=["EN24", "EN19", "EN8", "EN9", "EN31", "C45", "410"],
     ),
     dict(
         slug="case-hardening",
         name="Case Hardening &amp; Tempering",
-        short="A hard, wear-resistant skin over a core that stays tough. The "
-              "standard treatment for gears and transmission parts.",
-        temp="900&ndash;930&deg;C",
-        result="58&ndash;62 HRC case, 0.2&ndash;1.5 mm effective depth",
-        image="crankshaft",
+        short="A hard, wear-resistant case over a tough core. Carburised at "
+              "940&deg;C, then hardened from 840&deg;C.",
+        temp="Carburise at 940&deg;C, harden from 840&deg;C",
+        result="1.5&ndash;2 mm case from a six-hour soak",
+        image="g-pit-furnaces",
         body=[
-            "Low-carbon steel holds too little carbon to form martensite on "
-            "its own, so we add it from the outside in. The part sits in a "
-            "carbon-rich atmosphere at around 920&deg;C in one of our gas "
-            "carburising furnaces, and carbon diffuses into the surface layer.",
-            "Quench it and you get a component with two personalities. The "
-            "case is glass-hard and shrugs off wear and pitting; the core "
-            "stays at its original low carbon and absorbs shock without "
-            "cracking. A gear tooth has to be both, which is why almost every "
-            "gear in every gearbox has been through this.",
+            "Low-carbon steel like EN1A can&rsquo;t take much hardness on its "
+            "own, so carbon is added to the surface first. The parts are "
+            "carburised at 940&deg;C, and a six-hour soak builds a case "
+            "about 1.5 to 2 mm deep.",
+            "For case hardening and tempering, the charge then comes down to "
+            "840&deg;C, soaks for an hour and is quenched in oil or water, "
+            "depending on the grade. When only the case is wanted, the parts "
+            "cool inside the furnace and come out cold, ready for machining.",
         ],
-        points=["Case depth to drawing, verified by microhardness traverse",
-                "Selective case hardening with stop-off paint",
-                "Core hardness reported alongside case",
-                "Tempered after quench to stabilise"],
-        suits=["SAE 8620", "16MnCr5", "20MnCr5", "EN36", "EN353", "EN354"],
+        points=["Carburised at 940&deg;C",
+                "Six-hour soak for a 1.5&ndash;2 mm case",
+                "Hardened from 840&deg;C, one-hour soak",
+                "Oil or water quench, or furnace cooled for case only"],
+        suits=["EN1A", "EN36", "EN353", "SAE 8620", "16MnCr5", "20MnCr5"],
     ),
     dict(
         slug="annealing",
         name="Annealing",
-        short="Softening. Taking work-hardened or previously treated material "
-              "back to a machinable, stress-free state.",
-        temp="650&ndash;900&deg;C, slow cooled",
-        result="Softened, uniform, ready to machine or form",
-        image="furnace-anneal",
+        short="Making a material softer so it machines and forms easily. "
+              "Heated for its grade, then cooled in the furnace.",
+        temp="Set by grade. 410 anneals at 880&ndash;900&deg;C",
+        result="Softened and ready to machine",
+        image="g-tempering-furnace",
         body=[
-            "Annealing is a slow heat, a soak, and above all a slow cool "
-            "&mdash; usually inside the furnace itself, over many hours. That "
-            "cooling rate is the entire process; rush it and you have simply "
-            "hardened the part again.",
-            "Full annealing resets a structure above the critical point. "
-            "Process annealing works below it, to relieve the work hardening "
-            "that builds up during drawing and forming. Spheroidise annealing "
-            "rounds the carbides in high-carbon steel into globules, which is "
-            "what makes bearing steel machinable at all.",
+            "Annealing makes a material softer. Each grade has its own "
+            "annealing temperature; 410 stainless, for example, goes to "
+            "880&ndash;900&deg;C.",
+            "The part holds there until it is even all the way through, then "
+            "cools slowly inside the furnace and only comes out once it has "
+            "cooled. That slow cool is what leaves it soft.",
         ],
-        points=["Full, process and spheroidise cycles",
-                "Controlled furnace cooling",
-                "Bright annealing for finished surfaces",
-                "Non-ferrous annealing for copper alloys and aluminium"],
-        suits=["EN31", "C45", "Tool steels", "Copper alloys", "Brass"],
+        points=["Temperature set by grade",
+                "Soaked through the full section",
+                "Cooled inside the furnace",
+                "Taken out after cooling"],
+        suits=["410", "EN31", "EN8", "C45", "Castings", "Forgings"],
     ),
     dict(
         slug="normalising",
         name="Normalising &amp; Tempering",
-        short="Grain refinement after forging or casting. The step that makes "
-              "everything downstream predictable.",
-        temp="870&ndash;950&deg;C, air cooled",
-        result="Uniform fine grain, improved machinability",
-        image="forged-part",
+        short="The step after forging. Heated to 900&ndash;940&deg;C, held for "
+              "the section thickness, cooled in air.",
+        temp="900&ndash;940&deg;C, as the standard sets",
+        result="A refined, even grain after forging",
+        image="g-normalising",
         body=[
-            "Forging and casting leave a coarse, uneven grain structure and "
-            "properties that vary wildly through the part. Normalising heats "
-            "above the critical range and cools in still air &mdash; faster "
-            "than annealing, slower than a quench.",
-            "The result is a fine, even grain throughout. Think of it as the "
-            "step that makes the final treatment behave the same way every "
-            "single time, which is why so much forged and cast work starts "
-            "here.",
+            "Most of our normalising work arrives as forgings. The temperature "
+            "depends on the material, and the standard puts most grades at "
+            "900&ndash;940&deg;C.",
+            "Holding time comes from the thickness of the part. A 50 mm "
+            "section holds for about two hours. After the soak the charge "
+            "comes out and cools in air, and is tempered afterwards where the "
+            "specification calls for it.",
         ],
-        points=["Post-forging and post-casting grain refinement",
-                "Improves response to later hardening",
-                "Air cool on open racks",
-                "Relieves casting segregation"],
-        suits=["Forgings", "Castings", "EN8", "EN19", "Weldments"],
+        points=["900&ndash;940&deg;C as per standard",
+                "Holding time set by section thickness",
+                "About two hours for a 50 mm section",
+                "Air cooled, then tempered"],
+        suits=["Forgings", "EN8", "EN19", "C45", "Carbon steels"],
     ),
     dict(
         slug="stress-relieving",
         name="Stress Relieving",
-        short="Taking the locked-in stress out of welded and machined parts, "
-              "before it takes your tolerances out.",
-        temp="550&ndash;650&deg;C",
-        result="Dimensional stability, hardness unchanged",
-        image="furnace-metal",
+        short="Mostly for welded components. Taking out the stress welding "
+              "leaves behind, without changing the hardness.",
+        temp="Set by the base material and the weld",
+        result="Stress relieved, hardness unchanged",
+        image="g-bogie-furnace",
         body=[
-            "Welding, heavy machining and cold forming all leave residual "
-            "stress locked into a part. It sits there quietly until the part "
-            "is finish-machined or put into service, and then it releases and "
-            "the geometry moves.",
-            "A stress relieve is a soak below the critical point and a slow "
-            "cool. Hardness and structure stay exactly as they were and only "
-            "the internal stress lets go. On any long, thin or "
-            "precision-ground component, this is the difference between "
-            "holding a tolerance and scrapping the batch.",
+            "Most of the stress relieving we do is on welded components. The "
+            "base metal and the weld carry different stresses, and a part "
+            "left that way can crack or move once it is machined or put into "
+            "service.",
+            "A typical job is a cast valve body with weld deposited on top. "
+            "The whole part is held at the temperature its base grade and "
+            "welding procedure call for, then cooled slowly so the stress "
+            "comes out evenly.",
         ],
-        points=["Post-weld and post-machining",
-                "Below critical &mdash; hardness stays put",
-                "Slow controlled cool",
-                "Critical before finish grinding"],
-        suits=["Weldments", "Fabrications", "Machined blanks", "Castings"],
+        points=["Welded components and fabrications",
+                "Base metal and weld relieved together",
+                "Temperature set by grade and welding procedure",
+                "Slow, even cooling"],
+        suits=["Weldments", "Valve bodies", "Castings", "Fabrications"],
     ),
     dict(
         slug="solution-annealing",
         name="Solution Annealing",
-        short="Dissolving carbides back into solution, so stainless comes "
-              "back to full corrosion resistance.",
-        temp="950&ndash;1150&deg;C, rapid cooled",
-        result="Soft, homogeneous, corrosion resistance restored",
-        image="micro-stainless",
+        short="For non-magnetic stainless steels. Heated to "
+              "1040&ndash;1080&deg;C, then quenched within 20 seconds.",
+        temp="1040&ndash;1080&deg;C, time by thickness",
+        result="Corrosion resistance restored, magnetism relieved",
+        image="g-quench-tanks",
         body=[
-            "Welding and hot forming let chromium carbides form at the grain "
-            "boundaries of austenitic stainless, and the steel loses "
-            "corrosion resistance exactly where those carbides sit. Solution "
-            "annealing takes the part up high enough to dissolve them back "
-            "into solution, then cools it fast enough that they stay there.",
-            "The part comes out soft, chemically uniform and ready for "
-            "service in the environment it was specified for. This is also "
-            "the first half of age hardening, where the cooling step sets up "
-            "everything that follows.",
+            "Solution annealing is for the non-magnetic stainless steels. The "
+            "charge goes to 1040&ndash;1080&deg;C and holds for a time set "
+            "by the thickness, often around two hours.",
+            "Then speed matters. The parts go from the furnace into the "
+            "liquid quench within 20 seconds. That fixes the structure, "
+            "restores corrosion resistance and relieves the magnetism that "
+            "welding or cold work can bring in.",
         ],
-        points=["Austenitic and duplex stainless grades",
-                "Rapid cool through the sensitisation range",
-                "Restores corrosion resistance after welding",
-                "Also the solution step for PH grades and aluminium"],
-        suits=["304", "316", "321", "Duplex 2205", "17-4 PH", "Al alloys"],
+        points=["1040&ndash;1080&deg;C",
+                "Soak time by thickness, around two hours",
+                "Into the quench within 20 seconds",
+                "Relieves induced magnetism"],
+        suits=["304", "316", "321", "347", "Duplex"],
     ),
     dict(
         slug="age-hardening",
         name="Age Hardening &amp; Precipitation Hardening",
-        short="The non-ferrous route to strength. Dissolve, quench, then let "
-              "fine particles precipitate back out.",
-        temp="Age 120&ndash;600&deg;C after solution treatment",
-        result="T4 / T6 tempers, PH stainless conditions H900 upward",
-        image="furnace-vacuum",
+        short="For special grades like 718. After solution treatment, two "
+              "long ageing holds bring out the strength.",
+        temp="Two-step ageing, the second at 620&deg;C",
+        result="Precipitation hardened to specification",
+        image="g-pit-furnace-f5",
         body=[
-            "Aluminium alloys and precipitation-hardening stainless gain their "
-            "strength a different way from carbon steel. The alloying elements "
-            "go into solid solution at high temperature, a quench holds them "
-            "there, and then a long soak at a low temperature lets them "
-            "precipitate out as fine particles that obstruct movement through "
-            "the crystal.",
-            "The ageing step is where the strength actually appears, and it is "
-            "purely a function of time and temperature. A T6 temper is a "
-            "recipe rather than a setting, and we run it to the clock.",
+            "Special grades such as 718 get their strength from "
+            "precipitation, not from a quench. The material is solution "
+            "treated first and aged afterwards.",
+            "Ageing is two long holds. The charge soaks for ten hours at the "
+            "first ageing temperature, is furnace cooled to 620&deg;C, holds "
+            "there for eight hours and is then air cooled. Fine particles "
+            "form inside the metal during those holds, and they are what "
+            "bring the hardness up.",
         ],
-        points=["Aluminium T4 and T6 tempers",
-                "17-4 PH conditions H900 to H1150",
-                "Close control of ageing time and temperature",
-                "Hardness verified after ageing"],
-        suits=["Al 6061", "Al 6082", "Al 7075", "Al 2014", "17-4 PH", "15-5 PH"],
+        points=["Solution treated first",
+                "Ten-hour soak at the first ageing step",
+                "Furnace cooled to 620&deg;C, eight-hour hold",
+                "Air cooled"],
+        suits=["718", "17-4 PH", "PH stainless"],
     ),
     dict(
         slug="stabilising",
         name="Stabilising",
-        short="A long, low soak that settles a part for good, so it holds its "
-              "dimensions years into service.",
-        temp="150&ndash;300&deg;C, extended soak",
-        result="Long-term dimensional stability",
-        image="micro-duplex4",
+        short="For the stabilised stainless grades F321 and F347, run to the "
+              "cycle their specification sets.",
+        temp="As the grade&rsquo;s specification sets",
+        result="Protected against grain-boundary corrosion",
+        image="g-process-area",
         body=[
-            "Precision components carry small amounts of retained austenite "
-            "and residual stress even after a correct harden and temper. Over "
-            "months in service that austenite slowly transforms, and the part "
-            "grows by a few microns &mdash; enough to take a gauge, a spindle "
-            "or a measuring instrument out of tolerance.",
-            "Stabilising runs a long, low-temperature soak that brings those "
-            "changes forward and lets them happen here instead of in the "
-            "field. Gauge blocks, bearing races, machine tool spindles and "
-            "instrument parts all benefit, and it is usually specified "
-            "between rough and finish grinding.",
+            "F321 and F347 are stainless steels with titanium or niobium "
+            "added to protect them from corrosion at the grain boundaries. "
+            "A stabilising treatment is what puts that protection to work.",
+            "The parts are held to the cycle their specification calls for, "
+            "so the titanium or niobium ties up the carbon before chromium "
+            "can. The grain boundaries stay corrosion resistant, even in "
+            "high-temperature service.",
         ],
-        points=["Extended low-temperature cycles",
-                "Sub-zero treatment available on request",
-                "Specified between rough and finish grinding",
-                "For gauges, spindles and instrument components"],
-        suits=["EN31", "Gauge steels", "O1", "D2", "Bearing races"],
+        points=["F321 and F347",
+                "Held to the specified cycle",
+                "Protects against grain-boundary corrosion",
+                "For high-temperature service"],
+        suits=["F321", "F347"],
     ),
 ]
 
 PROCESSES_INTRO = (
-    "Eight processes cover almost everything that comes through the door, for "
-    "ferrous and non-ferrous metals alike, all of it to ASTM standards. If "
-    "your drawing calls for something else, or does not specify at all, send "
-    "it over &mdash; working out the right treatment is part of the job."
+    "Eight processes, for ferrous and non-ferrous metals. We work to your "
+    "specification, and where there isn&rsquo;t one, to ASTM and other "
+    "general standards. Whatever hardness you need, we have the experience "
+    "to reach it."
 )
 
 # ------------------------------------------------------------- materials ---
@@ -391,9 +383,11 @@ MATERIALS = [
     ("EN19 / 709M40", "Cr-Mo alloy", "Harden &amp; temper", "28&ndash;40 HRC",
      "Good through-hardening in section"),
     ("EN24 / 817M40", "Ni-Cr-Mo alloy", "Harden &amp; temper", "32&ndash;45 HRC",
-     "High strength shafts and gears"),
+     "Hardened at 840&ndash;860&deg;C, oil quenched"),
     ("EN31 / 534A99", "Bearing steel", "Harden, temper &amp; stabilise",
      "58&ndash;63 HRC", "Spheroidise anneal before machining"),
+    ("EN1A", "Free-cutting low carbon", "Case harden &amp; temper",
+     "1.5&ndash;2 mm case", "Carburised at 940&deg;C for six hours"),
     ("EN36 / 655M13", "Case hardening", "Case harden &amp; temper",
      "58&ndash;62 HRC case", "Tough core, hard case"),
     ("SAE 8620", "Case hardening", "Case harden &amp; temper",
@@ -420,10 +414,12 @@ MATERIALS = [
      "Machine bed and housing stability"),
     ("304 / 316", "Austenitic stainless", "Solution anneal", "Soft, ~80 HRB",
      "Restores corrosion resistance after welding"),
-    ("321 / 347", "Stabilised stainless", "Solution anneal", "Soft, ~80 HRB",
-     "For elevated service temperature"),
-    ("410 / 420", "Martensitic stainless", "Harden &amp; temper",
-     "40&ndash;50 HRC", "Valve trim, cutlery, pump parts"),
+    ("F321 / F347", "Stabilised stainless", "Solution anneal / stabilise",
+     "Soft, ~80 HRB", "For high-temperature service"),
+    ("410 / 420", "Martensitic stainless", "Harden &amp; temper / anneal",
+     "40&ndash;50 HRC", "410 anneals at 880&ndash;900&deg;C"),
+    ("718", "Nickel alloy", "Solution + age", "To specification",
+     "Two-step ageing, second hold at 620&deg;C"),
     ("17-4 PH", "PH stainless", "Solution + age", "40&ndash;44 HRC",
      "Condition H900 to H1150"),
     ("Al 6061 / 6082", "Aluminium", "Solution + age (T6)", "~95 HB",
@@ -448,36 +444,40 @@ QUALITY_INTRO = (
 )
 
 QUALITY = [
-    dict(name="Rockwell &amp; Brinell hardness", image="hardness-tester",
-         text="Rockwell, optical Brinell-cum-Rockwell and Brinell testers in "
+    dict(name="Rockwell, Brinell &amp; optical Brinell", image="g-rockwell-floor",
+         text="Rockwell, Brinell and optical Brinell-cum-Rockwell testers in "
               "house, reading at the points your drawing specifies. The "
               "number goes on the report that travels with the parts."),
-    dict(name="Portable hardness testing", image="hardness-close",
-         text="A portable tester reaches large fabrications, bogie-load work "
-              "and finished assemblies that will never fit under a bench "
+    dict(name="Portable hardness testing", image="g-inspection-area",
+         text="A portable tester reaches long shafts, bogie-load work and "
+              "finished assemblies that will never fit under a bench "
               "machine, so big parts get the same proof as small ones."),
-    dict(name="Microstructure at 500&times;", image="micro-ferrite",
+    dict(name="Microstructure at 500&times;", image="g-lab-2",
          text="Cut on the abrasive saw, mounted, polished on the twin-disc "
-              "grinder, etched and examined at up to 500&times;. Confirms the "
-              "structure the process was meant to produce, and catches "
-              "retained austenite, decarburisation and grain growth."),
-    dict(name="Furnace control &amp; power backup", image="furnace-computer",
-         text="Automated furnace control with temperature uniformity surveys "
-              "and instrument calibration on schedule, backed by 24&times;7 "
-              "diesel generators so a long carburising cycle finishes exactly "
-              "as it started."),
+              "grinder, etched and examined at up to 500&times;. It confirms "
+              "the structure the process was meant to produce."),
+    dict(name="Calibration &amp; power backup", image="g-shop-floor",
+         text="Every furnace is calibrated as per standard by an "
+              "NABL-accredited lab, across 100&ndash;1050&deg;C. Two gensets "
+              "back up the power, a 125&nbsp;kVA Kirloskar GenLight and a "
+              "45&nbsp;kVA Powerica, so a long cycle finishes the way it "
+              "started."),
 ]
 
 QUALITY_POINTS = [
-    ("ISO 9001:2015", "Certified by BSI and held continuously since 2006. The "
-                      "quality system is externally audited every year."),
-    ("ASTM standards", "Cycles and acceptance criteria follow ASTM practice, "
-                       "with customer specifications layered on top."),
-    ("Batch traceability", "Every batch carries an identity from goods-in to "
-                           "dispatch, with the cycle recorded against it."),
-    ("Reports with the parts", "A hardness report travels with every "
-                               "delivery, so the paperwork arrives when the "
-                               "parts do."),
+    ("ISO 9001:2015", "Certified since 2006 for the heat treatment of "
+                      "ferrous and non-ferrous metals, and audited every "
+                      "year."),
+    ("Your specification first", "We work to the customer&rsquo;s "
+                                 "specification, whatever it asks for. "
+                                 "Where there isn&rsquo;t one, we follow "
+                                 "ASTM and other general standards."),
+    ("Calibrated furnaces", "Every furnace is calibrated as per standard by "
+                            "an NABL-accredited lab, across its working "
+                            "range of 100&ndash;1050&deg;C."),
+    ("The hardness you need", "Years on the floor mean we reach the hardness "
+                              "you ask for, and a report travels with every "
+                              "batch to show it."),
 ]
 
 # ------------------------------------------------------------- headings ---
@@ -491,19 +491,22 @@ H_MICRO = "The evidence is in the grain."
 H_MICRO_TEXT = ("Etched cross-sections under the microscope at up to "
                 "500&times; &mdash; a direct look at what the process did to "
                 "the metal.")
-H_INDUSTRIES = "Most of what we treat ends up inside something that moves."
+H_INDUSTRIES = "Built into valves, mixers and railways."
 H_CUSTOMERS = "Who our parts go back to"
 H_ABOUT_PILLARS = "Three things we hold to"
 H_VISION = "What we are aiming at"
 
 # ------------------------------------------------------------- customers ---
-# Named in the 2025 company profile.
+# (name, logo file in assets/logos/). The logos are the companies' own marks,
+# shown white on the dark ground: Wikimedia Commons for five of them, Wheels
+# India's own site for the sixth.
 CUSTOMERS = [
-    "L&amp;T Valves Limited",
-    "Flowserve India Control Pvt Ltd",
-    "Schwing Stetter Pvt Ltd",
-    "Severn Glocon India Pvt Ltd",
-    "Bharat Heavy Electricals Ltd",
+    ("L&amp;T Valves", "lt.svg"),
+    ("Flowserve", "flowserve.svg"),
+    ("Schwing Stetter", "schwing.png"),
+    ("Caterpillar", "caterpillar.svg"),
+    ("Wheels India", "wheelsindia.png"),
+    ("BHEL", "bhel.svg"),
 ]
 
 CUSTOMERS_INTRO = (
@@ -512,52 +515,87 @@ CUSTOMERS_INTRO = (
 )
 
 # ------------------------------------------------------------ industries ---
+# The three fields the client named. Each gets an image from the gallery.
 
 INDUSTRIES = [
-    ("Valves &amp; flow control", "Stems, discs, seats and trim for valve "
-     "makers, including martensitic and PH stainless grades."),
-    ("Power &amp; heavy engineering", "Large fabrications and forged "
-     "components, stress relieved and normalised on the bogie hearth."),
-    ("Construction equipment", "Pins, bushes, levers and linkages built to "
-     "take shock and abrasion on site."),
-    ("Automotive components", "Gears, shafts, pins and linkages for the "
-     "tier-one and tier-two supply base around Chennai."),
-    ("Transmission &amp; gearing", "Case hardened gear sets, splines and "
-     "sprockets, with case depth verified per drawing."),
-    ("Pumps &amp; fluid handling", "Shafts, impellers and wear parts in both "
-     "carbon steel and stainless."),
-    ("Dies, moulds &amp; tooling", "Cold and hot work tool steels, press "
-     "tools, and hardened die faces."),
-    ("General engineering", "Job work, one-offs, prototypes and the awkward "
-     "parts nobody else wants to quote."),
+    dict(
+        name="Valves, oil &amp; gas",
+        image="g-dispatch-2",
+        alt="Treated valve components racked for dispatch",
+        body=[
+            "Valve bodies, bonnets, stems, discs and seats, much of it in "
+            "stainless and alloy steel for oil, gas and process plant. These "
+            "parts have to hold pressure and resist corrosion for years, and "
+            "valve makers check the paperwork as closely as the parts.",
+            "Cast bodies are normalised, or stress relieved after weld "
+            "build-up. Stainless trim is solution annealed and quenched "
+            "within 20 seconds, stabilised grades like F321 and F347 get "
+            "their own cycle, and special alloys such as 718 are aged to "
+            "specification. Every batch goes back with its hardness report.",
+        ],
+        points=["Solution annealing", "Stress relieving", "Stabilising",
+                "Age hardening"],
+    ),
+    dict(
+        name="Cement mixer trucks",
+        image="g-receiving-3",
+        alt="Components arriving at the receiving area",
+        body=[
+            "A transit mixer turns a loaded drum all day on rough site roads. "
+            "The shafts, pins, bushes, gears and wear parts behind it take "
+            "abrasion, shock and constant vibration, and a soft part shows up "
+            "quickly.",
+            "These parts are hardened and tempered for strength, or case "
+            "hardened so the surface resists wear while the core takes the "
+            "shock. Welded brackets and frames are stress relieved so they "
+            "hold their shape.",
+        ],
+        points=["Hardening &amp; tempering", "Case hardening",
+                "Stress relieving"],
+    ),
+    dict(
+        name="Railways",
+        image="g-receiving-area",
+        alt="Shafts and bar stock laid out on the shop floor",
+        body=[
+            "Railway parts are expected to run for years with little "
+            "maintenance and no surprises, often under heavy, repeated load.",
+            "We treat forged and machined parts for rail use: forgings are "
+            "normalised and tempered to refine the grain, shafts and pins are "
+            "hardened and tempered to the specified hardness, and welded "
+            "assemblies are stress relieved. All of it is done to the "
+            "customer&rsquo;s specification.",
+        ],
+        points=["Normalising &amp; tempering", "Hardening &amp; tempering",
+                "Stress relieving"],
+    ),
 ]
 
 INDUSTRIES_INTRO = (
-    "Chennai is an engineering city, and most of what we treat ends up inside "
-    "something that moves, holds pressure or carries load. Batch sizes run "
-    "from a single prototype to steady production quantities."
+    "Three kinds of work fill most of our furnaces: valves for oil and gas, "
+    "the cement mixer trucks that serve every building site, and parts for "
+    "the railways. Batch sizes run from a single prototype to steady "
+    "production."
 )
 
 # ---------------------------------------------------------------- about ----
 
 ABOUT_TITLE = "Twenty-one years of getting metal to behave"
-ABOUT_IMAGE = "forge"
+ABOUT_IMAGE = "g-team"
 ABOUT_BODY = [
-    "Everest Heat Treaters is a commercial heat treatment works on the "
-    "western edge of Chennai. Manufacturers across the city send us "
-    "components and we return them harder, tougher or softer &mdash; whatever "
-    "the drawing asks for &mdash; with the documentation to prove it. We have "
-    "been doing this since 2005, for ferrous and non-ferrous metals alike.",
-    "The plant runs automated sealed-quench and pit furnaces taking charges "
-    "of 800 to 1,000 kg, a bogie hearth three metres long for the big "
-    "fabrications, and dedicated tempering furnaces alongside them. Two-tonne "
-    "cranes move the work and 24&times;7 diesel generators sit behind "
-    "everything, which is what lets a twelve-hour carburising cycle finish "
-    "exactly as it started. Around 200 tonnes a month goes through.",
-    "Twenty people work here, led by a management team that has been together "
-    "since the beginning: R. Sathyamoorthy as managing director, T. R. "
-    "Thiyagarajan running production, A. Selvam on quality and S. Aravindth "
-    "as our metallurgist. That last role is the one customers notice most.",
+    "Everest Heat Treaters is a commercial heat treatment works in "
+    "Nazarathpettai, on the western edge of Chennai. Manufacturers across the "
+    "country send us components and we return them harder, tougher or softer "
+    "&mdash; whatever the specification asks for &mdash; with the "
+    "documentation to prove it. We have been doing this since 2005, for "
+    "ferrous and non-ferrous metals alike.",
+    "The plant runs a bogie hearth furnace for long and heavy work, gas "
+    "carburising and tempering pit furnaces, and a deep pit furnace for parts "
+    "up to two metres long, with charges of 800 to 1,000 kg. Quenching is "
+    "done in an oil tank and a water tank, each stirred by an impeller so the "
+    "whole charge cools evenly. Two-tonne cranes move the work, and two "
+    "gensets, a 125&nbsp;kVA Kirloskar GenLight and a 45&nbsp;kVA Powerica, "
+    "back up the power. Around 200 tonnes a month goes through.",
     "Most heat treatment problems arrive as a part that cracked, distorted or "
     "came out soft, and the answer usually sits in the steel grade, a section "
     "change, a sharp corner or a specification that was never right for the "
@@ -574,6 +612,81 @@ ABOUT_PILLARS = [
     ("Built for job work", "One prototype or a thousand pieces, treated on "
      "the same recorded cycle."),
 ]
+
+# --------------------------------------------------------------- the team --
+
+TEAM_TITLE = "The people who run the works"
+TEAM_INTRO = ("The same team has run the floor for years, and you will deal "
+              "with them directly.")
+TEAM_IMAGE = ("g-team-2", "The Everest Heat Treaters team outside the works")
+TEAM = [
+    ("R. Sathyamoorthy", "Proprietor &amp; Managing Director"),
+    ("S. Aravindth", "Metallurgist"),
+    ("A. Selvam", "Quality In-charge"),
+    ("Saravana Pandian", "Production In-charge"),
+    ("T. R. Thiyagarajan", "Maintenance"),
+]
+
+# ------------------------------------------------------------------ plant --
+# From the list of machineries in the 2025 company profile.
+PLANT_TITLE = "Furnaces and sizes"
+PLANT_INTRO = ("What each furnace takes. Charges run from 800 to 1,000 kg, "
+               "and every furnace is calibrated by an NABL-accredited lab.")
+PLANT = [
+    ("Bogie hearth furnace", "3000 L &times; 900 W &times; 450 H mm",
+     "Long, heavy and welded work"),
+    ("Pit furnace, gas carburising", "800 dia &times; 1200 mm",
+     "Case hardening"),
+    ("Pit furnace, gas carburising", "700 dia &times; 1200 mm",
+     "Case hardening"),
+    ("Pit furnace, tempering", "800 dia &times; 1200 mm", "Tempering"),
+    ("Pit furnace, tempering", "700 dia &times; 1200 mm", "Tempering"),
+    ("Deep pit furnace", "700 dia &times; 2000 mm", "Long shafts and bars"),
+    ("Quench tanks", "Oil and water", "Impeller agitated"),
+    ("Power backup", "125 kVA + 45 kVA",
+     "Kirloskar GenLight and Powerica gensets"),
+]
+
+# ----------------------------------------------------------------- safety --
+SAFETY_TITLE = "Safety on the floor"
+SAFETY_IMAGE = ("g-safety", "The Our Aim board at the factory entrance: "
+                "zero accidents, zero defects, zero delays")
+SAFETY_INTRO = (
+    "A heat treatment shop works with furnaces near 1,000&deg;C, tanks of "
+    "quench oil and loads lifted by crane. Our aim is on the board at the "
+    "factory entrance, and zero accidents is the first line on it."
+)
+SAFETY_POINTS = [
+    ("Protective gear", "Heat-resistant gloves, safety shoes and face "
+     "protection for anyone loading a furnace or working at the quench."),
+    ("Guarded pits and tanks", "Furnace pits and quench tanks are fenced "
+     "with posts and chains, and walkways are marked in yellow."),
+    ("Lifting by crane", "Hot and heavy charges move only on the two-tonne "
+     "cranes, on rated hooks and fixtures, never by hand."),
+    ("Fire readiness", "Extinguishers are kept at the furnaces and the "
+     "quench tanks, and the team knows where each one is."),
+    ("Maintained equipment", "Furnaces, cranes and electrical panels are "
+     "checked on schedule by our maintenance team."),
+    ("Clear housekeeping", "Receiving, process, inspection and dispatch each "
+     "have their own marked area, so work never piles up in a walkway."),
+]
+
+# ------------------------------------------------------- industrial visits --
+VISITS_TITLE = "Industrial visits, every year"
+VISITS_BODY = (
+    "Every year engineering students visit the works to see heat treatment "
+    "happen for real: a charge lifted out glowing, the quench, and the "
+    "hardness test that proves it. Our metallurgist walks them through each "
+    "step on the floor."
+)
+VISITS = [
+    ("g-iv-explaining", "Our metallurgist explaining the process to visiting "
+     "students"),
+    ("g-iv-furnace", "Students watching a pit furnace charge"),
+    ("g-iv-group", "A visiting batch of engineering students outside the "
+     "works"),
+]
+VISITS_VIDEO = "v-industrial-visit"
 
 # ------------------------------------------------- vision, mission, policy --
 # From page 5 of the 2025 company profile, rewritten in the site's voice.
@@ -634,31 +747,62 @@ TESTIMONIALS = [
 ]
 
 # --------------------------------------------------------------- gallery ---
-# The company's own photographs of the plant and of treated work, from
-# amtheat.com. See fetch_gallery.py — the originals are small, so these are
-# used at tile size only.
+# The client's own photographs and videos of the works, September 2026.
+# media.py converts them; the file names they were supplied under became
+# these captions. The first entry leads the gallery page at full width.
+#   (slug, caption)            a photograph in assets/img/
+#   (slug, caption, "video")   a video in assets/video/, poster alongside
 
 GALLERY_TITLE = "Inside the works"
 GALLERY_INTRO = (
-    "The furnaces, the cranes and the laboratory, photographed on the floor "
-    "at Nazarathpettai."
+    "The furnaces, the quench, the laboratory and the people, photographed "
+    "on the floor at Nazarathpettai."
 )
-# The client's own photographs, lifted from their 2025 profile — see plant.py.
-# The originals are 150-275px, so these are used at tile size only.
 GALLERY = [
-    ("kit-bogie-furnace", "Work at temperature in the bogie hearth"),
-    ("kit-pit-carburising", "Sealed pit furnace for gas carburising"),
-    ("kit-pit-tempering", "Pit furnace on the tempering line"),
-    ("kit-crane", "Two-tonne overhead crane"),
-    ("kit-rockwell", "Rockwell hardness tester"),
-    ("kit-optical", "Optical Brinell-cum-Rockwell tester"),
-    ("kit-brinell", "Brinell hardness tester"),
-    ("kit-portable", "Portable tester, for work too big for the bench"),
-    ("kit-microscope", "Metallurgical microscope, up to 500x"),
-    ("kit-cutoff", "Abrasive cut-off saw for test pieces"),
-    ("kit-mounting", "Mounting press for microsections"),
-    ("kit-polisher", "Twin-disc grinder and polisher"),
+    ("g-normalising", "Normalising: a charge glowing on the way out of the "
+     "furnace"),
+    ("v-oil-quench", "Hardening: a charge lifted from the furnace into the "
+     "oil quench", "video"),
+    ("g-charge-lift", "A charge at temperature, lifted from a pit furnace"),
+    ("g-bogie-furnace", "Bogie hearth furnace F3"),
+    ("g-pit-furnaces", "Pit type furnaces"),
+    ("g-pit-furnace-f5", "Pit type furnace F5"),
+    ("g-tempering-furnace", "Tempering furnace F2"),
+    ("g-quench-tanks", "Oil and water quench tanks beside the pit furnaces"),
+    ("v-oil-agitation", "Oil quench tank, agitated by its impeller", "video"),
+    ("v-quench-tanks", "The oil and water quench tanks", "video"),
+    ("g-rockwell-floor", "Rockwell hardness tester and furnace control "
+     "panels"),
+    ("g-lab", "Metallurgical laboratory"),
+    ("g-lab-2", "Laboratory: hardness testers and specimen preparation"),
+    ("g-inspection-area", "Inspection area"),
+    ("g-inspection", "Inspection on the shop floor"),
+    ("g-process-area", "Process area"),
+    ("g-shop-floor", "The shop floor and office"),
+    ("g-receiving-area", "Receiving area"),
+    ("g-receiving-2", "Incoming components at receiving"),
+    ("g-receiving-3", "Receiving area, loaded for the day"),
+    ("g-bolts", "Fasteners fixtured for treatment"),
+    ("g-dispatch", "Dispatch area"),
+    ("g-dispatch-2", "Treated components ready for dispatch"),
+    ("g-prod-plan", "Daily production plan"),
+    ("g-board", "Job status board"),
+    ("g-safety", "Safety board at the factory entrance"),
+    ("g-office", "Office"),
+    ("g-meeting", "A customer meeting"),
+    ("g-team", "The Everest Heat Treaters team"),
+    ("g-team-2", "The team outside the works"),
+    ("g-iv-explaining", "Industrial visit: explaining the process"),
+    ("v-industrial-visit", "Industrial visit", "video"),
+    ("g-iv-furnace", "Industrial visit: at the pit furnace"),
+    ("g-iv-pit", "Industrial visit: a charge in the furnace"),
+    ("g-iv-group", "Industrial visit: students outside the works"),
+    ("g-iv-group-2", "Industrial visit: a visiting batch"),
 ]
+# The strip on the homepage: the most telling eight, linking to the rest.
+GALLERY_HOME = ["g-normalising", "g-charge-lift", "g-bogie-furnace",
+                "g-quench-tanks", "g-pit-furnaces", "g-lab-2",
+                "g-dispatch-2", "g-team"]
 
 # ---------------------------------------------------------- certificates ---
 # Cropped from page 11 of the company profile by plant.py.
@@ -694,7 +838,8 @@ CONTACT_INTRO = (
 # it as well, so nothing has to be rewired later.
 #
 # The POST body is flat JSON: source, grade, phone, name, email, company,
-# process, qty, hardness, message, page.
+# process, weight, size, hardness, message, page. When a drawing is attached
+# it goes as multipart form data instead, with the file under "drawing".
 FORM_ENDPOINT = ""
 FORM_EMAIL = "everest_heattreaters@yahoo.co.in"
 
@@ -702,8 +847,8 @@ RFQ_FIELDS_NOTE = "We will reach out to you soon."
 
 FAQ = [
     ("What information do you need to quote?",
-     "Material grade, quantity, rough size and weight, and the hardness or "
-     "case depth required. A drawing is ideal."),
+     "Material grade, weight, size, and the hardness or case depth "
+     "required. A drawing is ideal."),
     ("What is the usual turnaround?",
      "Most conventional work runs two to three days. Long-cycle processes "
      "like deep case hardening take longer, and we will "
@@ -713,8 +858,9 @@ FAQ = [
      "here. Small lots get batched with compatible cycles."),
     ("How big a part can you take?",
      "The bogie hearth handles work up to three metres long, 900 mm wide and "
-     "450 mm tall, and the pit furnaces take components up to two metres "
-     "deep. Two-tonne cranes cover the handling."),
+     "450 mm tall, and the deep pit furnace takes parts up to two metres "
+     "long. Charges run from 800 to 1,000 kg, and two-tonne cranes cover "
+     "the handling."),
     ("My parts came out distorted somewhere else. Can you help?",
      "Usually. Distortion tends to be a design, grade or fixturing question "
      "rather than a furnace one. Send the part and the drawing and we will "

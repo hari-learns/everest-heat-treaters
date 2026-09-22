@@ -766,6 +766,192 @@ button{font:inherit;color:inherit}
   transition-delay:calc(var(--i,0) * 65ms)}
 [data-reveal].is-in{opacity:1;transform:none}
 
+/* ------------------------------------------------------- customer logos --- */
+/* Each company's own mark in its own colours, on a pale plate so filled
+   marks like BHEL's and L&T's read properly on the dark ground. The heat
+   pass still runs across the tile frame around it. */
+.custs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+.cust{max-width:none;flex-direction:column;gap:12px;min-height:0;
+  padding:12px 12px 14px}
+.cust__plate{position:relative;z-index:1;display:flex;align-items:center;
+  justify-content:center;width:100%;height:92px;padding:14px 16px;
+  border-radius:2px;background:#F3F5F9}
+.cust__logo{display:block;width:auto;height:auto;max-width:100%;
+  max-height:100%;object-fit:contain}
+.cust__name{position:relative;z-index:1;font-family:var(--mono);
+  font-size:.64rem;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+@media (max-width:1000px){ .custs{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:560px){
+  .custs{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .cust{padding:10px 10px 12px}
+  .cust__plate{height:78px;padding:12px}
+}
+
+/* ------------------------------------------------- industries, pictured --- */
+.inds--pic{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ind--pic{display:flex;flex-direction:column;padding:0;overflow:hidden;
+  color:inherit;text-decoration:none;
+  transition:transform .45s var(--ease),border-color .45s var(--ease),
+             box-shadow .45s var(--ease)}
+.ind__fig{overflow:hidden}
+.ind__fig img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;
+  border-radius:0;transition:transform .6s var(--ease)}
+.ind--pic h3{margin:20px 22px 8px;font-size:1.14rem}
+.ind--pic p{margin:0 22px 24px}
+@media (hover:hover){
+  .ind--pic:hover{transform:translateY(-4px);border-color:var(--line);
+    box-shadow:var(--shadow)}
+  .ind--pic:hover .ind__fig img{transform:scale(1.05)}
+}
+@media (max-width:760px){ .inds--pic{grid-template-columns:1fr} }
+
+.sectors{display:grid;gap:clamp(56px,8vw,112px)}
+.sector{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);
+  gap:clamp(28px,5vw,72px);align-items:center;scroll-margin-top:96px}
+.sector--flip .sector__fig{order:2}
+.sector__fig{margin:0;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--line-soft)}
+.sector__fig img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;
+  border-radius:0}
+.sector__text .h2{margin:0 0 .6em}
+.sector .chips{margin-top:22px}
+@media (max-width:860px){
+  .sector{grid-template-columns:1fr}
+  .sector--flip .sector__fig{order:0}
+}
+
+/* ------------------------------------------------------------- the team --- */
+.teamshot{margin:0 0 clamp(22px,3vw,34px);border-radius:var(--r);
+  overflow:hidden;border:1px solid var(--line-soft)}
+.teamshot img{display:block;width:100%;height:auto;max-height:560px;
+  object-fit:cover;object-position:50% 62%;border-radius:0}
+.team{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(12px,1.6vw,20px)}
+.member{padding:18px 18px 20px;background:var(--surface);
+  border-top:2px solid var(--heat);border-radius:0 0 var(--r) var(--r)}
+.member b{display:block;font-family:var(--display);font-weight:600;
+  font-size:1.02rem;letter-spacing:-.01em;margin-bottom:5px}
+.member span{display:block;font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--heat-2);
+  line-height:1.5}
+@media (max-width:1000px){ .team{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:600px){
+  .team{grid-template-columns:1fr;gap:10px}
+  .member{display:flex;justify-content:space-between;align-items:baseline;
+    gap:12px;padding:14px 16px}
+  .member b{margin:0}
+  .member span{text-align:right}
+}
+
+/* ------------------------------------------------------------ the plant --- */
+.plant{width:100%;border-collapse:collapse;font-size:.92rem;min-width:540px}
+.plant th,.plant td{padding:13px 16px;text-align:left;vertical-align:top;
+  border-bottom:1px solid var(--line-soft)}
+.plant tbody tr:last-child th,.plant tbody tr:last-child td{border-bottom:0}
+.plant thead th{background:var(--surface-2);font-family:var(--mono);
+  font-size:.66rem;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+.plant th[scope=row]{font-weight:600;color:var(--ink)}
+.plant td{color:var(--muted)}
+.plant td.mono{color:var(--heat-2);white-space:nowrap}
+@media (max-width:600px){
+  .plant{min-width:0;font-size:.88rem}
+  .plant th,.plant td{padding:12px 12px}
+  .plant th:nth-child(3),.plant td:nth-child(3){display:none}
+  .plant td.mono{white-space:normal}
+}
+
+/* --------------------------------------------------------------- safety --- */
+.split--media{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+  align-items:center}
+.safety__fig{margin:0;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--line-soft)}
+.safety__fig img{display:block;width:100%;height:auto;aspect-ratio:3/4;
+  object-fit:cover;object-position:70% 40%;border-radius:0}
+.feats--flat{gap:22px 28px}
+@media (max-width:900px){
+  .safety__fig img{aspect-ratio:4/3}
+}
+
+/* ------------------------------------------------------ gallery, visits --- */
+.shot > a{display:block;color:inherit}
+.shot--video video{display:block;width:100%;height:auto;aspect-ratio:3/2;
+  object-fit:cover;background:#000}
+.shot--video figcaption{position:static;opacity:1;transform:none;
+  background:none;padding:10px 12px 12px;color:var(--muted)}
+.shot__tag{display:inline-block;margin-right:8px;font-family:var(--mono);
+  font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--heat)}
+.shots--visits{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){ .shots--visits{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:520px){ .shots--visits{grid-template-columns:1fr} }
+
+/* The full gallery: photographs keep their own shape, so a tall furnace shot
+   stays tall. Two columns on a phone, up to four on a wide screen. */
+.masonry{columns:2;column-gap:clamp(10px,1.4vw,18px)}
+@media (min-width:700px){ .masonry{columns:3} }
+@media (min-width:1080px){ .masonry{columns:4} }
+.masonry .shot{display:block;break-inside:avoid;
+  margin:0 0 clamp(10px,1.4vw,18px)}
+.masonry .shot img{height:auto;aspect-ratio:auto}
+.masonry .shot--video video{aspect-ratio:auto;object-fit:contain}
+@media (max-width:520px){
+  .masonry .shot figcaption{font-size:.72rem;padding:22px 10px 9px}
+  .masonry .shot--video figcaption{padding:8px 10px 10px}
+}
+
+/* the gallery opens on its strongest photograph, at the size it was taken */
+.gal-lead{padding-block:clamp(40px,5vw,64px) clamp(26px,3.4vw,42px)}
+.gal-lead__in{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+  gap:clamp(24px,4vw,60px);align-items:end}
+.gal-lead__fig img{aspect-ratio:auto;height:auto}
+.gal-lead__text .h1{margin-top:.2em}
+.gal-lead__count{margin:1.2em 0 0;font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--heat-2)}
+@media (max-width:900px){ .gal-lead__in{grid-template-columns:1fr} }
+
+/* ------------------------------------------------------------- lightbox --- */
+.lb{position:fixed;inset:0;z-index:200;display:flex;align-items:center;
+  justify-content:center;padding:64px 16px 72px;
+  background:rgba(4,6,10,.95)}
+.lb[hidden]{display:none}
+.lb__fig{margin:0;max-width:100%;max-height:100%;display:flex;
+  flex-direction:column;align-items:center;gap:14px}
+.lb__img{display:block;max-width:min(100%,1400px);
+  max-height:calc(100svh - 170px);width:auto;height:auto;
+  object-fit:contain;border-radius:var(--r)}
+.lb__cap{max-width:60ch;text-align:center;font-size:.92rem;color:var(--muted)}
+.lb__btn{position:absolute;display:grid;place-items:center;width:48px;
+  height:48px;padding:0;border-radius:50%;cursor:pointer;
+  font-size:1.8rem;line-height:1;color:var(--ink);
+  background:rgba(18,26,40,.85);border:1px solid var(--line)}
+.lb__btn:hover{border-color:var(--heat)}
+.lb__btn:focus-visible{outline:2px solid var(--heat);outline-offset:2px}
+.lb__x{top:12px;right:12px}
+.lb__prev,.lb__next{top:50%;transform:translateY(-50%)}
+.lb__prev{left:14px}
+.lb__next{right:14px}
+.lb__n{position:absolute;top:26px;left:18px;margin:0;font-family:var(--mono);
+  font-size:.72rem;letter-spacing:.1em;color:var(--faint)}
+.lb-open,.lb-open body{overflow:hidden}
+@media (max-width:700px){
+  .lb__prev,.lb__next{top:auto;bottom:14px;transform:none}
+  .lb__prev{left:calc(50% - 60px)}
+  .lb__next{right:calc(50% - 60px)}
+}
+
+/* ------------------------------------------------------ drawing upload --- */
+.form input[type=file]{padding:9px 10px;font-size:.84rem;color:var(--muted);
+  cursor:pointer}
+.form input[type=file]::file-selector-button{margin-right:10px;
+  padding:7px 12px;cursor:pointer;font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r)}
+.file__hint{font-size:.62rem;letter-spacing:.04em;text-transform:none;
+  color:var(--faint)}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get
