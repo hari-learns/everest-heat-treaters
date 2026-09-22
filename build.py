@@ -107,8 +107,8 @@ def tile(entry, i=0, sizes="(max-width:700px) 50vw, 25vw"):
 
 def nav(current):
     return "\n        ".join(
-        f'<a href="{h}"{" aria-current=\"page\"" if h == current else ""}>{l}</a>'
-        for h, l in C.NAV)
+        f'<a href="{h}" style="--n:{i}"{" aria-current=\"page\"" if h == current else ""}>{l}</a>'
+        for i, (h, l) in enumerate(C.NAV))
 
 
 def logo():

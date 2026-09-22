@@ -952,23 +952,21 @@ button{font:inherit;color:inherit}
 .file__hint{font-size:.62rem;letter-spacing:.04em;text-transform:none;
   color:var(--faint)}
 
-/* ------------------------------------------------------- tucked header --- */
-/* Scrolling down, everything in the bar steps aside except Contact, which
-   stays pinned top right; scrolling up brings the bar back. The bar keeps
-   its height so nothing on the page jumps. */
-.hdr{transition:background .35s var(--ease),border-color .35s var(--ease),
-  backdrop-filter .35s var(--ease)}
-.brand,.nav,.burger{transition:opacity .3s var(--ease),transform .35s var(--ease),
-  visibility 0s}
-.hdr.is-tucked{background:transparent;border-bottom-color:transparent;
-  -webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none}
-.hdr.is-tucked .brand,.hdr.is-tucked .nav,.hdr.is-tucked .burger{opacity:0;
-  transform:translateY(-12px);visibility:hidden;
-  transition:opacity .25s var(--ease),transform .35s var(--ease),
-             visibility 0s linear .35s}
-.hdr.is-tucked .hdr__act .btn{pointer-events:auto;
-  box-shadow:0 10px 28px -10px rgba(0,0,0,.85)}
-@media (max-width:430px){ .hdr.is-tucked .hdr__act .btn--sm{display:inline-flex} }
+/* ------------------------------------------------------- folding nav --- */
+/* Scrolling down, the page links fold away to the right into the Contact
+   button; scrolling up, they unfold again. The bar, the name and Contact
+   never move. The nav keeps its width, so nothing else shifts. Each link
+   carries its position in --n: the one nearest Contact folds first and
+   comes back last. */
+.nav{clip-path:inset(-8px -8px -8px 0);
+  transition:clip-path .55s var(--ease)}
+.nav a{transition:color .3s var(--ease),opacity .35s var(--ease),
+  transform .5s var(--ease);
+  transition-delay:0s,calc((var(--n,0)) * 35ms),calc((var(--n,0)) * 35ms)}
+.hdr.is-tucked .nav{clip-path:inset(-8px -8px -8px 100%);pointer-events:none}
+.hdr.is-tucked .nav a{opacity:0;transform:translateX(34px);
+  transition-delay:0s,calc((6 - var(--n,0)) * 35ms),calc((6 - var(--n,0)) * 35ms)}
+@media (prefers-reduced-motion:reduce){ .nav,.nav a{transition:none} }
 
 /* ------------------------------------------------------- who you deal with */
 .person + .person{margin-top:1.1em;padding-top:1.1em;

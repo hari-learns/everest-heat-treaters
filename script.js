@@ -20,8 +20,8 @@
       requestAnimationFrame(function () {
         var y = window.scrollY;
         hdr.classList.toggle("is-stuck", y > 60);
-        // Reading down the page, the bar tucks away and leaves only the
-        // Contact button; any move back up brings the whole bar back.
+        // Reading down the page, the page links fold away into the Contact
+        // button; any move back up unfolds them. The bar itself stays.
         var dr = $("[data-drawer]");
         var open = dr && dr.classList.contains("is-open");
         if (y < 120 || open) hdr.classList.remove("is-tucked");
