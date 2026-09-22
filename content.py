@@ -86,7 +86,7 @@ NAV = [
 
 # ----------------------------------------------------------------- hero ----
 
-HERO_EYEBROW = "Ambattur, Chennai &middot; ISO 9001:2015"
+HERO_EYEBROW = "Nazarathpettai, Chennai &middot; ISO 9001:2015"
 # "Metal" cycles through the incandescent colours with a live temperature
 # reading above it, driven from GLOW_COLOURS — the same table as the scale
 # further down the page.
