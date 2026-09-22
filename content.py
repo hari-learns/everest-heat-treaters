@@ -184,7 +184,7 @@ PROCESSES = [
               "needs. The temperature is set by the material.",
         temp="Set by grade. EN24 hardens at 840&ndash;860&deg;C",
         result="The hardness your drawing specifies",
-        image="g-charge-lift",
+        image="g-oil-quench",
         body=[
             "Every material has its own hardening temperature, so the cycle "
             "starts from the grade. Take EN24: it goes up to 840&ndash;860&deg;C, "
@@ -366,6 +366,14 @@ PROCESSES = [
         suits=["F321", "F347"],
     ),
 ]
+
+# The homepage line under "The process of transformation." The processes
+# page carries the longer PROCESSES_INTRO, so the two never repeat.
+PROCESSES_HOME_INTRO = (
+    "Eight processes for ferrous and non-ferrous metals. Pick one to see how "
+    "we run it."
+)
+H_PROCESSES_PAGE = "How we run each process"
 
 PROCESSES_INTRO = (
     "Eight processes, for ferrous and non-ferrous metals. We work to your "
@@ -654,9 +662,13 @@ PLANT = [
 
 # ----------------------------------------------------------------- safety --
 SAFETY_TITLE = "Safety on the floor"
-# A drawn illustration rather than a photograph: helmet, the posts and chain
-# that fence every furnace pit, and the walkway line. See assets/img/.
-SAFETY_ART = "safety-art.svg"
+# Supplied by the client (September 2026): an illustration of the practices
+# below, from face shield and gloves to the chained quench tank.
+SAFETY_IMAGE = ("safety", "Illustration of safe practice in a heat "
+                "treatment shop: a worker in helmet, face shield and gloves "
+                "clear of the furnace, a charge moved by overhead crane, a "
+                "quench tank fenced with posts and chain, yellow walkway "
+                "markings and a fire extinguisher")
 SAFETY_INTRO = (
     "A heat treatment shop works with furnaces near 1,000&deg;C, tanks of "
     "quench oil and loads lifted by crane. Our aim is on the board at the "
@@ -772,6 +784,8 @@ GALLERY = [
      "furnace"),
     ("v-oil-quench", "Hardening: a charge lifted from the furnace into the "
      "oil quench", "video"),
+    ("g-oil-quench", "Hardening: the charge going into oil tank 1, 7,500 "
+     "litres"),
     ("g-charge-lift", "A charge at temperature, lifted from a pit furnace"),
     ("g-bogie-furnace", "Bogie hearth furnace F3"),
     ("g-pit-furnaces", "Pit type furnaces"),

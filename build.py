@@ -207,7 +207,7 @@ def footer():
     links = "".join(f'<li><a href="{h}">{l}</a></li>'
                     for h, l in C.NAV + [C.CONTACT_PAGE])
     procs = "".join(
-        f'<li><a href="process-{p["slug"]}.html">{p["name"]}</a></li>'
+        f'<li><a href="processes.html#{p["slug"]}">{p["name"]}</a></li>'
         for p in C.PROCESSES[:6])
     addr = "<br>".join(C.ADDRESS_LINES)
     note = (f'<p class="foot__note">{C.FOOTER_NOTE}</p>'
@@ -336,18 +336,34 @@ def people():
         for n, r, q in C.CONTACTS)
 
 
-def process_card(p, i=0):
-    return f'''<a class="pcard" href="process-{p["slug"]}.html" data-reveal style="--i:{i}">
-  <div class="pcard__fig">{img(p["image"], p["name"], sizes="(max-width:800px) 100vw, 33vw")}</div>
-  <div class="pcard__body">
-    <h3 class="pcard__title">{p["name"]}</h3>
-    <p class="pcard__txt">{p["short"]}</p>
-    <dl class="pcard__spec">
-      <dt>Result</dt><dd>{p["result"]}</dd>
-    </dl>
-    <span class="pcard__go">Read the process</span>
-  </div>
+def process_line(p, i=0):
+    """One process on the homepage: the name and a line, pointing into the
+    processes page. The full write-up lives there and only there."""
+    return f'''<a class="pline" href="processes.html#{p["slug"]}" data-reveal style="--i:{i % 4}">
+  <h3 class="pline__name">{p["name"]}</h3>
+  <p class="pline__txt">{p["short"]}</p>
 </a>'''
+
+
+def process_section(p, i=0):
+    """A process in full, on the processes page."""
+    prose = "".join(f"<p>{x}</p>" for x in p["body"])
+    pts = "".join(f"<li>{x}</li>" for x in p["points"])
+    suits = "".join(f'<span class="chip">{x}</span>' for x in p["suits"])
+    return f'''<article class="proc{" proc--flip" if i % 2 else ""}" id="{p["slug"]}">
+  <figure class="proc__fig" data-reveal>{img(p["image"], p["name"], sizes="(max-width:900px) 100vw, 42vw")}</figure>
+  <div class="proc__text" data-reveal>
+    <h2 class="h2">{p["name"]}</h2>
+    <p class="lede">{p["short"]}</p>
+    <dl class="proc__spec">
+      <div><dt>Temperature</dt><dd>{p["temp"]}</dd></div>
+      <div><dt>Result</dt><dd>{p["result"]}</dd></div>
+    </dl>
+    <div class="prose">{prose}</div>
+    <ul class="ticks">{pts}</ul>
+    <div class="chips">{suits}</div>
+  </div>
+</article>'''
 
 
 def enquiry_form():
@@ -392,7 +408,7 @@ def build_home():
         f'<span class="stat__l">{l}</span></div>'
         for i, (v, u, l) in enumerate(C.STATS))
 
-    procs = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES[:6]))
+    procs = "".join(process_line(p, i) for i, p in enumerate(C.PROCESSES))
 
     quals = "".join(
         f'<div class="qtile" data-reveal style="--i:{i}">'
@@ -442,10 +458,10 @@ def build_home():
 
 <section class="sec">
   <div class="wrap">
-    {sec_head("What we do", C.H_PROCESSES, C.PROCESSES_INTRO)}
-    <div class="pgrid">{procs}</div>
+    {sec_head("What we do", C.H_PROCESSES, C.PROCESSES_HOME_INTRO)}
+    <div class="plines">{procs}</div>
     <div class="sec__more" data-reveal>
-      <a class="btn btn--ghost" href="processes.html">All eight processes</a>
+      <a class="btn btn--ghost" href="processes.html">How we run each process</a>
     </div>
   </div>
 </section>
@@ -494,62 +510,17 @@ def build_home():
 
 
 def build_processes():
-    cards = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES))
+    jump = "".join(f'<a class="chip chip--link" href="#{p["slug"]}">{p["name"]}</a>'
+                   for p in C.PROCESSES)
+    secs = "".join(process_section(p, i) for i, p in enumerate(C.PROCESSES))
     body = f'''
-{subhero("Processes", C.H_PROCESSES, C.PROCESSES_INTRO,
+{subhero("Processes", C.H_PROCESSES_PAGE, C.PROCESSES_INTRO,
          "g-pit-furnaces")}
-<section class="sec"><div class="wrap"><div class="pgrid">{cards}</div></div></section>
+<nav class="wrap jump" aria-label="Processes on this page">{jump}</nav>
+<section class="sec sec--tight"><div class="wrap procs">{secs}</div></section>
 {cta()}'''
     return page("processes.html", f"{C.TAB_NAME} — Heat treatment processes",
                 C.PROCESSES_INTRO, body, "processes.html")
-
-
-def build_process_pages():
-    made = []
-    for p in C.PROCESSES:
-        others = [o for o in C.PROCESSES if o["slug"] != p["slug"]][:3]
-        prose = "".join(f"<p>{x}</p>" for x in p["body"])
-        pts = "".join(f"<li>{x}</li>" for x in p["points"])
-        suits = "".join(f'<span class="chip">{s}</span>' for s in p["suits"])
-        body = f'''
-{subhero("Process", p["name"], p["short"], p["image"])}
-
-<section class="sec">
-  <div class="wrap split split--wide">
-    <div class="split__text">
-      <div class="prose" data-reveal>{prose}</div>
-      <h2 class="h3" data-reveal>How we run it</h2>
-      <ul class="ticks" data-reveal>{pts}</ul>
-      <h2 class="h3" data-reveal>Grades we treat this way</h2>
-      <div class="chips" data-reveal>{suits}</div>
-    </div>
-    <aside class="spec" data-reveal>
-      <h2 class="spec__h">At a glance</h2>
-      <dl class="spec__list">
-        <dt>Temperature</dt><dd>{p["temp"]}</dd>
-        <dt>Typical result</dt><dd>{p["result"]}</dd>
-        <dt>Reporting</dt><dd>Hardness report with every batch</dd>
-        <dt>Batch size</dt><dd>Single piece to production</dd>
-      </dl>
-      <a class="btn btn--block" href="contact.html#enquire">Enquire about this process</a>
-      <a class="link link--block" href="materials.html">Check your grade</a>
-    </aside>
-  </div>
-</section>
-
-<section class="sec sec--alt">
-  <div class="wrap">
-    {sec_head("Related", "Other processes", mid=True)}
-    <div class="pgrid">{"".join(process_card(o, i) for i, o in enumerate(others))}</div>
-  </div>
-</section>
-{cta()}'''
-        # p["name"] carries inline HTML entities for on-page display; the
-        # <title> is escaped again downstream, so unescape it once here
-        made.append(page(f"process-{p['slug']}.html",
-                         f"{C.TAB_NAME} — {html.unescape(p['name'])}",
-                         p["short"], body, "processes.html"))
-    return made
 
 
 def build_materials():
@@ -698,7 +669,7 @@ def build_about():
 
 <section class="sec sec--alt" id="safety">
   <div class="wrap split split--media">
-    <figure class="safety__fig safety__fig--art" data-reveal><img src="assets/img/{C.SAFETY_ART}" alt="" width="480" height="640" loading="lazy"></figure>
+    <figure class="safety__fig" data-reveal>{img(C.SAFETY_IMAGE[0], C.SAFETY_IMAGE[1], sizes="(max-width:900px) 100vw, 40vw")}</figure>
     <div class="split__text">
       {sec_head("Safety", C.SAFETY_TITLE, C.SAFETY_INTRO)}
       <div class="feats feats--2 feats--flat">{"".join(
@@ -861,7 +832,6 @@ def build_404():
 
 def main():
     made = [build_home(), build_processes()]
-    made += build_process_pages()
     made += [build_materials(), build_quality(), build_industries(),
              build_about(), build_gallery(), build_contact(), build_404()]
 
