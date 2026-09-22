@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" role="img" aria-labelledby="t">
+  <title id="t">Illustration: a safety helmet above a chained barrier, with the words Zero accidents</title>
+  <defs>
+    <linearGradient id="heat" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFD26B"/>
+      <stop offset=".45" stop-color="#FF9420"/>
+      <stop offset="1" stop-color="#D14405"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy="1" r=".75">
+      <stop offset="0" stop-color="#FF6B18" stop-opacity=".30"/>
+      <stop offset=".55" stop-color="#FF6B18" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#FF6B18" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#E9EEF7" fill-opacity=".07"/>
+    </pattern>
+    <style>
+      .ln{fill:none;stroke:url(#heat);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+      .thin{stroke-width:2}
+      .chain{fill:none;stroke:#FFA51F;stroke-width:3;stroke-linecap:round;stroke-dasharray:7 6}
+      .rise{fill:none;stroke:#FFA51F;stroke-width:2.2;stroke-linecap:round;opacity:.0;
+        animation:rise 3.6s ease-in-out infinite}
+      .rise:nth-of-type(2){animation-delay:1.2s}
+      .rise:nth-of-type(3){animation-delay:2.4s}
+      @keyframes rise{0%{opacity:0;transform:translateY(10px)}35%{opacity:.8}
+        100%{opacity:0;transform:translateY(-18px)}}
+      .sway{animation:sway 5s ease-in-out infinite;transform-origin:240px 470px}
+      @keyframes sway{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+      @media (prefers-reduced-motion:reduce){.rise,.sway{animation:none}.rise{opacity:.6}}
+    </style>
+  </defs>
+
+  <rect width="480" height="640" fill="#0E1522"/>
+  <rect width="480" height="640" fill="url(#dots)"/>
+  <rect width="480" height="640" fill="url(#glow)"/>
+
+  <!-- heat rising off the work -->
+  <g>
+    <path class="rise" d="M200 132 q-9 -13 0 -26 q9 -13 0 -26"/>
+    <path class="rise" d="M240 122 q-9 -13 0 -26 q9 -13 0 -26"/>
+    <path class="rise" d="M280 132 q-9 -13 0 -26 q9 -13 0 -26"/>
+  </g>
+
+  <!-- the helmet -->
+  <path d="M132 318 C132 212 182 160 240 160 C298 160 348 212 348 318 Z"
+        fill="#FF6B18" fill-opacity=".07"/>
+  <path class="ln" d="M132 318 C132 212 182 160 240 160 C298 160 348 212 348 318"/>
+  <path class="ln" d="M100 318 H380 Q394 318 394 331 V336 Q394 350 380 350 H100 Q86 350 86 336 V331 Q86 318 100 318 Z"/>
+  <path class="ln thin" d="M222 163 C225 200 225 262 223 318"/>
+  <path class="ln thin" d="M258 163 C255 200 255 262 257 318"/>
+  <path class="ln thin" d="M176 188 C165 226 161 270 163 318"/>
+  <path class="ln thin" d="M304 188 C315 226 319 270 317 318"/>
+  <circle class="ln" cx="240" cy="262" r="24"/>
+  <path class="ln" d="M228 262 L237 271 L253 252"/>
+
+  <!-- posts and chain, as around every furnace pit -->
+  <g class="sway">
+    <path class="chain" d="M94 452 Q167 500 240 452"/>
+    <path class="chain" d="M240 452 Q313 500 386 452"/>
+  </g>
+  <g class="ln">
+    <rect x="82" y="440" width="24" height="112" rx="4"/>
+    <rect x="228" y="440" width="24" height="112" rx="4"/>
+    <rect x="374" y="440" width="24" height="112" rx="4"/>
+  </g>
+  <g stroke="#FFA51F" stroke-width="2.4" stroke-linecap="round" opacity=".85">
+    <path d="M84 474 L104 462 M84 496 L104 484 M84 518 L104 506"/>
+    <path d="M230 474 L250 462 M230 496 L250 484 M230 518 L250 506"/>
+    <path d="M376 474 L396 462 M376 496 L396 484 M376 518 L396 506"/>
+  </g>
+
+  <!-- the yellow walkway line -->
+  <path d="M40 552 H440" stroke="#96A4BB" stroke-opacity=".35" stroke-width="2"/>
+  <g stroke="#FFD24A" stroke-width="3" stroke-linecap="round" opacity=".55">
+    <path d="M52 574 l12 -12 M80 574 l12 -12 M108 574 l12 -12 M136 574 l12 -12 M164 574 l12 -12 M192 574 l12 -12 M220 574 l12 -12 M248 574 l12 -12 M276 574 l12 -12 M304 574 l12 -12 M332 574 l12 -12 M360 574 l12 -12 M388 574 l12 -12 M416 574 l12 -12"/>
+  </g>
+
+  <text x="240" y="614" text-anchor="middle" fill="#FFA51F"
+        font-family="ui-monospace, Menlo, Consolas, monospace" font-size="17"
+        letter-spacing="5">ZERO ACCIDENTS</text>
+</svg>

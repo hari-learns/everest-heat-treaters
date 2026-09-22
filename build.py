@@ -228,7 +228,7 @@ def footer():
     </div>
     <div class="foot__col">
       <h2 class="foot__h">Contact</h2>
-      <p>{C.CONTACT_NAME}, {C.CONTACT_QUALS}<br><span class="foot__role">{C.CONTACT_ROLE}</span></p>
+      {"".join(f'<p>{n}{", " + q if q else ""}<br><span class="foot__role">{r}</span></p>' for n, r, q in C.CONTACTS)}
       <p><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
       <p><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
     </div>
@@ -302,9 +302,8 @@ def cta():
 <section class="band">
   <div class="wrap band__in" data-reveal>
     <p class="eyebrow">Contact</p>
-    <h2 class="h2">Send us the grade and the hardness.</h2>
-    <p class="lede">Or just describe the problem &mdash; specifying the
-      treatment is part of the job.</p>
+    <h2 class="h2">{C.CTA_TITLE}</h2>
+    <p class="lede">{C.CTA_TEXT}</p>
     <div class="band__act">
       <a class="btn" href="contact.html#enquire">Contact us</a>
       <a class="btn btn--ghost" href="https://wa.me/{C.WHATSAPP}"
@@ -326,6 +325,15 @@ def subhero(eyebrow, title, text, image=None):
     <p class="lede">{text}</p>
   </div>
 </section>'''
+
+
+def people():
+    """The managing director, then the metallurgist, as one block."""
+    return "".join(
+        f'<div class="person"><p class="person__name">{n}</p>'
+        f'{f"<p class=person__quals>{q}</p>" if q else ""}'
+        f'<p class="person__role">{r}</p></div>'
+        for n, r, q in C.CONTACTS)
 
 
 def process_card(p, i=0):
@@ -385,12 +393,6 @@ def build_home():
         for i, (v, u, l) in enumerate(C.STATS))
 
     procs = "".join(process_card(p, i) for i, p in enumerate(C.PROCESSES[:6]))
-
-    inds = "".join(
-        f'<a class="ind ind--pic" href="industries.html#{slugify(d["name"])}" data-reveal style="--i:{i}">'
-        f'<div class="ind__fig">{img(d["image"], d["alt"], sizes="(max-width:800px) 100vw, 33vw")}</div>'
-        f'<h3>{d["name"]}</h3><p>{d["body"][0]}</p></a>'
-        for i, d in enumerate(C.INDUSTRIES))
 
     quals = "".join(
         f'<div class="qtile" data-reveal style="--i:{i}">'
@@ -462,13 +464,6 @@ def build_home():
   </div>
 </section>
 
-<section class="sec">
-  <div class="wrap">
-    {sec_head("Industries", C.H_INDUSTRIES, C.INDUSTRIES_INTRO, mid=True)}
-    <div class="inds inds--pic">{inds}</div>
-  </div>
-</section>
-
 <section class="sec sec--plates">
   <div class="wrap">
     {sec_head("Gallery", C.GALLERY_TITLE, C.GALLERY_INTRO, mid=True)}
@@ -489,7 +484,7 @@ def build_home():
         "".join(f'<button type="button" role="tab" data-quote-dot="{i}"'
                 f' aria-label="Review {i + 1}"></button>'
                 for i in range(len(C.TESTIMONIALS)))}</div>
-    </div>""" if C.TESTIMONIALS else ''}
+    </div>""" if C.TESTIMONIALS and C.SHOW_TESTIMONIALS else ''}
   </div>
 </section>
 
@@ -669,9 +664,7 @@ def build_about():
     <div class="split__text"><div class="prose prose--lg" data-reveal>{prose}</div></div>
     <aside class="card-person" data-reveal>
       <p class="eyebrow">Who you will deal with</p>
-      <p class="person__name">{C.CONTACT_NAME}</p>
-      <p class="person__quals">{C.CONTACT_QUALS}</p>
-      <p class="person__role">{C.CONTACT_ROLE}</p>
+      {people()}
       <hr>
       <p><a class="link" href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
       <p><a class="link" href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
@@ -705,7 +698,7 @@ def build_about():
 
 <section class="sec sec--alt" id="safety">
   <div class="wrap split split--media">
-    <figure class="safety__fig" data-reveal>{img(C.SAFETY_IMAGE[0], C.SAFETY_IMAGE[1], sizes="(max-width:800px) 100vw, 40vw")}</figure>
+    <figure class="safety__fig safety__fig--art" data-reveal><img src="assets/img/{C.SAFETY_ART}" alt="" width="480" height="640" loading="lazy"></figure>
     <div class="split__text">
       {sec_head("Safety", C.SAFETY_TITLE, C.SAFETY_INTRO)}
       <div class="feats feats--2 feats--flat">{"".join(
@@ -814,6 +807,10 @@ def build_contact():
     <aside class="cinfo" data-reveal>
       <h2 class="h3">{C.NAME}</h2>
       <p class="cinfo__cert">{C.CERT}</p>
+      <div class="cinfo__people">
+        <p class="eyebrow">Who you will deal with</p>
+        {people()}
+      </div>
       <address>{addr}</address>
       <dl class="cinfo__list">
         <dt>Phone</dt><dd><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></dd>

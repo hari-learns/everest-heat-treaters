@@ -144,7 +144,7 @@ def check_single_source():
         src = src.replace(doc, "")
     for label, value in [("phone", C.PHONE), ("email", C.EMAIL),
                          ("company name", C.NAME), ("GSTIN", C.GSTIN),
-                         ("contact name", C.CONTACT_NAME),
+                         ("contact name", C.CONTACTS[0][0]),
                          ("address", C.ADDRESS_LINES[0])]:
         if value in src:
             fail(f"{label} {value!r} is hard-coded in build.py — belongs in content.py")

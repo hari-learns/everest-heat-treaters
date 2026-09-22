@@ -41,9 +41,12 @@ DESCRIPTION = (
     "ISO 9001:2015 certified, working to ASTM standards."
 )
 
-CONTACT_NAME = "S. Aravindth"
-CONTACT_QUALS = "B.E., M.E."
-CONTACT_ROLE = "Metallurgist"
+# Who a customer deals with, in order: the managing director first, then
+# the metallurgist. Shown in the footer, on About and on Contact.
+CONTACTS = [
+    ("R. Sathyamoorthy", "Managing Director", ""),
+    ("S. Aravindth", "Metallurgist", "B.E., M.E."),
+]
 
 PHONE = "+91 6379 547 322"
 PHONE_LINK = "+916379547322"
@@ -485,13 +488,13 @@ QUALITY_POINTS = [
 
 H_PROCESSES = "The process of transformation."
 H_PROOF = "We measure the treatment"
-H_QUALITY = "How we prove the treatment landed."
+H_QUALITY = "Every batch is tested before it leaves."
 H_QUALITY_SYSTEM = "How it is controlled"
 H_MICRO = "The evidence is in the grain."
 H_MICRO_TEXT = ("Etched cross-sections under the microscope at up to "
                 "500&times; &mdash; a direct look at what the process did to "
                 "the metal.")
-H_INDUSTRIES = "Built into valves, mixers and railways."
+H_INDUSTRIES = "We treat for many industries. These three lead."
 H_CUSTOMERS = "Who our parts go back to"
 H_ABOUT_PILLARS = "Three things we hold to"
 H_VISION = "What we are aiming at"
@@ -581,7 +584,9 @@ INDUSTRIES_INTRO = (
 # ---------------------------------------------------------------- about ----
 
 ABOUT_TITLE = "Twenty-one years of getting metal to behave"
-ABOUT_IMAGE = "g-team"
+# No photograph behind the About heading: the team shot is shown whole in the
+# team section instead, where no one gets cropped.
+ABOUT_IMAGE = None
 ABOUT_BODY = [
     "Everest Heat Treaters is a commercial heat treatment works in "
     "Nazarathpettai, on the western edge of Chennai. Manufacturers across the "
@@ -649,8 +654,9 @@ PLANT = [
 
 # ----------------------------------------------------------------- safety --
 SAFETY_TITLE = "Safety on the floor"
-SAFETY_IMAGE = ("g-safety", "The Our Aim board at the factory entrance: "
-                "zero accidents, zero defects, zero delays")
+# A drawn illustration rather than a photograph: helmet, the posts and chain
+# that fence every furnace pit, and the walkway line. See assets/img/.
+SAFETY_ART = "safety-art.svg"
 SAFETY_INTRO = (
     "A heat treatment shop works with furnaces near 1,000&deg;C, tanks of "
     "quench oil and loads lifted by crane. Our aim is on the board at the "
@@ -733,6 +739,9 @@ POLICY_POINTS = [
 # exactly as the customer wrote it rather than edited to read "Everest" —
 # changing someone's words is not ours to do. If the client wants the name to
 # match, ask them for a reworded version rather than editing it here.
+# The client asked for reviews to come off the site (September 2026). The
+# quotes stay here so they can go back with one flag.
+SHOW_TESTIMONIALS = False
 TESTIMONIALS = [
     dict(text="Excellent workmanship and timely delivery. Their heat treatment "
               "quality has consistently exceeded our expectations.",
@@ -877,3 +886,6 @@ FAQ = [
 # ---------------------------------------------------------------- footer ---
 
 FOOTER_NOTE = ""
+
+CTA_TITLE = "Send us the grade and the hardness."
+CTA_TEXT = "We will get back to you soon."

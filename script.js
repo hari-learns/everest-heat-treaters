@@ -13,15 +13,26 @@
   var hdr = $("[data-header]");
   if (hdr) {
     var ticking = false;
+    var lastY = window.scrollY;
     var onScroll = function () {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
-        hdr.classList.toggle("is-stuck", window.scrollY > 60);
+        var y = window.scrollY;
+        hdr.classList.toggle("is-stuck", y > 60);
+        // Reading down the page, the bar tucks away and leaves only the
+        // Contact button; any move back up brings the whole bar back.
+        var dr = $("[data-drawer]");
+        var open = dr && dr.classList.contains("is-open");
+        if (y < 120 || open) hdr.classList.remove("is-tucked");
+        else if (y > lastY + 6) hdr.classList.add("is-tucked");
+        else if (y < lastY - 6) hdr.classList.remove("is-tucked");
+        if (Math.abs(y - lastY) > 6 || y < 120) lastY = y;
         ticking = false;
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    hdr.addEventListener("focusin", function () { hdr.classList.remove("is-tucked"); });
     onScroll();
   }
 
