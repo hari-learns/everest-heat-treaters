@@ -588,16 +588,12 @@ button{font:inherit;color:inherit}
   max-width:100%;padding:18px 16px;box-shadow:inset 3px 0 0 var(--heat)}
 .ask__lead{margin:0;color:var(--muted);font-size:.92rem}
 .ask__lead b{color:var(--ink)}
-.ask__step{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
-.ask__full{font-size:.86rem;color:var(--faint)}
-.ask__field{display:flex;align-items:center;gap:10px;margin:0;
-  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--faint)}
-.ask__field input{font-family:var(--body);font-size:.95rem;text-transform:none;
-  letter-spacing:0;color:var(--ink);background:var(--surface);
-  border:1px solid var(--line);border-radius:var(--r);padding:10px 13px;
-  min-height:44px;min-width:0;flex:1 1 180px;max-width:260px}
-.ask__field input:focus-visible{outline:2px solid var(--heat);outline-offset:1px}
+.ask__form{display:flex;align-items:center;gap:10px}
+.ask__form input{font-family:var(--body);font-size:.95rem;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r);padding:10px 13px;height:44px;width:240px;min-width:0}
+.ask__form input:focus-visible{outline:2px solid var(--heat);outline-offset:1px}
+.ask__form input::placeholder{color:var(--faint)}
 .ask__done{margin:0;color:var(--heat-2);font-size:.94rem}
 @media (max-width:900px){
   /* The table is 840px wide and scrolls inside its own box, so a cell that
@@ -608,10 +604,7 @@ button{font:inherit;color:inherit}
   .ask{position:sticky;left:0;
     width:min(calc(100vw - var(--gut) * 2), 460px);
     flex-direction:column;align-items:stretch;gap:12px}
-  .ask__field{flex-direction:column;align-items:stretch;gap:6px;width:100%}
-  /* flex:1 1 180px is a WIDTH basis in the row layout and a HEIGHT basis
-     here, which is what turned a phone field into a 180px-tall box. */
-  .ask__field input{flex:0 0 auto;width:100%;max-width:none;height:48px}
+  .ask__form input{width:100%;height:48px}
   .ask__form{width:100%;flex-direction:column;align-items:stretch;gap:10px}
   .ask__form .btn{width:100%}
 }

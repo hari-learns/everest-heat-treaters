@@ -319,16 +319,11 @@
         '<td colspan="' + COLS + '">' +
           '<div class="ask">' +
             '<p class="ask__lead">Enquire about <b></b></p>' +
-            '<div class="ask__step" data-ask-step="start">' +
-              '<button class="btn btn--sm" type="button" data-ask-go>Enquire</button>' +
-              '<a class="link ask__full" href="contact.html?grade=' +
-                 encodeURIComponent(grade) + '#enquire">or use the full form</a>' +
-            '</div>' +
-            '<form class="ask__step ask__form" data-ask-form hidden novalidate>' +
-              '<label class="ask__field">Your phone' +
-                '<input type="tel" name="phone" required autocomplete="tel" ' +
-                'placeholder="Phone number" inputmode="tel"></label>' +
-              '<button class="btn btn--sm" type="submit">Send</button>' +
+            '<form class="ask__form" data-ask-form novalidate>' +
+              '<input type="tel" name="phone" required autocomplete="tel" ' +
+                'inputmode="tel" placeholder="Your phone number" ' +
+                'aria-label="Your phone number">' +
+              '<button class="btn btn--sm" type="submit">Enquire</button>' +
               '<button class="btn btn--ghost btn--sm" type="button" data-ask-cancel>Cancel</button>' +
             '</form>' +
             '<p class="ask__done" data-ask-done hidden>Thank you. We will reach out to you soon.</p>' +
@@ -348,15 +343,11 @@
       open = rowFor(grade);
       row.after(open);
 
-      var start = $('[data-ask-step="start"]', open);
       var form = $("[data-ask-form]", open);
       var done = $("[data-ask-done]", open);
-
-      $("[data-ask-go]", open).addEventListener("click", function () {
-        start.hidden = true;
-        form.hidden = false;
-        $("input", form).focus();
-      });
+      // one step: the phone field and Enquire are there as soon as the row
+      // opens. Focus only with a mouse, so a phone keyboard does not jump up.
+      if (window.matchMedia("(hover:hover)").matches) $("input", form).focus();
       $("[data-ask-cancel]", form).addEventListener("click", close);
       form.addEventListener("submit", function (e) {
         e.preventDefault();
