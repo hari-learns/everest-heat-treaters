@@ -337,11 +337,11 @@ def people():
 
 
 def process_line(p, i=0):
-    """One process on the homepage: the name and a line, pointing into the
-    processes page. The full write-up lives there and only there."""
-    return f'''<a class="pline" href="processes.html#{p["slug"]}" data-reveal style="--i:{i % 4}">
-  <h3 class="pline__name">{p["name"]}</h3>
-  <p class="pline__txt">{p["short"]}</p>
+    """One process on the homepage: its photograph and its name, pointing into
+    the processes page. The write-up lives there and only there."""
+    return f'''<a class="ptile" href="processes.html#{p["slug"]}" data-reveal style="--i:{i % 4}">
+  {img(p["image"], "", sizes="(max-width:640px) 50vw, 25vw")}
+  <h3 class="ptile__name">{p["name"]}</h3>
 </a>'''
 
 
@@ -459,7 +459,7 @@ def build_home():
 <section class="sec">
   <div class="wrap">
     {sec_head("What we do", C.H_PROCESSES, C.PROCESSES_HOME_INTRO)}
-    <div class="plines">{procs}</div>
+    <div class="ptiles">{procs}</div>
     <div class="sec__more" data-reveal>
       <a class="btn btn--ghost" href="processes.html">How we run each process</a>
     </div>
