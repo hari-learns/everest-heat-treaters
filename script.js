@@ -125,120 +125,6 @@
   /* The colour of steel is not decoration here — below roughly 400 C what
      you see is the interference colour of the oxide film, and above it the
      metal is incandescent. Both tables come from content.py. */
-  /* ------------------------------------------------------- hero scene --- */
-  /* The crane's round: out of the furnace, across, into the oil, back.
-     Keyframes are (seconds, trolley x, hook y); the charge's temperature
-     has its own track and colours the steel, its glow, and the headline
-     word. Everything else (flare, steam, sparks, haze) keys off those. */
-  (function () {
-    var box = $("[data-scene]");
-    if (!box) return;
-    var stops = JSON.parse(box.getAttribute("data-heat-scale") || "[]");
-    var stages = JSON.parse(box.getAttribute("data-stages") || "[]");
-    var trolley = $("[data-scene-trolley]", box), load = $("[data-scene-load]", box);
-    var cables = [$("[data-scene-cable]", box), $("[data-scene-cable2]", box)];
-    var steel = $("[data-scene-steel]", box);
-    var tOut = $("[data-scene-t]", box), stageOut = $("[data-scene-stage]", box);
-    var word = $("[data-heat-word]");
-    var wordT = word && $("[data-heat-temp]", word);
-
-    var LOOP = 13;
-    var MOVE = [   // s, x, hook y
-      [0, 160, 300], [1.2, 160, 300], [2.6, 160, 140], [4.4, 450, 140],
-      [5.2, 450, 320], [7.0, 450, 320], [8.2, 450, 140], [10.0, 160, 140],
-      [11.0, 160, 300], [13, 160, 300]];
-    var HEAT = [   // s, degrees C
-      [0, 860], [1.2, 860], [4.4, 832], [5.2, 820], [6.1, 110], [7.0, 70],
-      [11.0, 45], [13, 860]];
-
-    var ease = function (f) { return f * f * (3 - 2 * f); };
-    var track = function (keys, s, col) {
-      for (var i = 0; i < keys.length - 1; i++) {
-        var a = keys[i], b = keys[i + 1];
-        if (s <= b[0]) {
-          var f = b[0] === a[0] ? 1 : ease((s - a[0]) / (b[0] - a[0]));
-          return a[col] + (b[col] - a[col]) * f;
-        }
-      }
-      return keys[keys.length - 1][col];
-    };
-    var rgb = function (h) {
-      h = h.replace("#", "");
-      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
-    };
-    var mix = function (a, c, f) {
-      return [0, 1, 2].map(function (i) { return Math.round(a[i] + (c[i] - a[i]) * f); });
-    };
-    var glow = function (t) {
-      if (t <= stops[0][0]) return rgb(stops[0][1]);
-      for (var i = 0; i < stops.length - 1; i++) {
-        if (t <= stops[i + 1][0]) {
-          return mix(rgb(stops[i][1]), rgb(stops[i + 1][1]),
-                     (t - stops[i][0]) / (stops[i + 1][0] - stops[i][0]));
-        }
-      }
-      return rgb(stops[stops.length - 1][1]);
-    };
-    var STEEL = [75, 85, 99], WORD_COLD = [174, 184, 198];
-    var steelAt = function (t) {
-      if (t < 450) return STEEL;
-      if (t < 620) return mix(STEEL, glow(560), (t - 450) / 170);
-      return glow(t);
-    };
-    var wordAt = function (t) {
-      if (t < 700) return WORD_COLD;
-      if (t < 760) return mix(WORD_COLD, glow(760), (t - 700) / 60);
-      return glow(t);
-    };
-    var css = function (c) { return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; };
-
-    var paint = function (s) {
-      var x = track(MOVE, s, 1), hy = track(MOVE, s, 2), t = track(HEAT, s, 1);
-      trolley.setAttribute("transform", "translate(" + x.toFixed(1) + " 0)");
-      load.setAttribute("transform", "translate(0 " + hy.toFixed(1) + ")");
-      cables.forEach(function (c) { c.setAttribute("y2", hy.toFixed(1)); });
-      var sc = steelAt(t);
-      steel.setAttribute("fill", css(sc));
-      steel.style.filter = t > 560
-        ? "drop-shadow(0 0 " + Math.round((t - 500) / 22) + "px " + css(sc) + ")" : "none";
-      box.style.setProperty("--haze", t > 600 && hy < 290 ? 1 : 0);
-      box.classList.toggle("is-lifting", s > 1.2 && s < 2.8);
-      box.classList.toggle("is-quench", s > 5.0 && s < 7.6);
-      box.classList.toggle("is-flare", s > 5.0 && s < 6.0);
-      tOut.textContent = Math.round(t);
-      tOut.parentNode.style.color = css(wordAt(t));
-      var cap = stages[0][1];
-      stages.forEach(function (st) { if (s >= st[0]) cap = st[1]; });
-      if (stageOut.innerHTML !== cap) stageOut.innerHTML = cap;
-      if (word) {
-        word.style.color = css(wordAt(t));
-        if (wordT) wordT.textContent = Math.round(t) + "°C";
-      }
-    };
-
-    if (reduced) { paint(3.2); return; }
-
-    var origin = 0, paused = 0, raf = 0, visible = true, onScreen = true;
-    var tick = function (now) {
-      if (!origin) origin = now - paused * 1000;
-      var s = ((now - origin) / 1000) % LOOP;
-      paused = s;
-      paint(s);
-      raf = requestAnimationFrame(tick);
-    };
-    var run = function () {
-      cancelAnimationFrame(raf);
-      origin = 0;
-      if (visible && onScreen) raf = requestAnimationFrame(tick);
-    };
-    document.addEventListener("visibilitychange", function () { visible = !document.hidden; run(); });
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; run(); }).observe(box);
-    }
-    paint(0);
-    run();
-  })();
-
   /* ------------------------------------------- text that runs on heat --- */
   /* Two things paint themselves from the incandescent scale: the word in the
      headline, and the company name in the header. They run half a cycle
@@ -248,8 +134,7 @@
     var targets = [];
     var word = $("[data-heat-word]");
     var heroSrc = $(".hero__title[data-heat-scale]");
-    // with the hero drawing on the page, the drawing drives the word instead
-    if (word && heroSrc && !$("[data-scene]")) {
+    if (word && heroSrc) {
       targets.push({ el: word, src: heroSrc, phase: 0,
                      label: $("[data-heat-temp]", word) });
     }

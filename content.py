@@ -114,20 +114,8 @@ HERO_TEXT = (
     "hardness you ask for. Every batch we ship includes a verified test "
     "report."
 )
-# The drawing beside the headline: an overhead crane takes a charge out of
-# the pit furnace, quenches it in the oil tank and returns it for tempering.
-# (seconds into the loop, caption) - the caption shows from that moment on.
-HERO_SCENE_STAGES = [
-    (0.0, "Soaking at 850&deg;C"),
-    (1.2, "Out of the furnace"),
-    (4.4, "Over the oil tank"),
-    (5.2, "Oil quench"),
-    (7.0, "Back to the furnace"),
-    (11.0, "Next charge, heating to 850&deg;C"),
-]
-
-# No photograph behind the hero. The mark is drawn as line art instead —
-# see trace.py and mark_paths.py.
+# No photograph behind the hero. The company mark is drawn beside the
+# headline instead, traced from the profile PDF — see trace.py.
 HERO_IMAGE = None
 
 # The band under the hero. Every figure here comes from the Everest Heat

@@ -126,155 +126,40 @@ HEAT_STOPS = html.escape(json.dumps(
 
 
 def hero_mark():
-    """The company mark, drawn rather than pasted.
+    """The company mark, drawn in.
 
-    trace.py walks the logo bitmap and hands back outlines; they are stroked
-    here so the ridgeline can draw itself in and carry a travelling heat
-    gradient. Nothing is rasterised, so it stays sharp at any size and costs
-    about a kilobyte.
+    trace.py lifts the mountain from the profile PDF at full resolution. The
+    outlines draw themselves first, peak by peak; then the solid mark fills
+    in underneath them and a band of heat travels slowly across it. It is
+    the logo itself, and sharp at any size.
     """
     w, h = MARK.VIEW
-    # the rings draw in order, biggest first, each a beat behind the last
-    paths = "".join(
-        f'<path d="{d}" style="--len:{len(d) * 3};--d:{i * 0.16:.2f}s"/>'
+    lines = "".join(
+        f'<path d="{d}" pathLength="1" style="--d:{i * 0.14:.2f}s"/>'
         for i, d in enumerate(MARK.PATHS))
-    return f'''<svg class="hero__mark" viewBox="0 0 {w} {h}"
-     preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
-  <defs>
-    <linearGradient id="markheat" x1="-0.6" y1="0" x2="0.4" y2="0">
-      <stop offset="0%" stop-color="#7E1B05"/>
-      <stop offset="28%" stop-color="#D14405"/>
-      <stop offset="50%" stop-color="#FF9420"/>
-      <stop offset="72%" stop-color="#FFD26B"/>
-      <stop offset="100%" stop-color="#7E1B05"/>
-      <animate attributeName="x1" values="-0.6;1.0;-0.6" dur="13s"
-               repeatCount="indefinite"/>
-      <animate attributeName="x2" values="0.4;2.0;0.4" dur="13s"
-               repeatCount="indefinite"/>
-    </linearGradient>
-  </defs>
-  <g class="hero__mark__art">{paths}</g>
-</svg>'''
-
-
-def hero_scene():
-    """The plant, drawn: pit furnace, overhead crane, oil quench tank.
-
-    Line art in the same heat gradient as the traced mark. script.js moves
-    the crane and colours the charge from the incandescent scale; this is
-    the still frame, which is also what reduced motion shows.
-    """
-    stages = html.escape(json.dumps([[t, c] for t, c in C.HERO_SCENE_STAGES],
-                                    separators=(",", ":")), quote=True)
-    return f"""<figure class="scene" data-scene data-stages="{stages}"
-        data-heat-scale="{HEAT_STOPS}" aria-label="Illustration: an overhead crane lifts a glowing charge from a pit furnace and quenches it in an oil tank">
-  <svg class="scene__art" viewBox="0 0 600 500" aria-hidden="true" focusable="false">
+    return f"""<figure class="mark" aria-hidden="true">
+  <svg class="mark__svg" viewBox="-12 -12 {w + 24} {h + 24}" focusable="false">
     <defs>
-      <linearGradient id="sline" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#FFB63F"/><stop offset=".5" stop-color="#FF7A1A"/>
-        <stop offset="1" stop-color="#C2410C"/>
+      <linearGradient id="markfill" x1="0" y1="0" x2="1" y2="0.35">
+        <stop offset="0" stop-color="#E85F06"/>
+        <stop offset=".3" stop-color="#FF8A1F"/>
+        <stop offset=".5" stop-color="#FFD26B"/>
+        <stop offset=".7" stop-color="#FF8A1F"/>
+        <stop offset="1" stop-color="#E85F06"/>
+        <animate attributeName="x1" values="-1;0;-1" dur="11s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="0;2;0" dur="11s" repeatCount="indefinite"/>
       </linearGradient>
-      <radialGradient id="mouth" cx=".5" cy=".5" r=".5">
-        <stop offset="0" stop-color="#FFF1C2"/><stop offset=".35" stop-color="#FFB63F"/>
-        <stop offset=".75" stop-color="#E85F06"/><stop offset="1" stop-color="#7E1B05"/>
-      </radialGradient>
-      <radialGradient id="ambient" cx=".5" cy=".5" r=".5">
-        <stop offset="0" stop-color="#FF6B18" stop-opacity=".42"/>
-        <stop offset=".6" stop-color="#FF6B18" stop-opacity=".08"/>
-        <stop offset="1" stop-color="#FF6B18" stop-opacity="0"/>
-      </radialGradient>
-      <linearGradient id="oil" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#0B111B"/><stop offset=".5" stop-color="#1B2638"/>
-        <stop offset="1" stop-color="#0B111B"/>
+      <linearGradient id="markline" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#FFD26B"/><stop offset="1" stop-color="#FF7A1A"/>
       </linearGradient>
-      <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#000" stop-opacity=".5"/>
-        <stop offset=".3" stop-color="#fff" stop-opacity=".22"/>
-        <stop offset=".6" stop-color="#fff" stop-opacity="0"/>
-        <stop offset="1" stop-color="#000" stop-opacity=".55"/>
-      </linearGradient>
-      <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse"
-               patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="10" stroke="#FFD24A" stroke-opacity=".35" stroke-width="3"/>
-      </pattern>
+      <filter id="markglow" x="-10%" y="-20%" width="120%" height="140%">
+        <feGaussianBlur stdDeviation="7" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-
-    <!-- the heat the furnace throws into the bay -->
-    <ellipse class="scene__ambient" cx="160" cy="330" rx="230" ry="190" fill="url(#ambient)"/>
-
-    <!-- overhead crane: runway beam and the trolley riding it -->
-    <g class="scene__struct">
-      <line x1="24" y1="52" x2="576" y2="52"/><line x1="24" y1="72" x2="576" y2="72"/>
-      <path d="M24 52 V72 M576 52 V72"/>
-      <path d="M60 72 L80 52 M120 72 L140 52 M180 72 L200 52 M240 72 L260 52 M300 72 L320 52 M360 72 L380 52 M420 72 L440 52 M480 72 L500 52 M540 72 L560 52"/>
-      <path d="M40 72 V470 M560 72 V470"/>
-    </g>
-    <g data-scene-trolley>
-      <rect class="scene__trolley" x="-26" y="74" width="52" height="20" rx="3"/>
-      <circle class="scene__wheel" cx="-14" cy="72" r="4"/><circle class="scene__wheel" cx="14" cy="72" r="4"/>
-      <line class="scene__cable" data-scene-cable x1="-4" y1="94" x2="-4" y2="300"/>
-      <line class="scene__cable" data-scene-cable2 x1="4" y1="94" x2="4" y2="300"/>
-      <g data-scene-load>
-        <path class="scene__hook" d="M-12 0 H12 L10 14 H-10 Z"/>
-        <path class="scene__hook" d="M0 14 V22 C0 30 10 30 10 24"/>
-        <path class="scene__chain" d="M-6 24 L-28 42 M6 24 L28 42"/>
-        <!-- the charge: a stack of rings on a fixture -->
-        <g class="scene__charge">
-          <rect data-scene-steel x="-34" y="42" width="68" height="92" rx="6" fill="#4B5563"/>
-          <rect x="-34" y="42" width="68" height="92" rx="6" fill="url(#shade)"/>
-          <path class="scene__rings" d="M-34 65 H34 M-34 88 H34 M-34 111 H34"/>
-        </g>
-        <g class="scene__haze">
-          <path d="M-18 30 q-6 -10 0 -20 q6 -10 0 -20"/>
-          <path d="M0 26 q-6 -10 0 -20 q6 -10 0 -20"/>
-          <path d="M18 30 q-6 -10 0 -20 q6 -10 0 -20"/>
-        </g>
-      </g>
-    </g>
-
-    <!-- pit furnace: mouth glow behind, body in front -->
-    <ellipse cx="160" cy="330" rx="86" ry="22" fill="#1A1210" stroke="url(#sline)" stroke-width="1.6"/>
-    <ellipse class="scene__mouth" cx="160" cy="331" rx="68" ry="16" fill="url(#mouth)"/>
-    <g class="scene__sparks" data-scene-sparks>
-      <circle cx="140" cy="320" r="1.8"/><circle cx="170" cy="318" r="1.4"/>
-      <circle cx="186" cy="322" r="1.6"/><circle cx="150" cy="316" r="1.2"/>
-      <circle cx="176" cy="324" r="1.2"/>
-    </g>
-    <g data-scene-front-furnace>
-      <path class="scene__body" d="M74 330 A86 22 0 0 0 246 330 V458 A86 22 0 0 1 74 458 Z"/>
-      <path class="scene__line" d="M74 330 V458 A86 22 0 0 0 246 458 V330"/>
-      <path class="scene__line scene__line--soft" d="M74 368 A86 22 0 0 0 246 368 M74 420 A86 22 0 0 0 246 420"/>
-      <path class="scene__line" d="M74 330 A86 22 0 0 0 246 330"/>
-      <rect class="scene__plate" x="140" y="388" width="40" height="22" rx="3"/>
-      <text class="scene__label" x="160" y="404">F1</text>
-    </g>
-
-    <!-- oil quench tank -->
-    <ellipse cx="450" cy="362" rx="100" ry="25" fill="url(#oil)" stroke="url(#sline)" stroke-width="1.6"/>
-    <ellipse class="scene__oil" cx="450" cy="366" rx="90" ry="19" fill="url(#oil)"/>
-    <g class="scene__flare" data-scene-flare>
-      <path d="M404 366 q8 -30 14 -8 q6 -34 16 -4 q8 -40 18 -2 q10 -30 16 2 q6 -22 14 10 Z"/>
-    </g>
-    <g class="scene__steam" data-scene-steam>
-      <path d="M420 350 q-10 -20 0 -40 q10 -20 0 -40"/>
-      <path d="M452 346 q-10 -22 0 -44 q10 -22 0 -44"/>
-      <path d="M484 350 q-10 -20 0 -40 q10 -20 0 -40"/>
-    </g>
-    <g data-scene-front-tank>
-      <path class="scene__body" d="M350 362 A100 25 0 0 0 550 362 V458 A100 25 0 0 1 350 458 Z"/>
-      <path class="scene__line" d="M350 362 V458 A100 25 0 0 0 550 458 V362"/>
-      <path class="scene__line" d="M350 362 A100 25 0 0 0 550 362"/>
-      <text class="scene__label scene__label--tank" x="450" y="424">OIL TANK &middot; 7500 L</text>
-    </g>
-
-    <!-- floor and the yellow walkway line -->
-    <line class="scene__floor" x1="20" y1="478" x2="580" y2="478"/>
-    <rect x="270" y="470" width="56" height="8" fill="url(#hatch)"/>
+    <path class="mark__fill" d="{MARK.WHOLE}" fill="url(#markfill)" fill-rule="evenodd" filter="url(#markglow)"/>
+    <g class="mark__lines">{lines}</g>
   </svg>
-  <figcaption class="scene__cap" aria-hidden="true">
-    <span class="scene__deg"><span data-scene-t>850</span>&deg;C</span>
-    <span class="scene__stage" data-scene-stage>{C.HERO_SCENE_STAGES[0][1]}</span>
-  </figcaption>
 </figure>"""
 
 
@@ -569,7 +454,7 @@ def build_home():
         for i, n in enumerate([1, 2, 3, 4, 5, 6]))
 
     body = f'''
-<section class="hero hero--chart hero--scene">
+<section class="hero hero--chart hero--mark">
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="wrap hero__in">
    <div class="hero__copy">
@@ -582,7 +467,7 @@ def build_home():
       <a class="btn btn--ghost" href="processes.html">See the processes</a>
     </div>
    </div>
-   {hero_scene()}
+   {hero_mark()}
   </div>
 </section>
 

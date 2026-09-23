@@ -16,19 +16,25 @@ import sys
 
 from PIL import Image
 
-SRC = "assets/img/logo-mark.png"
 LEVEL = 0.5          # alpha midpoint
-EPS = 0.70           # RDP tolerance: smooths the pixel staircase
-                     # without losing a peak or a tree
+UPSCALE = 2          # trace the PDF original at twice its size: the
+                     # interpolated edge is far smoother than the pixels
+EPS = 0.9            # RDP tolerance, in upscaled pixels
 MIN_RING = 7         # low, so the pine trees survive
-MIN_BLOB = 12        # pixels; drops scanning specks, keeps the trees
-VIEW_W = 340         # the viewBox the paths are written against
+MIN_BLOB = 40        # upscaled pixels; drops specks, keeps the trees
+VIEW_W = 680         # the viewBox the paths are written against
 
 
-def grid(path):
-    # the mark ships quantised to a palette, so ask for RGBA explicitly
-    im = Image.open(path).convert("RGBA")
-    a = im.getchannel("A")
+def grid():
+    """The mark straight from the company profile, black on white, at full
+    resolution and upscaled, rather than the 340px header copy."""
+    from logo import source
+    im = source().convert("L")
+    im = im.resize((im.width * UPSCALE, im.height * UPSCALE), Image.LANCZOS)
+    # dark is ink: invert so the mark is the foreground
+    a = im.point(lambda v: 255 - v)
+    box = a.point(lambda v: 255 if v > 60 else 0).getbbox()
+    a = a.crop((box[0] - 2, box[1] - 2, box[2] + 2, box[3] + 2))
     w, h = a.size
     px = list(a.getdata())
     return w, h, [[px[y * w + x] / 255.0 for x in range(w)] for y in range(h)]
@@ -188,7 +194,7 @@ def rdp_closed(ring, eps):
 
 
 def main():
-    w, h, g = grid(SRC)
+    w, h, g = grid()
     scale = VIEW_W / w
     paths = []
     for cells in components(w, h, g):
@@ -210,6 +216,9 @@ def main():
                 for x, y in pts) + "Z"
             paths.append(d)
     paths.sort(key=len, reverse=True)
+    # all rings as one path too: filled even-odd, the holes (the crevasses
+    # in the peaks) come out as holes
+    whole = "".join(paths)
 
     print('"""Vector outlines of the company mark, produced by trace.py.')
     print()
@@ -220,6 +229,7 @@ def main():
     for d in paths:
         print(f'    "{d}",')
     print("]")
+    print(f'WHOLE = "{whole}"')
     print(f"# {len(paths)} rings, {sum(len(d) for d in paths)} chars",
           file=sys.stderr)
 

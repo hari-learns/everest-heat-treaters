@@ -288,66 +288,29 @@ button{font:inherit;color:inherit}
 .hero--chart .hero__title{font-size:clamp(2.4rem,1.1rem + 3.6vw,4.3rem);max-width:none}
 .hero--chart .hero__glow{inset:auto -10% -30% auto}
 
-/* The hero drawing: line art in the heat gradient on the dark ground,
-   moving parts driven from script.js. */
-.scene{margin:0;position:relative}
-.scene__art{display:block;width:100%;height:auto;overflow:visible}
-.scene__struct{fill:none;stroke:#2B374B;stroke-width:1.4;stroke-linecap:round}
-.scene__trolley{fill:#141C2B;stroke:url(#sline);stroke-width:1.4}
-.scene__wheel{fill:#0B111B;stroke:#FFA51F;stroke-width:1.2}
-.scene__cable{stroke:#6B778B;stroke-width:1.1}
-.scene__hook{fill:none;stroke:#FFA51F;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
-.scene__chain{fill:none;stroke:#6B778B;stroke-width:1.2;stroke-dasharray:3 3}
-/* colour is set every frame from script.js, so nothing here eases it */
-.scene__charge rect[data-scene-steel],.hero--scene .heat,.scene__deg{transition:none}
-.scene__rings{fill:none;stroke:rgba(0,0,0,.35);stroke-width:1.2}
-.scene__haze path{fill:none;stroke:#FFB63F;stroke-width:1.4;stroke-linecap:round;
-  opacity:calc(var(--haze,0) * .7);transition:opacity .6s;
-  animation:haze 1.6s ease-in-out infinite}
-.scene__haze path:nth-child(2){animation-delay:.5s}
-.scene__haze path:nth-child(3){animation-delay:1s}
-@keyframes haze{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.scene__body{fill:#101723}
-.scene__line{fill:none;stroke:url(#sline);stroke-width:1.6;stroke-linejoin:round}
-.scene__line--soft{stroke:#2B374B;stroke-width:1.2}
-.scene__plate{fill:#0B111B;stroke:#FFA51F;stroke-width:1}
-.scene__label{fill:#FFA51F;font:600 12px var(--mono);text-anchor:middle;letter-spacing:.08em}
-.scene__label--tank{fill:#6B778B;font-size:10.5px;letter-spacing:.16em}
-.scene__floor{stroke:#2B374B;stroke-width:1.4}
-.scene__mouth{animation:mouth 3.2s ease-in-out infinite alternate}
-@keyframes mouth{from{opacity:.82}to{opacity:1}}
-.scene__ambient{animation:mouth 4.5s ease-in-out infinite alternate}
-.scene__sparks circle{fill:#FFD26B;opacity:0}
-.scene.is-lifting .scene__sparks circle{animation:spark 1s ease-out infinite}
-.scene.is-lifting .scene__sparks circle:nth-child(2){animation-delay:.2s}
-.scene.is-lifting .scene__sparks circle:nth-child(3){animation-delay:.45s}
-.scene.is-lifting .scene__sparks circle:nth-child(4){animation-delay:.65s}
-.scene.is-lifting .scene__sparks circle:nth-child(5){animation-delay:.85s}
-@keyframes spark{0%{opacity:1;transform:translate(0,0)}
-  100%{opacity:0;transform:translate(var(--dx,12px),-60px)}}
-.scene__sparks circle:nth-child(odd){--dx:-14px}
-.scene__flare path{fill:#FF8A1F;opacity:0;transform-origin:450px 366px;
-  filter:drop-shadow(0 0 10px #FF6B18)}
-.scene.is-flare .scene__flare path{animation:flare .5s ease-in-out infinite alternate}
-@keyframes flare{0%{opacity:.95;transform:scaleY(.8)}100%{opacity:.7;transform:scaleY(1.25)}}
-.scene__steam path{fill:none;stroke:#C9D2DE;stroke-width:2;stroke-linecap:round;opacity:0}
-.scene.is-quench .scene__steam path{animation:steam 2.2s ease-out infinite}
-.scene.is-quench .scene__steam path:nth-child(2){animation-delay:.6s}
-.scene.is-quench .scene__steam path:nth-child(3){animation-delay:1.2s}
-@keyframes steam{0%{opacity:0;transform:translateY(8px)}30%{opacity:.5}
-  100%{opacity:0;transform:translateY(-40px)}}
-.scene__cap{display:flex;align-items:baseline;justify-content:center;gap:14px;
-  margin-top:6px;font-family:var(--mono)}
-.scene__deg{font-size:1.5rem;font-weight:500;letter-spacing:-.03em;
-  font-variant-numeric:tabular-nums;min-width:4.2ch;text-align:right}
-.scene__stage{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-  min-width:24ch}
+/* The mark beside the headline: outlines draw in, the solid fill follows,
+   then heat travels across it. */
+.mark{margin:0;position:relative;display:grid;place-items:center;isolation:isolate}
+.mark::before{content:"";position:absolute;inset:8% 4% -6%;z-index:-1;
+  background:radial-gradient(closest-side,rgba(255,107,24,.22),transparent);
+  animation:breathe 7s ease-in-out infinite alternate}
+.mark__svg{display:block;width:100%;height:auto;overflow:visible}
+/* pathLength="1" on each outline, so the dash is exactly one outline long */
+.mark__lines path{fill:none;stroke:url(#markline);stroke-width:2;
+  stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;
+  animation:markdraw 1.9s cubic-bezier(.22,1,.28,1) calc(.2s + var(--d,0s)) forwards,
+            markfade .9s ease 2.9s forwards}
+.mark__fill{opacity:0;animation:markfill 1.4s cubic-bezier(.22,1,.28,1) 1.7s forwards}
+@keyframes markfill{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes markfade{to{opacity:.35}}
 @media (max-width:980px){
   .hero--chart .hero__in{grid-template-columns:1fr}
-  .scene{max-width:620px;width:100%;margin-inline:auto}
+  .mark{max-width:460px;width:100%;margin-inline:auto}
 }
 @media (prefers-reduced-motion:reduce){
-  .scene *{animation:none!important}
+  .mark__lines path{animation:none;stroke-dashoffset:0;opacity:.35}
+  .mark__fill{animation:none;opacity:1}
+  .mark::before{animation:none}
 }
 
 /* ------------------------------------------------------------- subhero --- */
