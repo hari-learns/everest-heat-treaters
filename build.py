@@ -11,6 +11,7 @@ import hashlib
 import html
 import json
 import os
+import re
 
 import content as C
 import mark_paths as MARK
@@ -252,6 +253,16 @@ def footer():
 </a>'''
 
 
+def clean_urls(doc):
+    """Link to /about rather than /about.html, and to / rather than
+    /index.html. GitHub Pages serves about.html for /about by itself, so the
+    files keep their names and only the links change. A local
+    `python3 -m http.server` does not do this; preview with the live site or
+    a server that tries .html."""
+    doc = re.sub(r'href="index\.html(?=[#"?])', 'href="./', doc)
+    return re.sub(r'href="([a-z0-9-]+)\.html(?=[#"?])', r'href="\1', doc)
+
+
 def page(path, title, description, body, current="", noindex=False):
     # a 404 is never worth indexing, even on a live build
     robots = "noindex, nofollow" if (C.NOINDEX or noindex) else "index, follow"
@@ -281,6 +292,7 @@ def page(path, title, description, body, current="", noindex=False):
 <script src="script.js?v={JS_V}" defer></script>
 </body>
 </html>'''
+    doc = clean_urls(doc)
     with open(os.path.join(ROOT, path), "w", encoding="utf-8") as fh:
         fh.write(doc)
     return path

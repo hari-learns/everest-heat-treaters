@@ -89,8 +89,12 @@ def check_pages():
         for href in set(p.links):
             if href.startswith(("http", "mailto:", "tel:", "#", "//")):
                 continue
-            target = href.split("#")[0]
-            if target and not os.path.exists(os.path.join(ROOT, target)):
+            target = href.split("#")[0].split("?")[0]
+            if target == "./":
+                target = "index.html"
+            # clean URLs: /about is served from about.html
+            if target and not os.path.exists(os.path.join(ROOT, target)) \
+                    and not os.path.exists(os.path.join(ROOT, target + ".html")):
                 fail(f"{name}: broken link -> {href}")
     for t, names in titles.items():
         if len(names) > 1:
