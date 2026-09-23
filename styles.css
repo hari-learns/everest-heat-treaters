@@ -1053,6 +1053,29 @@ button{font:inherit;color:inherit}
 }
 @media (max-width:480px){ .proc__spec{grid-template-columns:1fr} }
 
+/* ----------------------------------------------- quality, home strip --- */
+/* Four facts in one quiet row, divided by hairlines; the quality page keeps
+   the photographs. */
+.qstrip{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border-block:1px solid var(--line-soft)}
+.qstrip__item{padding:clamp(20px,2.6vw,30px) clamp(16px,2vw,26px);
+  display:grid;gap:6px;align-content:start}
+.qstrip__item + .qstrip__item{border-left:1px solid var(--line-soft)}
+.qstrip__item b{font-family:var(--mono);font-weight:500;font-size:.68rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--heat-2)}
+.nobr{white-space:nowrap}
+.qstrip__item span{color:var(--ink);font-size:1rem;line-height:1.45}
+@media (max-width:900px){
+  .qstrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .qstrip__item:nth-child(3){border-left:0}
+  .qstrip__item:nth-child(n+3){border-top:1px solid var(--line-soft)}
+}
+@media (max-width:480px){
+  .qstrip{grid-template-columns:1fr}
+  .qstrip__item + .qstrip__item{border-left:0;border-top:1px solid var(--line-soft)}
+}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get

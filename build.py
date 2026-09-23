@@ -412,12 +412,6 @@ def build_home():
     procs = "".join(process_line(by_slug[slug], i)
                     for i, slug in enumerate(C.PROCESSES_HOME_ORDER))
 
-    quals = "".join(
-        f'<div class="qtile" data-reveal style="--i:{i}">'
-        f'<div class="qtile__fig">{img(q["image"], q["name"], sizes="(max-width:800px) 100vw, 25vw")}</div>'
-        f'<h3>{q["name"]}</h3><p>{q["text"]}</p></div>'
-        for i, q in enumerate(C.QUALITY))
-
     tests = "".join(
         f'<blockquote class="quote" data-reveal style="--i:{i}">'
         f'<p>{t["text"]}</p><cite>{t["name"]}<span>{t["meta"]}</span></cite></blockquote>'
@@ -470,8 +464,13 @@ def build_home():
 
 <section class="sec sec--alt">
   <div class="wrap">
-    {sec_head("Proof", C.H_PROOF, C.QUALITY_INTRO, mid=True)}
-    <div class="qgrid">{quals}</div>
+    {sec_head("Proof", C.H_PROOF, C.QUALITY_HOME_INTRO, mid=True)}
+    <ul class="qstrip">{"".join(
+      f'<li class="qstrip__item" data-reveal style="--i:{n}"><b>{t}</b><span>{d}</span></li>'
+      for n, (t, d) in enumerate(C.QUALITY_HOME))}</ul>
+    <div class="sec__more" data-reveal>
+      <a class="btn btn--ghost" href="quality.html">How we test every batch</a>
+    </div>
   </div>
 </section>
 

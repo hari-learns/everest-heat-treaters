@@ -79,8 +79,8 @@ NAV = [
     ("index.html", "Home"),
     ("processes.html", "Processes"),
     ("materials.html", "Materials"),
-    ("quality.html", "Quality"),
     ("industries.html", "Industries"),
+    ("quality.html", "Quality"),
     ("gallery.html", "Gallery"),
     ("about.html", "About"),
 ]
@@ -487,6 +487,16 @@ QUALITY = [
               "started."),
 ]
 
+# The homepage version: four short facts in a strip, pointing to the quality
+# page, which keeps the full tiles. Nothing is shown twice.
+QUALITY_HOME_INTRO = "Four checks stand behind every report we send."
+QUALITY_HOME = [
+    ("Hardness", "Rockwell, Brinell and optical Brinell in house"),
+    ("Big parts", "A portable tester for work off the bench"),
+    ("Microstructure", "Examined at up to 500&times;"),
+    ("Calibration", "NABL-calibrated furnaces, <span class=\"nobr\">100&ndash;1050&deg;C</span>"),
+]
+
 QUALITY_POINTS = [
     ("ISO 9001:2015", "Certified since 2006 for the heat treatment of "
                       "ferrous and non-ferrous metals, and audited every "
@@ -837,7 +847,7 @@ GALLERY = [
 # The strip on the homepage: the most telling eight, linking to the rest.
 GALLERY_HOME = ["g-normalising", "g-charge-lift", "g-bogie-furnace",
                 "g-quench-tanks", "g-pit-furnaces", "g-lab-2",
-                "g-dispatch-2", "g-team"]
+                "g-dispatch-2", "g-team-2"]
 
 # ---------------------------------------------------------- certificates ---
 # Cropped from page 11 of the company profile by plant.py.
