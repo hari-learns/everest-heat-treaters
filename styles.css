@@ -1104,6 +1104,26 @@ button{font:inherit;color:inherit}
   .qsec--flip .qsec__fig{order:0}
 }
 
+/* Gallery opener as one banner: the photograph wide and short, the title
+   laid over its lower edge, so there is no empty column beside it. */
+.gal-lead{padding-block:clamp(20px,3vw,36px) clamp(18px,2.4vw,30px)}
+.gal-lead__in{display:block;position:relative}
+.gal-lead__fig{margin:0;border-radius:var(--r);overflow:hidden}
+.gal-lead__fig img{width:100%;height:clamp(300px,52vh,520px)!important;
+  aspect-ratio:auto;object-fit:cover;object-position:50% 58%}
+.gal-lead__fig figcaption{display:none}
+.gal-lead__fig::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(6,9,15,.92) 0%,rgba(6,9,15,.55) 38%,transparent 70%),
+             linear-gradient(to right,rgba(6,9,15,.6),transparent 60%)}
+.gal-lead__text{position:absolute;left:0;bottom:0;z-index:2;pointer-events:none;
+  padding:clamp(20px,3.4vw,44px);max-width:640px}
+.gal-lead__text .h1{margin:.15em 0 .25em}
+.gal-lead__text .lede{margin:0;color:#D5DCE8}
+.gal-lead__count{margin-top:.9em}
+@media (max-width:600px){
+  .gal-lead__fig img{height:62vh!important}
+}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get
@@ -1202,3 +1222,4 @@ button{font:inherit;color:inherit}
   [data-reveal]{opacity:1;transform:none}
   .hero__glow{animation:none}
 }
+.gal-lead + .sec{padding-top:0}
