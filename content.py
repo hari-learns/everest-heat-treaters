@@ -170,7 +170,10 @@ GLOW_COLOURS = [
 ]
 
 # --------------------------------------------------------------- process ---
-# The eight processes, described the way the plant actually runs them. The
+# The eight processes, described the way the plant actually runs them.
+# Each has its own picture so the homepage tiles read apart: stills from the
+# client's own videos for the furnace and quench work, and licensed
+# micrographs (see CREDITS.md) for the two that happen inside the metal. The
 # temperatures and times are the client's own figures (September 2026); where
 # a figure depends on the grade, the text says so rather than inventing one.
 # The first six also appear on the homepage, so the order is the order of
@@ -209,7 +212,7 @@ PROCESSES = [
               "940&deg;C, then hardened from 840&deg;C.",
         temp="Carburise at 940&deg;C, harden from 840&deg;C",
         result="1.5&ndash;2 mm case from a six-hour soak",
-        image="g-pit-furnaces",
+        image="p-case-lift",
         body=[
             "Low-carbon steel like EN1A can&rsquo;t take much hardness on its "
             "own, so carbon is added to the surface first. The parts are "
@@ -233,7 +236,7 @@ PROCESSES = [
               "Heated for its grade, then cooled in the furnace.",
         temp="Set by grade. 410 anneals at 880&ndash;900&deg;C",
         result="Softened and ready to machine",
-        image="g-tempering-furnace",
+        image="p-furnace-glow",
         body=[
             "Annealing makes a material softer. Each grade has its own "
             "annealing temperature; 410 stainless, for example, goes to "
@@ -278,7 +281,7 @@ PROCESSES = [
               "leaves behind, without changing the hardness.",
         temp="Set by the base material and the weld",
         result="Stress relieved, hardness unchanged",
-        image="g-bogie-furnace",
+        image="p-bogie",
         body=[
             "Most of the stress relieving we do is on welded components. The "
             "base metal and the weld carry different stresses, and a part "
@@ -302,7 +305,7 @@ PROCESSES = [
               "1040&ndash;1080&deg;C, then quenched within 20 seconds.",
         temp="1040&ndash;1080&deg;C, time by thickness",
         result="Corrosion resistance restored, magnetism relieved",
-        image="g-quench-tanks",
+        image="p-water-quench",
         body=[
             "Solution annealing is for the non-magnetic stainless steels. The "
             "charge goes to 1040&ndash;1080&deg;C and holds for a time set "
@@ -325,7 +328,7 @@ PROCESSES = [
               "long ageing holds bring out the strength.",
         temp="Two-step ageing, the second at 620&deg;C",
         result="Precipitation hardened to specification",
-        image="g-pit-furnace-f5",
+        image="p-precipitates",
         body=[
             "Special grades such as 718 get their strength from "
             "precipitation, not from a quench. The material is solution "
@@ -349,7 +352,7 @@ PROCESSES = [
               "cycle their specification sets.",
         temp="As the grade&rsquo;s specification sets",
         result="Protected against grain-boundary corrosion",
-        image="g-process-area",
+        image="micro-stainless",
         body=[
             "F321 and F347 are stainless steels with titanium or niobium "
             "added to protect them from corrosion at the grain boundaries. "
