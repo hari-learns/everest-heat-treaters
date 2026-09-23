@@ -157,85 +157,124 @@ def hero_mark():
 </svg>'''
 
 
-def hero_chart():
-    """The furnace chart: a process sheet that draws itself.
+def hero_scene():
+    """The plant, drawn: pit furnace, overhead crane, oil quench tank.
 
-    Temperature runs up the side, time along the bottom. script.js walks each
-    cycle in HERO_CYCLES, drawing the curve and colouring the bar of steel
-    above it from the same incandescent scale as the rest of the site.
-    Everything here is the static frame; the numbers come from content.py.
+    Line art in the same heat gradient as the traced mark. script.js moves
+    the crane and colours the charge from the incandescent scale; this is
+    the still frame, which is also what reduced motion shows.
     """
-    W, H, L, R, T, B = 600, 330, 52, 14, 14, 36
-    top, bot = T, H - B
-    def y(c): return bot - (bot - top) * c / 1100
-    grid = "".join(
-        f'<line x1="{L}" x2="{W - R}" y1="{y(c):.1f}" y2="{y(c):.1f}"/>'
-        f'<text x="{L - 10}" y="{y(c) + 4:.1f}">{c}</text>'
-        for c in (0, 200, 400, 600, 800, 1000))
-    # the gradient runs up the temperature axis, so wherever the curve sits
-    # it takes the colour of steel at that temperature
-    stops = [(0, "#3E8BE0"), (300, "#6E7A8C"), (480, "#7E1B05"),
-             (700, "#A82D04"), (850, "#E85F06"), (1000, "#FF9420"),
-             (1100, "#FFD26B")]
-    grad = "".join(f'<stop offset="{c / 1100:.3f}" stop-color="{h}"/>'
-                   for c, h in stops)
-    cycles = html.escape(json.dumps(
-        [dict(name=c["name"], grade=c["grade"],
-              points=[list(p) for p in c["points"]]) for c in C.HERO_CYCLES],
-        separators=(",", ":")), quote=True)
-    tabs = "".join(
-        f'<button type="button" class="fchart__tab" data-fchart-tab="{i}">'
-        f'{c["name"]}</button>' for i, c in enumerate(C.HERO_CYCLES))
-    first = C.HERO_CYCLES[0]
-    return f"""<figure class="fchart" data-fchart="{cycles}"
-        data-heat-scale="{HEAT_STOPS}" aria-label="Animated furnace chart of heat treatment cycles">
-  <div class="fchart__top">
-    <div class="fchart__id">
-      <p class="fchart__k">Process sheet</p>
-      <p class="fchart__name" data-fchart-name>{first["name"]}</p>
-      <p class="fchart__grade" data-fchart-grade>{first["grade"]}</p>
-    </div>
-    <div class="fchart__read" aria-hidden="true">
-      <p class="fchart__deg"><span data-fchart-t>30</span><i>&deg;C</i></p>
-      <p class="fchart__stage" data-fchart-stage>Loading the furnace</p>
-    </div>
-  </div>
-  <svg class="fchart__bar" viewBox="0 0 600 64" aria-hidden="true" focusable="false">
+    stages = html.escape(json.dumps([[t, c] for t, c in C.HERO_SCENE_STAGES],
+                                    separators=(",", ":")), quote=True)
+    return f"""<figure class="scene" data-scene data-stages="{stages}"
+        data-heat-scale="{HEAT_STOPS}" aria-label="Illustration: an overhead crane lifts a glowing charge from a pit furnace and quenches it in an oil tank">
+  <svg class="scene__art" viewBox="0 0 600 500" aria-hidden="true" focusable="false">
     <defs>
-      <linearGradient id="barshade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff" stop-opacity=".38"/>
-        <stop offset=".35" stop-color="#fff" stop-opacity=".05"/>
-        <stop offset=".7" stop-color="#000" stop-opacity=".12"/>
-        <stop offset="1" stop-color="#000" stop-opacity=".45"/>
+      <linearGradient id="sline" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FFB63F"/><stop offset=".5" stop-color="#FF7A1A"/>
+        <stop offset="1" stop-color="#C2410C"/>
       </linearGradient>
+      <radialGradient id="mouth" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#FFF1C2"/><stop offset=".35" stop-color="#FFB63F"/>
+        <stop offset=".75" stop-color="#E85F06"/><stop offset="1" stop-color="#7E1B05"/>
+      </radialGradient>
+      <radialGradient id="ambient" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#FF6B18" stop-opacity=".42"/>
+        <stop offset=".6" stop-color="#FF6B18" stop-opacity=".08"/>
+        <stop offset="1" stop-color="#FF6B18" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="oil" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#0B111B"/><stop offset=".5" stop-color="#1B2638"/>
+        <stop offset="1" stop-color="#0B111B"/>
+      </linearGradient>
+      <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#000" stop-opacity=".5"/>
+        <stop offset=".3" stop-color="#fff" stop-opacity=".22"/>
+        <stop offset=".6" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+      </linearGradient>
+      <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse"
+               patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="10" stroke="#FFD24A" stroke-opacity=".35" stroke-width="3"/>
+      </pattern>
     </defs>
-    <g class="fchart__bubbles">
-      <circle cx="150" cy="58" r="3"/><circle cx="210" cy="60" r="2"/>
-      <circle cx="275" cy="57" r="3.5"/><circle cx="340" cy="60" r="2.2"/>
-      <circle cx="405" cy="58" r="3"/><circle cx="460" cy="60" r="2"/>
+
+    <!-- the heat the furnace throws into the bay -->
+    <ellipse class="scene__ambient" cx="160" cy="330" rx="230" ry="190" fill="url(#ambient)"/>
+
+    <!-- overhead crane: runway beam and the trolley riding it -->
+    <g class="scene__struct">
+      <line x1="24" y1="52" x2="576" y2="52"/><line x1="24" y1="72" x2="576" y2="72"/>
+      <path d="M24 52 V72 M576 52 V72"/>
+      <path d="M60 72 L80 52 M120 72 L140 52 M180 72 L200 52 M240 72 L260 52 M300 72 L320 52 M360 72 L380 52 M420 72 L440 52 M480 72 L500 52 M540 72 L560 52"/>
+      <path d="M40 72 V470 M560 72 V470"/>
     </g>
-    <rect data-fchart-steel x="110" y="16" width="380" height="32" rx="16" fill="#4B5563"/>
-    <rect x="110" y="16" width="380" height="32" rx="16" fill="url(#barshade)"/>
-  </svg>
-  <svg class="fchart__plot" viewBox="0 0 {W} {H}" aria-hidden="true" focusable="false"
-       data-box="{L},{W - R},{top},{bot}">
-    <defs>
-      <linearGradient id="curveheat" gradientUnits="userSpaceOnUse"
-                      x1="0" y1="{bot}" x2="0" y2="{y(1100):.1f}">{grad}</linearGradient>
-      <filter id="curveglow" x="-10%" y="-20%" width="120%" height="140%">
-        <feGaussianBlur stdDeviation="5"/>
-      </filter>
-    </defs>
-    <g class="fchart__grid">{grid}
-      <line class="fchart__axis" x1="{L}" x2="{W - R}" y1="{bot}" y2="{bot}"/>
+    <g data-scene-trolley>
+      <rect class="scene__trolley" x="-26" y="74" width="52" height="20" rx="3"/>
+      <circle class="scene__wheel" cx="-14" cy="72" r="4"/><circle class="scene__wheel" cx="14" cy="72" r="4"/>
+      <line class="scene__cable" data-scene-cable x1="-4" y1="94" x2="-4" y2="300"/>
+      <line class="scene__cable" data-scene-cable2 x1="4" y1="94" x2="4" y2="300"/>
+      <g data-scene-load>
+        <path class="scene__hook" d="M-12 0 H12 L10 14 H-10 Z"/>
+        <path class="scene__hook" d="M0 14 V22 C0 30 10 30 10 24"/>
+        <path class="scene__chain" d="M-6 24 L-28 42 M6 24 L28 42"/>
+        <!-- the charge: a stack of rings on a fixture -->
+        <g class="scene__charge">
+          <rect data-scene-steel x="-34" y="42" width="68" height="92" rx="6" fill="#4B5563"/>
+          <rect x="-34" y="42" width="68" height="92" rx="6" fill="url(#shade)"/>
+          <path class="scene__rings" d="M-34 65 H34 M-34 88 H34 M-34 111 H34"/>
+        </g>
+        <g class="scene__haze">
+          <path d="M-18 30 q-6 -10 0 -20 q6 -10 0 -20"/>
+          <path d="M0 26 q-6 -10 0 -20 q6 -10 0 -20"/>
+          <path d="M18 30 q-6 -10 0 -20 q6 -10 0 -20"/>
+        </g>
+      </g>
     </g>
-    <text class="fchart__unit" x="{L - 10}" y="{top - 2}">&deg;C</text>
-    <g class="fchart__time" data-fchart-time></g>
-    <path class="fchart__halo" data-fchart-halo d="" stroke="url(#curveheat)" filter="url(#curveglow)"/>
-    <path class="fchart__curve" data-fchart-curve d="" stroke="url(#curveheat)"/>
-    <circle class="fchart__head" data-fchart-head r="5" cx="{L}" cy="{bot}"/>
+
+    <!-- pit furnace: mouth glow behind, body in front -->
+    <ellipse cx="160" cy="330" rx="86" ry="22" fill="#1A1210" stroke="url(#sline)" stroke-width="1.6"/>
+    <ellipse class="scene__mouth" cx="160" cy="331" rx="68" ry="16" fill="url(#mouth)"/>
+    <g class="scene__sparks" data-scene-sparks>
+      <circle cx="140" cy="320" r="1.8"/><circle cx="170" cy="318" r="1.4"/>
+      <circle cx="186" cy="322" r="1.6"/><circle cx="150" cy="316" r="1.2"/>
+      <circle cx="176" cy="324" r="1.2"/>
+    </g>
+    <g data-scene-front-furnace>
+      <path class="scene__body" d="M74 330 A86 22 0 0 0 246 330 V458 A86 22 0 0 1 74 458 Z"/>
+      <path class="scene__line" d="M74 330 V458 A86 22 0 0 0 246 458 V330"/>
+      <path class="scene__line scene__line--soft" d="M74 368 A86 22 0 0 0 246 368 M74 420 A86 22 0 0 0 246 420"/>
+      <path class="scene__line" d="M74 330 A86 22 0 0 0 246 330"/>
+      <rect class="scene__plate" x="140" y="388" width="40" height="22" rx="3"/>
+      <text class="scene__label" x="160" y="404">F1</text>
+    </g>
+
+    <!-- oil quench tank -->
+    <ellipse cx="450" cy="362" rx="100" ry="25" fill="url(#oil)" stroke="url(#sline)" stroke-width="1.6"/>
+    <ellipse class="scene__oil" cx="450" cy="366" rx="90" ry="19" fill="url(#oil)"/>
+    <g class="scene__flare" data-scene-flare>
+      <path d="M404 366 q8 -30 14 -8 q6 -34 16 -4 q8 -40 18 -2 q10 -30 16 2 q6 -22 14 10 Z"/>
+    </g>
+    <g class="scene__steam" data-scene-steam>
+      <path d="M420 350 q-10 -20 0 -40 q10 -20 0 -40"/>
+      <path d="M452 346 q-10 -22 0 -44 q10 -22 0 -44"/>
+      <path d="M484 350 q-10 -20 0 -40 q10 -20 0 -40"/>
+    </g>
+    <g data-scene-front-tank>
+      <path class="scene__body" d="M350 362 A100 25 0 0 0 550 362 V458 A100 25 0 0 1 350 458 Z"/>
+      <path class="scene__line" d="M350 362 V458 A100 25 0 0 0 550 458 V362"/>
+      <path class="scene__line" d="M350 362 A100 25 0 0 0 550 362"/>
+      <text class="scene__label scene__label--tank" x="450" y="424">OIL TANK &middot; 7500 L</text>
+    </g>
+
+    <!-- floor and the yellow walkway line -->
+    <line class="scene__floor" x1="20" y1="478" x2="580" y2="478"/>
+    <rect x="270" y="470" width="56" height="8" fill="url(#hatch)"/>
   </svg>
-  <div class="fchart__tabs" role="group" aria-label="Choose a cycle">{tabs}</div>
+  <figcaption class="scene__cap" aria-hidden="true">
+    <span class="scene__deg"><span data-scene-t>850</span>&deg;C</span>
+    <span class="scene__stage" data-scene-stage>{C.HERO_SCENE_STAGES[0][1]}</span>
+  </figcaption>
 </figure>"""
 
 
@@ -530,7 +569,7 @@ def build_home():
         for i, n in enumerate([1, 2, 3, 4, 5, 6]))
 
     body = f'''
-<section class="hero hero--chart">
+<section class="hero hero--chart hero--scene">
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="wrap hero__in">
    <div class="hero__copy">
@@ -543,7 +582,7 @@ def build_home():
       <a class="btn btn--ghost" href="processes.html">See the processes</a>
     </div>
    </div>
-   {hero_chart()}
+   {hero_scene()}
   </div>
 </section>
 
