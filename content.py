@@ -189,16 +189,9 @@ PROCESSES = [
         result="The hardness your drawing specifies",
         image="g-oil-quench",
         body=[
-            "Every material has its own hardening temperature, so the cycle "
-            "starts from the grade. Take EN24: it goes up to 840&ndash;860&deg;C, "
-            "holds until the whole section has reached temperature, and is "
-            "then quenched in oil. The quench locks the steel into its "
-            "hardest structure.",
-            "Straight out of the quench the part is too brittle to use. "
-            "Tempering at a lower temperature brings it back to the hardness "
-            "you asked for, and that number is what the tempering cycle is "
-            "set to.",
+            "Hardening makes steel hard and strong. The part is heated above its critical temperature until the whole section has changed structure, then cooled fast in a quench. That locks the steel into its hardest form. Hardened steel on its own is brittle, so it is always tempered: heated again to a lower temperature that trades a little hardness for toughness, until it lands at the hardness the part needs.",
         ],
+        example="Take EN24. We harden it at 840&ndash;860&deg;C, hold until the full section is at temperature, and quench it in oil. It is then tempered at the temperature that brings it to the hardness on your drawing, and checked before it leaves.",
         points=["Hardening temperature set by grade",
                 "Oil quenching",
                 "Tempered to the hardness you ask for",
@@ -214,15 +207,9 @@ PROCESSES = [
         result="1.5&ndash;2 mm case from a six-hour soak",
         image="p-case-lift",
         body=[
-            "Low-carbon steel like EN1A can&rsquo;t take much hardness on its "
-            "own, so carbon is added to the surface first. The parts are "
-            "carburised at 940&deg;C, and a six-hour soak builds a case "
-            "about 1.5 to 2 mm deep.",
-            "For case hardening and tempering, the charge then comes down to "
-            "840&deg;C, soaks for an hour and is quenched in oil or water, "
-            "depending on the grade. When only the case is wanted, the parts "
-            "cool inside the furnace and come out cold, ready for machining.",
+            "Case hardening gives a part two properties at once: a hard, wear-resistant surface and a tough core that takes shock. Low-carbon steel cannot harden much on its own, so carbon is diffused into the surface first (carburising). The part is then hardened and tempered, and only the carbon-rich case becomes hard.",
         ],
+        example="Take EN1A. We carburise it at 940&deg;C; a six-hour soak builds a case about 1.5 to 2 mm deep. For case hardening and tempering, the charge comes down to 840&deg;C, soaks for an hour and is quenched in oil or water, depending on the grade. When only the case is wanted, the parts cool inside the furnace and come out ready for machining.",
         points=["Carburised at 940&deg;C",
                 "Six-hour soak for a 1.5&ndash;2 mm case",
                 "Hardened from 840&deg;C, one-hour soak",
@@ -238,13 +225,9 @@ PROCESSES = [
         result="Softened and ready to machine",
         image="p-furnace-glow",
         body=[
-            "Annealing makes a material softer. Each grade has its own "
-            "annealing temperature; 410 stainless, for example, goes to "
-            "880&ndash;900&deg;C.",
-            "The part holds there until it is even all the way through, then "
-            "cools slowly inside the furnace and only comes out once it has "
-            "cooled. That slow cool is what leaves it soft.",
+            "Annealing makes a material soft. It relieves the hardness left by forging, cold work or an earlier treatment, so the part machines and forms easily. The material is heated to its annealing temperature, held until it is even all the way through, and then cooled very slowly. That slow cool is what leaves it soft.",
         ],
+        example="Take 410 stainless. We anneal it at 880&ndash;900&deg;C, soak it for its section, then let it cool inside the furnace and take it out only once it has cooled.",
         points=["Temperature set by grade",
                 "Soaked through the full section",
                 "Cooled inside the furnace",
@@ -260,14 +243,9 @@ PROCESSES = [
         result="A refined, even grain after forging",
         image="g-normalising",
         body=[
-            "Most of our normalising work arrives as forgings. The temperature "
-            "depends on the material, and the standard puts most grades at "
-            "900&ndash;940&deg;C.",
-            "Holding time comes from the thickness of the part. A 50 mm "
-            "section holds for about two hours. After the soak the charge "
-            "comes out and cools in air, and is tempered afterwards where the "
-            "specification calls for it.",
+            "Normalising refines the coarse, uneven grain left by forging or casting, so the metal is uniform and behaves predictably in machining and in any later treatment. The part is heated above its critical range, held for its thickness and cooled in still air, then tempered where the specification asks.",
         ],
+        example="Most of our normalising is forgings. The standard puts most grades at 900&ndash;940&deg;C, and holding time follows thickness: a 50 mm section holds about two hours. For example, a charge held at 1000&deg;C for two hours comes out and cools in air.",
         points=["900&ndash;940&deg;C as per standard",
                 "Holding time set by section thickness",
                 "About two hours for a 50 mm section",
@@ -283,15 +261,9 @@ PROCESSES = [
         result="Stress relieved, hardness unchanged",
         image="p-bogie",
         body=[
-            "Most of the stress relieving we do is on welded components. The "
-            "base metal and the weld carry different stresses, and a part "
-            "left that way can crack or move once it is machined or put into "
-            "service.",
-            "A typical job is a cast valve body with weld deposited on top. "
-            "The whole part is held at the temperature its base grade and "
-            "welding procedure call for, then cooled slowly so the stress "
-            "comes out evenly.",
+            "Stress relieving removes the stress locked into a part by welding, heavy machining or forming, which can otherwise crack the part or move its dimensions later. The part is held below its critical temperature and cooled slowly, so hardness and structure stay as they are and only the stress lets go.",
         ],
+        example="Most of our stress relieving is welded work. A cast valve body with weld built up on top, for example, carries different stresses in the base metal and the weld. We hold the whole part at the temperature its grade and welding procedure call for, then cool it slowly so both relax evenly.",
         points=["Welded components and fabrications",
                 "Base metal and weld relieved together",
                 "Temperature set by grade and welding procedure",
@@ -307,14 +279,9 @@ PROCESSES = [
         result="Corrosion resistance restored, magnetism relieved",
         image="p-water-quench",
         body=[
-            "Solution annealing is for the non-magnetic stainless steels. The "
-            "charge goes to 1040&ndash;1080&deg;C and holds for a time set "
-            "by the thickness, often around two hours.",
-            "Then speed matters. The parts go from the furnace into the "
-            "liquid quench within 20 seconds. That fixes the structure, "
-            "restores corrosion resistance and relieves the magnetism that "
-            "welding or cold work can bring in.",
+            "Solution annealing is for austenitic, non-magnetic stainless steels. Heating to a high temperature dissolves carbides and other phases back into the metal, and a fast liquid quench keeps them dissolved. It restores corrosion resistance and toughness, and relieves the magnetism that welding or cold work can bring in.",
         ],
+        example="We heat stainless charges to 1040&ndash;1080&deg;C and hold for a time set by thickness, often around two hours. The parts then go from the furnace into the quench within 20 seconds, which is what fixes the structure.",
         points=["1040&ndash;1080&deg;C",
                 "Soak time by thickness, around two hours",
                 "Into the quench within 20 seconds",
@@ -330,15 +297,9 @@ PROCESSES = [
         result="Precipitation hardened to specification",
         image="p-precipitates",
         body=[
-            "Special grades such as 718 get their strength from "
-            "precipitation, not from a quench. The material is solution "
-            "treated first and aged afterwards.",
-            "Ageing is two long holds. The charge soaks for ten hours at the "
-            "first ageing temperature, is furnace cooled to 620&deg;C, holds "
-            "there for eight hours and is then air cooled. Fine particles "
-            "form inside the metal during those holds, and they are what "
-            "bring the hardness up.",
+            "Age hardening, or precipitation hardening, strengthens special alloys that do not harden by quenching. After solution treatment, the metal is held for long periods at lower temperatures, and fine particles precipitate inside it. Those particles are what raise the strength and hardness.",
         ],
+        example="Take 718. After solution treatment it soaks for ten hours at the first ageing temperature, is furnace cooled to 620&deg;C, held there for eight hours, and then air cooled.",
         points=["Solution treated first",
                 "Ten-hour soak at the first ageing step",
                 "Furnace cooled to 620&deg;C, eight-hour hold",
@@ -354,14 +315,9 @@ PROCESSES = [
         result="Protected against grain-boundary corrosion",
         image="micro-stainless",
         body=[
-            "F321 and F347 are stainless steels with titanium or niobium "
-            "added to protect them from corrosion at the grain boundaries. "
-            "A stabilising treatment is what puts that protection to work.",
-            "The parts are held to the cycle their specification calls for, "
-            "so the titanium or niobium ties up the carbon before chromium "
-            "can. The grain boundaries stay corrosion resistant, even in "
-            "high-temperature service.",
+            "Stabilising is for stainless steels alloyed with titanium or niobium. Held at the right temperature, those elements tie up the carbon before chromium can, so chromium carbides do not form at the grain boundaries. The steel stays corrosion resistant, even after welding or in high-temperature service.",
         ],
+        example="We stabilise F321 and F347, holding each to the cycle its specification sets.",
         points=["F321 and F347",
                 "Held to the specified cycle",
                 "Protects against grain-boundary corrosion",

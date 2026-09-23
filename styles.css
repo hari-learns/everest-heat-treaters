@@ -1174,6 +1174,12 @@ button{font:inherit;color:inherit}
   .aim + .aim{border-left:0;padding-top:30px;border-top:1px solid var(--line)}
 }
 
+.proc__how{margin:0 0 1.6em;padding:18px 20px;background:var(--surface);
+  border-left:2px solid var(--heat);border-radius:0 var(--r) var(--r) 0}
+.proc__how-h{margin:0 0 .5em;font-family:var(--mono);font-weight:500;
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--heat-2)}
+.proc__how p{margin:0;color:var(--ink);line-height:1.65}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get

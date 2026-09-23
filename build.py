@@ -372,6 +372,10 @@ def process_section(p, i=0):
       <div><dt>Result</dt><dd>{p["result"]}</dd></div>
     </dl>
     <div class="prose">{prose}</div>
+    <div class="proc__how">
+      <h3 class="proc__how-h">How we do it</h3>
+      <p>{p["example"]}</p>
+    </div>
     <ul class="ticks">{pts}</ul>
     <div class="chips">{suits}</div>
   </div>
