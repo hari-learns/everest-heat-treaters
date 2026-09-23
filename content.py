@@ -518,7 +518,7 @@ QUALITY_POINTS = [
 
 H_PROCESSES = "The process of transformation."
 H_PROOF = "We measure the treatment"
-H_QUALITY = "Every batch is tested before it leaves."
+H_QUALITY = "Every batch has a solid test report."
 H_QUALITY_SYSTEM = "How it is controlled"
 H_MICRO = "The evidence is in the grain."
 H_MICRO_TEXT = ("Etched cross-sections under the microscope at up to "

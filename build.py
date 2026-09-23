@@ -567,9 +567,9 @@ def build_materials():
 
 def build_quality():
     tiles = "".join(
-        f'<div class="qtile" data-reveal style="--i:{i}">'
-        f'<div class="qtile__fig">{img(q["image"], q["name"], sizes="(max-width:800px) 100vw, 25vw")}</div>'
-        f'<h3>{q["name"]}</h3><p>{q["text"]}</p></div>'
+        f'<article class="qsec{" qsec--flip" if i % 2 else ""}">'
+        f'<figure class="qsec__fig" data-reveal>{img(q["image"], q["name"], sizes="(max-width:860px) 100vw, 55vw")}</figure>'
+        f'<div class="qsec__text" data-reveal><h2 class="h2">{q["name"]}</h2><p class="lede">{q["text"]}</p></div></article>'
         for i, q in enumerate(C.QUALITY))
     pts = "".join(
         f'<div class="feat" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
@@ -577,7 +577,7 @@ def build_quality():
     body = f'''
 {subhero("Quality", C.H_QUALITY, C.QUALITY_INTRO,
          "g-lab")}
-<section class="sec"><div class="wrap"><div class="qgrid">{tiles}</div></div></section>
+<section class="sec"><div class="wrap qsecs">{tiles}</div></section>
 <section class="sec sec--alt">
   <div class="wrap">
     {sec_head("The system", C.H_QUALITY_SYSTEM, mid=True)}

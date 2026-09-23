@@ -1096,6 +1096,21 @@ button{font:inherit;color:inherit}
   font-size:clamp(1rem,.95rem + .3vw,1.15rem);line-height:1.8;text-wrap:balance}
 .more__list span{color:var(--faint);margin-inline:.35em}
 
+/* ------------------------------------------------ quality, one by one --- */
+.qsecs{display:grid;gap:clamp(48px,7vw,96px)}
+.qsec{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+  gap:clamp(28px,5vw,72px);align-items:center}
+.qsec--flip .qsec__fig{order:2}
+.qsec__fig{margin:0;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--line-soft);box-shadow:var(--shadow)}
+.qsec__fig img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:0}
+.qsec__text .h2{margin:0 0 .5em}
+.qsec__text .lede{margin:0}
+@media (max-width:860px){
+  .qsec{grid-template-columns:1fr}
+  .qsec--flip .qsec__fig{order:0}
+}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get
