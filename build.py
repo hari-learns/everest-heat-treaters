@@ -408,7 +408,9 @@ def build_home():
         f'<span class="stat__l">{l}</span></div>'
         for i, (v, u, l) in enumerate(C.STATS))
 
-    procs = "".join(process_line(p, i) for i, p in enumerate(C.PROCESSES))
+    by_slug = {p["slug"]: p for p in C.PROCESSES}
+    procs = "".join(process_line(by_slug[slug], i)
+                    for i, slug in enumerate(C.PROCESSES_HOME_ORDER))
 
     quals = "".join(
         f'<div class="qtile" data-reveal style="--i:{i}">'

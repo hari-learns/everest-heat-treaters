@@ -377,6 +377,15 @@ PROCESSES_HOME_INTRO = (
     "we run it."
 )
 H_PROCESSES_PAGE = "How we run each process"
+# The order of the tiles on the homepage only. Four pictures glow and four
+# are cool (the bogie, the water quench and two micrographs), so they are
+# laid out as a checkerboard rather than all the hot ones in the top row.
+# Everywhere else keeps the order of PROCESSES.
+PROCESSES_HOME_ORDER = [
+    "hardening-tempering", "stress-relieving", "case-hardening",
+    "solution-annealing",
+    "age-hardening", "annealing", "stabilising", "normalising",
+]
 
 PROCESSES_INTRO = (
     "Eight processes, for ferrous and non-ferrous metals. We work to your "
