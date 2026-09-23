@@ -383,28 +383,28 @@ def enquiry_form():
     return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}"
       data-endpoint="{esc(C.FORM_ENDPOINT)}" id="enquire" novalidate>
   <div class="form__row">
-    <label>Your name <i class="req">required</i><input type="text" name="name" required autocomplete="name"></label>
-    <label>Company<input type="text" name="company" autocomplete="organization"></label>
+    <label><span class="form__lbl">Your name <i class="req">required</i></span><input type="text" name="name" required autocomplete="name"></label>
+    <label><span class="form__lbl">Company</span><input type="text" name="company" autocomplete="organization"></label>
   </div>
   <div class="form__row">
-    <label>Phone <i class="req">required</i><input type="tel" name="phone" required autocomplete="tel"></label>
-    <label>Email<input type="email" name="email" autocomplete="email"></label>
+    <label><span class="form__lbl">Phone <i class="req">required</i></span><input type="tel" name="phone" required autocomplete="tel"></label>
+    <label><span class="form__lbl">Email</span><input type="email" name="email" autocomplete="email"></label>
   </div>
   <div class="form__row">
-    <label>Material grade<input type="text" name="grade" placeholder="EN31, SAE 8620&hellip;"></label>
-    <label>Treatment<select name="process">
+    <label><span class="form__lbl">Material grade</span><input type="text" name="grade" placeholder="EN31, SAE 8620&hellip;"></label>
+    <label><span class="form__lbl">Treatment</span><select name="process">
       <option>General</option>{opts}</select></label>
   </div>
   <div class="form__row">
-    <label>Weight<input type="text" name="weight" placeholder="e.g. 400 kg"></label>
-    <label>Size<input type="text" name="size" placeholder="e.g. 60 dia &times; 450 mm"></label>
+    <label><span class="form__lbl">Weight</span><input type="text" name="weight" placeholder="e.g. 400 kg"></label>
+    <label><span class="form__lbl">Size</span><input type="text" name="size" placeholder="e.g. 60 dia &times; 450 mm"></label>
   </div>
   <div class="form__row">
-    <label>Hardness required<input type="text" name="hardness" placeholder="e.g. 58&ndash;62 HRC"></label>
-    <label class="file">Drawing<input type="file" name="drawing"
-      accept=".pdf,.png,.jpg,.jpeg,.webp,.dwg,.dxf"><span class="file__hint">PDF, image or DWG</span></label>
+    <label><span class="form__lbl">Hardness required</span><input type="text" name="hardness" placeholder="e.g. 58&ndash;62 HRC"></label>
+    <label class="file"><span class="form__lbl">Drawing <i class="opt">PDF, image or DWG</i></span><input type="file" name="drawing"
+      accept=".pdf,.png,.jpg,.jpeg,.webp,.dwg,.dxf"></label>
   </div>
-  <label>Part description or problem<textarea name="message" rows="4"
+  <label><span class="form__lbl">Part description or problem</span><textarea name="message" rows="4"
     placeholder="What the part does, what it runs against, how it is failing&hellip;"></textarea></label>
   <button class="btn btn--block" type="submit">Send enquiry</button>
   <p class="form__note">Name and phone are all we need. Everything else is optional. {C.RFQ_FIELDS_NOTE}</p>

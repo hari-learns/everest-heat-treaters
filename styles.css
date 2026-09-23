@@ -1124,6 +1124,22 @@ button{font:inherit;color:inherit}
   .gal-lead__fig img{height:62vh!important}
 }
 
+/* Every field is label-then-control on the same two rows, so paired fields
+   line up: the label (with "required" or a hint on the same line) above,
+   and a control of one fixed height below. */
+.form__row{align-items:start}
+.form label{grid-template-rows:auto auto;align-content:start}
+.form__lbl{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;
+  min-height:1.2em}
+.form .req,.form .opt{font-style:normal;font-size:.62rem;letter-spacing:.1em}
+.form .opt{color:var(--faint);text-transform:none;letter-spacing:.02em;
+  font-family:var(--body);font-size:.72rem}
+.form input:not([type=file]),.form select{height:50px;min-height:50px;
+  padding-block:0}
+.form input[type=file]{height:50px;min-height:50px;padding:0 10px;
+  display:flex;align-items:center;line-height:50px}
+.form input[type=file]::file-selector-button{vertical-align:middle}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get
