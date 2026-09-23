@@ -618,7 +618,12 @@ def build_industries():
 </article>''')
     body = f'''
 {subhero("Industries", C.H_INDUSTRIES, C.INDUSTRIES_INTRO, "g-dispatch")}
-<section class="sec"><div class="wrap sectors">{"".join(blocks)}</div></section>
+<section class="sec"><div class="wrap sectors">{"".join(blocks)}</div>
+  <div class="wrap more" data-reveal>
+    <p class="more__h">{C.INDUSTRIES_MORE_TITLE}</p>
+    <p class="more__list">{" <span aria-hidden=\"true\">&middot;</span> ".join(C.INDUSTRIES_MORE)}</p>
+  </div>
+</section>
 {cta()}'''
     return page("industries.html", f"{C.TAB_NAME} — Industries served",
                 C.INDUSTRIES_INTRO, body, "industries.html")

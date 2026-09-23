@@ -111,8 +111,8 @@ BRAND_HEAT_RANGE = (840, 1250)
 HERO_TEXT = (
     "ISO 9001:2015 certified for the heat treatment of ferrous and "
     "non-ferrous metals. We work to your specification and reach the "
-    "hardness you ask for, and every batch leaves here with a report that "
-    "says so."
+    "hardness you ask for. Every batch we ship includes a verified test "
+    "report."
 )
 # No photograph behind the hero. The mark is drawn as line art instead —
 # see trace.py and mark_paths.py.
@@ -524,7 +524,7 @@ H_MICRO = "The evidence is in the grain."
 H_MICRO_TEXT = ("Etched cross-sections under the microscope at up to "
                 "500&times; &mdash; a direct look at what the process did to "
                 "the metal.")
-H_INDUSTRIES = "We treat for many industries. These three lead."
+H_INDUSTRIES = "We treat for many industries across various domains."
 H_CUSTOMERS = "Who our parts go back to"
 H_ABOUT_PILLARS = "Three things we hold to"
 H_VISION = "What we are aiming at"
@@ -548,13 +548,16 @@ CUSTOMERS_INTRO = (
 )
 
 # ------------------------------------------------------------ industries ---
-# The three fields the client named. Each gets an image from the gallery.
+# The three fields the client named. The images were supplied by the client
+# (September 2026) as portrait posters with the title set in, so they are
+# shown whole, never cropped.
 
 INDUSTRIES = [
     dict(
         name="Valves, oil &amp; gas",
-        image="g-dispatch-2",
-        alt="Treated valve components racked for dispatch",
+        image="ind-valves",
+        alt="Flanged valve bodies in front of a refinery at sunset, titled "
+            "Valves, oil and gas: tougher parts for a harder world",
         body=[
             "Valve bodies, bonnets, stems, discs and seats, much of it in "
             "stainless and alloy steel for oil, gas and process plant. These "
@@ -571,8 +574,9 @@ INDUSTRIES = [
     ),
     dict(
         name="Cement mixer trucks",
-        image="g-receiving-3",
-        alt="Components arriving at the receiving area",
+        image="ind-mixers",
+        alt="Shafts, bushes and gears in front of a cement mixer truck, "
+            "titled Cement mixer trucks: strength inside every turn",
         body=[
             "A transit mixer turns a loaded drum all day on rough site roads. "
             "The shafts, pins, bushes, gears and wear parts behind it take "
@@ -588,8 +592,9 @@ INDUSTRIES = [
     ),
     dict(
         name="Railways",
-        image="g-receiving-area",
-        alt="Shafts and bar stock laid out on the shop floor",
+        image="ind-railways",
+        alt="Steel bars beside railway tracks at sunset, titled Railways: "
+            "built for a longer journey",
         body=[
             "Railway parts are expected to run for years with little "
             "maintenance and no surprises, often under heavy, repeated load.",
@@ -603,6 +608,12 @@ INDUSTRIES = [
                 "Stress relieving"],
     ),
 ]
+
+# The quiet line after the three: the other work that comes through.
+INDUSTRIES_MORE_TITLE = "And many more"
+INDUSTRIES_MORE = ["Power &amp; heavy engineering", "Construction equipment",
+                   "Automotive", "Pumps", "Gears &amp; transmission",
+                   "Earthmoving", "Tooling &amp; dies", "General engineering"]
 
 INDUSTRIES_INTRO = (
     "Three kinds of work fill most of our furnaces: valves for oil and gas, "

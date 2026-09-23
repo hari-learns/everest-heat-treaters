@@ -1076,6 +1076,26 @@ button{font:inherit;color:inherit}
   .qstrip__item + .qstrip__item{border-left:0;border-top:1px solid var(--line-soft)}
 }
 
+/* ------------------------------------------------- industries, posters --- */
+/* The industry images are portrait posters with their titles set in, so
+   they keep their full 2:3 shape. */
+.sector{grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)}
+.sector--flip{grid-template-columns:minmax(0,1.28fr) minmax(0,.72fr)}
+.sector__fig{box-shadow:var(--shadow)}
+.sector__fig img{aspect-ratio:2/3;height:auto}
+@media (max-width:860px){
+  .sector,.sector--flip{grid-template-columns:1fr}
+  .sector__fig{max-width:440px;width:100%;margin-inline:auto}
+}
+
+.more{margin-top:clamp(56px,8vw,100px);padding-top:clamp(28px,4vw,44px);
+  border-top:1px solid var(--line-soft);text-align:center}
+.more__h{margin:0 0 .6em;font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--heat-2)}
+.more__list{margin:0 auto;max-width:60ch;color:var(--muted);
+  font-size:clamp(1rem,.95rem + .3vw,1.15rem);line-height:1.8;text-wrap:balance}
+.more__list span{color:var(--faint);margin-inline:.35em}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get
