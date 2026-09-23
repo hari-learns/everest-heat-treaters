@@ -125,6 +125,175 @@
   /* The colour of steel is not decoration here — below roughly 400 C what
      you see is the interference colour of the oxide film, and above it the
      metal is incandescent. Both tables come from content.py. */
+  /* ------------------------------------------------------ furnace chart --- */
+  /* The hero's process sheet. Each cycle is a list of (hours, degrees C,
+     milliseconds on screen, stage) from content.py. The curve is drawn up to
+     the moving head every frame, the bar of steel and the headline word take
+     the colour of metal at the head's temperature, and the quench sets the
+     tank bubbling. When one cycle ends the next begins; the tabs jump. */
+  (function () {
+    var box = $("[data-fchart]");
+    if (!box) return;
+    var cycles;
+    try { cycles = JSON.parse(box.getAttribute("data-fchart")); } catch (e) { return; }
+    var stops = JSON.parse(box.getAttribute("data-heat-scale") || "[]");
+    var plot = $(".fchart__plot", box);
+    var b = plot.getAttribute("data-box").split(",").map(Number);
+    var L = b[0], R = b[1], TOP = b[2], BOT = b[3];
+    var curve = $("[data-fchart-curve]", box), halo = $("[data-fchart-halo]", box);
+    var head = $("[data-fchart-head]", box), steel = $("[data-fchart-steel]", box);
+    var tOut = $("[data-fchart-t]", box), stageOut = $("[data-fchart-stage]", box);
+    var nameOut = $("[data-fchart-name]", box), gradeOut = $("[data-fchart-grade]", box);
+    var timeG = $("[data-fchart-time]", box);
+    var tabs = $$("[data-fchart-tab]", box);
+    var word = $("[data-heat-word]");
+    var wordT = word && $("[data-heat-temp]", word);
+    var NS = "http://www.w3.org/2000/svg";
+
+    var rgb = function (h) {
+      h = h.replace("#", "");
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    };
+    var mix = function (a, c, f) {
+      return [0, 1, 2].map(function (i) { return Math.round(a[i] + (c[i] - a[i]) * f); });
+    };
+    var glow = function (t) {
+      if (t <= stops[0][0]) return rgb(stops[0][1]);
+      for (var i = 0; i < stops.length - 1; i++) {
+        if (t <= stops[i + 1][0]) {
+          return mix(rgb(stops[i][1]), rgb(stops[i + 1][1]),
+                     (t - stops[i][0]) / (stops[i + 1][0] - stops[i][0]));
+        }
+      }
+      return rgb(stops[stops.length - 1][1]);
+    };
+    var STEEL = [75, 85, 99];
+    // what steel looks like at t: grey when cold, dull red from ~500C,
+    // then up the incandescent scale
+    var steelAt = function (t) {
+      if (t < 450) return STEEL;
+      if (t < 620) return mix(STEEL, glow(560), (t - 450) / 170);
+      return glow(t);
+    };
+    // the headline word stays legible: bright steel below cherry heat
+    var WORD_COLD = [174, 184, 198];
+    var wordAt = function (t) {
+      if (t < 700) return WORD_COLD;
+      if (t < 760) return mix(WORD_COLD, glow(760), (t - 700) / 60);
+      return glow(t);
+    };
+    var css = function (c) { return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; };
+
+    var cur = 0, pts, sx, total, start = 0, raf = 0, hold = 0, qUntil = -1;
+    var X = function (h) { return L + (R - L) * h / sx; };
+    var Y = function (c) { return BOT - (BOT - TOP) * c / 1100; };
+
+    var load = function (i) {
+      cur = (i + cycles.length) % cycles.length;
+      var c = cycles[cur];
+      pts = c.points;
+      sx = pts[pts.length - 1][0];
+      total = pts.reduce(function (a, p) { return a + p[2]; }, 0);
+      nameOut.innerHTML = c.name;
+      gradeOut.textContent = c.grade;
+      tabs.forEach(function (t, n) { t.setAttribute("aria-pressed", String(n === cur)); });
+      // time ticks: a mark every hour, a label every two (or every four on
+      // the long cycles, so they never crowd)
+      timeG.innerHTML = "";
+      var every = sx > 10 ? 4 : 2;
+      for (var h = 0; h <= Math.floor(sx); h++) {
+        var ln = document.createElementNS(NS, "line");
+        ln.setAttribute("x1", X(h)); ln.setAttribute("x2", X(h));
+        ln.setAttribute("y1", BOT); ln.setAttribute("y2", BOT + 5);
+        timeG.appendChild(ln);
+        if (h % every === 0) {
+          var tx = document.createElementNS(NS, "text");
+          tx.setAttribute("x", X(h)); tx.setAttribute("y", BOT + 20);
+          tx.textContent = h + " h";
+          timeG.appendChild(tx);
+        }
+      }
+      start = 0;
+      hold = 0;
+      qUntil = -1;
+    };
+
+    var paint = function (ms) {
+      // find the segment the head is in
+      var acc = 0, i = 1;
+      for (; i < pts.length; i++) {
+        if (acc + pts[i][2] >= ms) break;
+        acc += pts[i][2];
+      }
+      if (i >= pts.length) i = pts.length - 1;
+      var a = pts[i - 1], z = pts[i];
+      var f = Math.min(1, Math.max(0, (ms - acc) / z[2]));
+      // soak and heat ease gently; the quench drops hard
+      var fast = z[1] < a[1] - 300;
+      var e = fast ? 1 - Math.pow(1 - f, 3) : f;
+      var h = a[0] + (z[0] - a[0]) * e, t = a[1] + (z[1] - a[1]) * e;
+      var d = "M" + X(pts[0][0]).toFixed(1) + " " + Y(pts[0][1]).toFixed(1);
+      for (var k = 1; k < i; k++) d += " L" + X(pts[k][0]).toFixed(1) + " " + Y(pts[k][1]).toFixed(1);
+      d += " L" + X(h).toFixed(1) + " " + Y(t).toFixed(1);
+      curve.setAttribute("d", d);
+      halo.setAttribute("d", d);
+      head.setAttribute("cx", X(h).toFixed(1));
+      head.setAttribute("cy", Y(t).toFixed(1));
+      var sc = steelAt(t);
+      head.style.fill = css(glow(Math.max(t, 500)));
+      steel.setAttribute("fill", css(sc));
+      steel.style.filter = t > 560
+        ? "drop-shadow(0 0 " + Math.round((t - 500) / 28) + "px " + css(sc) + ")"
+        : "none";
+      tOut.textContent = Math.round(t);
+      tOut.parentNode.style.color = css(wordAt(t));
+      stageOut.innerHTML = z[3];
+      // the tank keeps bubbling a beat after the steel has gone in
+      if (fast) qUntil = acc + z[2] + 1400;
+      box.classList.toggle("is-quench", ms < qUntil);
+      if (word) {
+        word.style.color = css(wordAt(t));
+        if (wordT) wordT.textContent = Math.round(t) + "°C";
+      }
+    };
+
+    load(0);
+    tabs.forEach(function (t, n) {
+      t.addEventListener("click", function () { load(n); if (reduced) paint(total); });
+    });
+
+    if (reduced) { paint(total * 0.3); return; }
+
+    var HOLD = 1600;
+    var tick = function (now) {
+      if (!start) start = now;
+      var ms = now - start;
+      if (ms <= total) {
+        paint(ms);
+      } else {
+        paint(total);
+        if (!hold) hold = now;
+        if (now - hold > HOLD) load(cur + 1);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    // only run while the chart is on screen and the tab is visible
+    var visible = true, onScreen = true;
+    var run = function () {
+      cancelAnimationFrame(raf);
+      if (visible && onScreen) { start = 0; raf = requestAnimationFrame(tick); }
+    };
+    document.addEventListener("visibilitychange", function () {
+      visible = !document.hidden; run();
+    });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        onScreen = es[0].isIntersecting; run();
+      }).observe(box);
+    }
+    run();
+  })();
+
   /* ------------------------------------------- text that runs on heat --- */
   /* Two things paint themselves from the incandescent scale: the word in the
      headline, and the company name in the header. They run half a cycle
@@ -134,7 +303,8 @@
     var targets = [];
     var word = $("[data-heat-word]");
     var heroSrc = $(".hero__title[data-heat-scale]");
-    if (word && heroSrc) {
+    // with the furnace chart on the page, the chart drives the word instead
+    if (word && heroSrc && !$("[data-fchart]")) {
       targets.push({ el: word, src: heroSrc, phase: 0,
                      label: $("[data-heat-temp]", word) });
     }

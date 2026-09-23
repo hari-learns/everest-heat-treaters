@@ -279,6 +279,84 @@ button{font:inherit;color:inherit}
   font-size:clamp(1rem,.95rem + .4vw,1.14rem)}
 .hero__act{display:flex;flex-wrap:wrap;gap:12px;margin-top:2.2em}
 
+/* ------------------------------------------------- hero, furnace chart --- */
+.hero--chart{align-items:center;min-height:0;
+  padding-block:clamp(40px,5.5vw,84px) clamp(40px,5vw,72px)}
+.hero--chart .hero__in{display:grid;
+  grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);
+  gap:clamp(32px,5vw,80px);align-items:center}
+.hero--chart .hero__title{font-size:clamp(2.4rem,1.1rem + 3.6vw,4.3rem);max-width:none}
+.hero--chart .hero__glow{inset:auto -10% -30% auto}
+
+.fchart{margin:0;position:relative;padding:clamp(18px,2.2vw,28px);
+  border-radius:14px;border:1px solid var(--line);
+  background:
+    radial-gradient(120% 80% at 50% 0%,rgba(255,107,24,.07),transparent 60%),
+    linear-gradient(180deg,rgba(24,34,52,.72),rgba(12,18,29,.9));
+  box-shadow:0 30px 80px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.05);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+/* engineering-paper corners */
+.fchart::before,.fchart::after{content:"";position:absolute;width:14px;height:14px;
+  border:1px solid var(--heat);opacity:.55;pointer-events:none}
+.fchart::before{top:10px;left:10px;border-right:0;border-bottom:0}
+.fchart::after{bottom:10px;right:10px;border-left:0;border-top:0}
+.fchart__top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.fchart__k{margin:0 0 .5em;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.fchart__name{margin:0;font-family:var(--display);font-weight:700;
+  font-size:clamp(1.05rem,.9rem + .6vw,1.35rem);letter-spacing:-.02em;line-height:1.15}
+.fchart__grade{display:inline-block;margin:.5em 0 0;padding:3px 9px;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--heat-2);
+  border:1px solid rgba(255,165,31,.35);border-radius:999px}
+.fchart__read{text-align:right;min-width:0}
+.fchart__deg{margin:0;font-family:var(--mono);font-weight:500;line-height:1;
+  font-size:clamp(2rem,1.4rem + 2.4vw,3.2rem);letter-spacing:-.04em;
+  font-variant-numeric:tabular-nums;transition:color .2s linear}
+.fchart__deg i{font-style:normal;font-size:.42em;margin-left:.15em;
+  vertical-align:.95em;opacity:.8}
+.fchart__stage{margin:.55em 0 0;font-size:.82rem;color:var(--muted);min-height:1.3em}
+.fchart__bar{display:block;width:100%;height:auto;margin:clamp(10px,1.4vw,16px) 0 2px;
+  overflow:visible}
+.fchart__bar rect[data-fchart-steel]{transition:fill .12s linear}
+.fchart__bubbles circle{fill:none;stroke:#9CC3F0;stroke-width:1.2;opacity:0}
+.fchart.is-quench .fchart__bubbles circle{animation:bubble 1s ease-out infinite}
+.fchart.is-quench .fchart__bubbles circle:nth-child(2n){animation-delay:.3s}
+.fchart.is-quench .fchart__bubbles circle:nth-child(3n){animation-delay:.6s}
+@keyframes bubble{0%{opacity:0;transform:translateY(0)}
+  25%{opacity:.9}100%{opacity:0;transform:translateY(-44px)}}
+.fchart__plot{display:block;width:100%;height:auto;overflow:visible}
+.fchart__grid line{stroke:rgba(233,238,247,.07);stroke-width:1}
+.fchart__grid .fchart__axis{stroke:rgba(233,238,247,.22)}
+.fchart__grid text,.fchart__unit,.fchart__time text{fill:var(--faint);
+  font-family:var(--mono);font-size:11px;text-anchor:end}
+.fchart__time text{text-anchor:middle}
+.fchart__time line{stroke:rgba(233,238,247,.22)}
+.fchart__curve{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.fchart__halo{fill:none;stroke-width:10;opacity:.55;stroke-linejoin:round;stroke-linecap:round}
+.fchart__head{stroke:#fff;stroke-width:1.5;
+  filter:drop-shadow(0 0 8px rgba(255,160,60,.9))}
+.fchart__tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;
+  padding-top:14px;border-top:1px solid var(--line-soft)}
+.fchart__tab{font:500 .7rem/1 var(--mono);letter-spacing:.06em;cursor:pointer;
+  padding:9px 12px;border-radius:999px;color:var(--muted);background:transparent;
+  border:1px solid var(--line-soft);transition:color .3s,border-color .3s,background .3s}
+.fchart__tab:hover{color:var(--ink);border-color:var(--line)}
+.fchart__tab[aria-pressed="true"]{color:var(--on-heat);background:var(--heat);border-color:var(--heat)}
+.fchart__tab:focus-visible{outline:2px solid var(--heat);outline-offset:2px}
+@media (max-width:980px){
+  .hero--chart .hero__in{grid-template-columns:1fr}
+  .fchart{max-width:640px}
+}
+@media (max-width:480px){
+  .fchart{padding:16px 14px;border-radius:12px}
+  .fchart__tab{padding:9px 10px;font-size:.64rem}
+  .fchart__grid text,.fchart__unit,.fchart__time text{font-size:19px}
+  .fchart__curve{stroke-width:4.5}
+}
+@media (prefers-reduced-motion:reduce){
+  .fchart.is-quench .fchart__bubbles circle{animation:none}
+}
+
 /* ------------------------------------------------------------- subhero --- */
 .subhero{position:relative;overflow:hidden;display:flex;align-items:flex-end;
   min-height:min(32svh,300px);

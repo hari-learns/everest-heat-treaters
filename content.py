@@ -114,6 +114,41 @@ HERO_TEXT = (
     "hardness you ask for. Every batch we ship includes a verified test "
     "report."
 )
+# The furnace chart beside the headline: real cycles from the processes
+# below, drawn live as a time-temperature curve with the steel changing
+# colour as it goes. Each point is (hours, degrees C, milliseconds the
+# segment ending here takes on screen, what is happening in that segment).
+# The first point is where the cycle starts.
+HERO_CYCLES = [
+    dict(name="Hardening &amp; Tempering", grade="EN24", points=[
+        (0, 30, 0, ""),
+        (1.5, 850, 1700, "Heating to 850&deg;C"),
+        (3.0, 850, 1500, "Soaking through the section"),
+        (3.1, 60, 650, "Oil quench"),
+        (4.0, 560, 1100, "Heating to temper"),
+        (6.0, 560, 1300, "Tempering to hardness"),
+        (7.0, 40, 900, "Air cool"),
+    ]),
+    dict(name="Case Hardening", grade="EN1A", points=[
+        (0, 30, 0, ""),
+        (2.0, 940, 1600, "Heating to 940&deg;C"),
+        (8.0, 940, 2000, "Carburising, six hours"),
+        (8.6, 840, 700, "Down to 840&deg;C"),
+        (9.6, 840, 1000, "Soaking one hour"),
+        (9.7, 60, 650, "Oil quench"),
+        (10.5, 180, 800, "Heating to temper"),
+        (12.0, 180, 900, "Tempering"),
+        (12.6, 40, 700, "Cool"),
+    ]),
+    dict(name="Solution Annealing", grade="316 stainless", points=[
+        (0, 30, 0, ""),
+        (1.6, 1060, 1700, "Heating to 1060&deg;C"),
+        (3.6, 1060, 1700, "Soaking by thickness"),
+        (3.66, 50, 600, "Quenched within 20 seconds"),
+        (4.4, 35, 800, "Out of the tank"),
+    ]),
+]
+
 # No photograph behind the hero. The mark is drawn as line art instead —
 # see trace.py and mark_paths.py.
 HERO_IMAGE = None

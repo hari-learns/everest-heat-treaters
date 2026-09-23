@@ -157,6 +157,88 @@ def hero_mark():
 </svg>'''
 
 
+def hero_chart():
+    """The furnace chart: a process sheet that draws itself.
+
+    Temperature runs up the side, time along the bottom. script.js walks each
+    cycle in HERO_CYCLES, drawing the curve and colouring the bar of steel
+    above it from the same incandescent scale as the rest of the site.
+    Everything here is the static frame; the numbers come from content.py.
+    """
+    W, H, L, R, T, B = 600, 330, 52, 14, 14, 36
+    top, bot = T, H - B
+    def y(c): return bot - (bot - top) * c / 1100
+    grid = "".join(
+        f'<line x1="{L}" x2="{W - R}" y1="{y(c):.1f}" y2="{y(c):.1f}"/>'
+        f'<text x="{L - 10}" y="{y(c) + 4:.1f}">{c}</text>'
+        for c in (0, 200, 400, 600, 800, 1000))
+    # the gradient runs up the temperature axis, so wherever the curve sits
+    # it takes the colour of steel at that temperature
+    stops = [(0, "#3E8BE0"), (300, "#6E7A8C"), (480, "#7E1B05"),
+             (700, "#A82D04"), (850, "#E85F06"), (1000, "#FF9420"),
+             (1100, "#FFD26B")]
+    grad = "".join(f'<stop offset="{c / 1100:.3f}" stop-color="{h}"/>'
+                   for c, h in stops)
+    cycles = html.escape(json.dumps(
+        [dict(name=c["name"], grade=c["grade"],
+              points=[list(p) for p in c["points"]]) for c in C.HERO_CYCLES],
+        separators=(",", ":")), quote=True)
+    tabs = "".join(
+        f'<button type="button" class="fchart__tab" data-fchart-tab="{i}">'
+        f'{c["name"]}</button>' for i, c in enumerate(C.HERO_CYCLES))
+    first = C.HERO_CYCLES[0]
+    return f"""<figure class="fchart" data-fchart="{cycles}"
+        data-heat-scale="{HEAT_STOPS}" aria-label="Animated furnace chart of heat treatment cycles">
+  <div class="fchart__top">
+    <div class="fchart__id">
+      <p class="fchart__k">Process sheet</p>
+      <p class="fchart__name" data-fchart-name>{first["name"]}</p>
+      <p class="fchart__grade" data-fchart-grade>{first["grade"]}</p>
+    </div>
+    <div class="fchart__read" aria-hidden="true">
+      <p class="fchart__deg"><span data-fchart-t>30</span><i>&deg;C</i></p>
+      <p class="fchart__stage" data-fchart-stage>Loading the furnace</p>
+    </div>
+  </div>
+  <svg class="fchart__bar" viewBox="0 0 600 64" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="barshade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".38"/>
+        <stop offset=".35" stop-color="#fff" stop-opacity=".05"/>
+        <stop offset=".7" stop-color="#000" stop-opacity=".12"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".45"/>
+      </linearGradient>
+    </defs>
+    <g class="fchart__bubbles">
+      <circle cx="150" cy="58" r="3"/><circle cx="210" cy="60" r="2"/>
+      <circle cx="275" cy="57" r="3.5"/><circle cx="340" cy="60" r="2.2"/>
+      <circle cx="405" cy="58" r="3"/><circle cx="460" cy="60" r="2"/>
+    </g>
+    <rect data-fchart-steel x="110" y="16" width="380" height="32" rx="16" fill="#4B5563"/>
+    <rect x="110" y="16" width="380" height="32" rx="16" fill="url(#barshade)"/>
+  </svg>
+  <svg class="fchart__plot" viewBox="0 0 {W} {H}" aria-hidden="true" focusable="false"
+       data-box="{L},{W - R},{top},{bot}">
+    <defs>
+      <linearGradient id="curveheat" gradientUnits="userSpaceOnUse"
+                      x1="0" y1="{bot}" x2="0" y2="{y(1100):.1f}">{grad}</linearGradient>
+      <filter id="curveglow" x="-10%" y="-20%" width="120%" height="140%">
+        <feGaussianBlur stdDeviation="5"/>
+      </filter>
+    </defs>
+    <g class="fchart__grid">{grid}
+      <line class="fchart__axis" x1="{L}" x2="{W - R}" y1="{bot}" y2="{bot}"/>
+    </g>
+    <text class="fchart__unit" x="{L - 10}" y="{top - 2}">&deg;C</text>
+    <g class="fchart__time" data-fchart-time></g>
+    <path class="fchart__halo" data-fchart-halo d="" stroke="url(#curveheat)" filter="url(#curveglow)"/>
+    <path class="fchart__curve" data-fchart-curve d="" stroke="url(#curveheat)"/>
+    <circle class="fchart__head" data-fchart-head r="5" cx="{L}" cy="{bot}"/>
+  </svg>
+  <div class="fchart__tabs" role="group" aria-label="Choose a cycle">{tabs}</div>
+</figure>"""
+
+
 def header(current):
     return f'''<a class="skip" href="#main">Skip to content</a>
 <header class="hdr" data-header>
@@ -448,10 +530,10 @@ def build_home():
         for i, n in enumerate([1, 2, 3, 4, 5, 6]))
 
     body = f'''
-<section class="hero">
+<section class="hero hero--chart">
   <div class="hero__glow" aria-hidden="true"></div>
-  {hero_mark()}
   <div class="wrap hero__in">
+   <div class="hero__copy">
     <p class="hero__eyebrow">{C.HERO_EYEBROW}</p>
     <h1 class="hero__title" data-heat-scale="{HEAT_STOPS}"
         data-heat-lo="{C.HERO_HEAT_RANGE[0]}" data-heat-hi="{C.HERO_HEAT_RANGE[1]}">{C.HERO_TITLE}</h1>
@@ -460,6 +542,8 @@ def build_home():
       <a class="btn" href="contact.html#enquire">Contact us</a>
       <a class="btn btn--ghost" href="processes.html">See the processes</a>
     </div>
+   </div>
+   {hero_chart()}
   </div>
 </section>
 
