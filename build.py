@@ -643,9 +643,6 @@ def build_industries():
 
 def build_about():
     prose = "".join(f"<p>{x}</p>" for x in C.ABOUT_BODY)
-    pillars = "".join(
-        f'<div class="feat" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
-        for i, (t, d) in enumerate(C.ABOUT_PILLARS))
     body = f'''
 {subhero("About", C.ABOUT_TITLE, "", C.ABOUT_IMAGE)}
 <section class="sec">
@@ -707,7 +704,9 @@ def build_about():
 <section class="sec sec--alt">
   <div class="wrap">
     {sec_head("How we work", C.H_ABOUT_PILLARS, mid=True)}
-    <div class="feats feats--3">{pillars}</div>
+    <div class="holds">{"".join(
+      f'<div class="hold" data-reveal style="--i:{i}"><h3>{t}</h3><p>{d}</p></div>'
+      for i, (t, d) in enumerate(C.ABOUT_PILLARS))}</div>
   </div>
 </section>
 
@@ -729,15 +728,20 @@ def build_about():
 <section class="sec">
   <div class="wrap">
     {sec_head("Where we are going", C.H_VISION, mid=True)}
-    <div class="feats feats--2">
-      <div class="feat" data-reveal style="--i:0">
-        <h3>{C.VISION_TITLE}</h3>
+    <div class="aims">
+      <div class="aim" data-reveal style="--i:0">
+        <p class="aim__k">{C.VISION_TITLE}</p>
         {"".join(f"<p>{t}</p>" for t in C.VISION_BODY)}
       </div>
-      <div class="feat" data-reveal style="--i:1">
-        <h3>{C.MISSION_TITLE}</h3>
+      <div class="aim" data-reveal style="--i:1">
+        <p class="aim__k">{C.MISSION_TITLE}</p>
         {"".join(f"<p>{t}</p>" for t in C.MISSION_BODY)}
       </div>
+    </div>
+    <div class="promise" data-reveal>
+      <p class="aim__k">{C.PROMISE_TITLE}</p>
+      <p class="promise__lead">{C.PROMISE_BODY[0]}</p>
+      <p class="promise__sub">{C.PROMISE_BODY[1]}</p>
     </div>
   </div>
 </section>

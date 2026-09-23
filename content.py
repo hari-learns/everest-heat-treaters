@@ -761,6 +761,14 @@ MISSION_BODY = [
     "on &mdash; integrity, quality and innovation.",
 ]
 
+PROMISE_TITLE = "Our promise"
+PROMISE_BODY = [
+    "Two decades on the furnace floor mean we can reach the hardness your "
+    "part needs, whatever the grade and whatever the specification.",
+    "If you have the material and the requirement, you are in the right "
+    "place. Bring both, and we will take it from there.",
+]
+
 POLICY_TITLE = "Our quality policy"
 POLICY_INTRO = (
     "We commit to heat treatment that meets or exceeds what our customers "
