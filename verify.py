@@ -218,12 +218,13 @@ def check_media():
     referenced = ({s for s in (C.HERO_IMAGE, C.ABOUT_IMAGE) if s}
                   | {p["image"] for p in C.PROCESSES}
                   | {q["image"] for q in C.QUALITY}
-                  | {f"plate-{n}" for n in range(1, 7)})
+                  | {m[0] for m in C.MICROSTRUCTURES}
+                  | {g[0] for g in C.GALLERY if len(g) < 3})
     missing = [s for s in referenced
                if not os.path.exists(os.path.join(ROOT, "assets", "img", s + ".webp"))]
     if missing:
         fail(f"referenced image(s) not built: {sorted(missing)} "
-             "— run: python3 fetch_media.py && python3 assets.py && python3 tiles.py")
+             "— run: python3 fetch_media.py && python3 assets.py && python3 media.py")
     else:
         print("  every referenced image exists")
 

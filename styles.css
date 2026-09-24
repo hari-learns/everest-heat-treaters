@@ -454,11 +454,17 @@ button{font:inherit;color:inherit}
 .qtile p{margin:0;color:var(--muted);font-size:.9rem}
 
 /* --------------------------------------------------------------- plates --- */
-.plates{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(8px,1.1vw,14px)}
-.plate{overflow:hidden;border-radius:var(--r);background:var(--surface-2)}
-.plate img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:0;
-  transition:transform .9s var(--ease),filter .5s var(--ease);filter:saturate(1.1)}
-.plate:hover img{transform:scale(1.08)}
+/* the four structures the lab sees most, each named */
+.plates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,22px)}
+.plate{margin:0}
+.plate img{display:block;width:100%;aspect-ratio:1;object-fit:cover;
+  border-radius:var(--r);border:1px solid var(--line-soft);
+  transition:transform .9s var(--ease)}
+@media (hover:hover){ .plate:hover img{transform:scale(1.03)} }
+.plate figcaption{display:grid;gap:3px;margin-top:12px}
+.plate figcaption b{font-family:var(--mono);font-weight:500;font-size:.72rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--heat-2)}
+.plate figcaption span{font-size:.88rem;color:var(--muted);line-height:1.45}
 
 /* ----------------------------------------------------------- industries --- */
 .inds{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,30px)}
@@ -675,6 +681,7 @@ button{font:inherit;color:inherit}
   letter-spacing:-.025em;margin:0}
 .person__quals{font-family:var(--mono);font-size:.8rem;color:var(--heat-2);margin:.3em 0 0}
 .person__role{margin:.5em 0 0;color:var(--muted)}
+.person__tel{margin:.45em 0 0!important}
 .card-person hr{border:0;border-top:1px solid var(--line-soft);margin:1.6em 0}
 .card-person p{margin:0 0 .6em}
 
@@ -1064,7 +1071,7 @@ button{font:inherit;color:inherit}
   aspect-ratio:4/5;object-fit:cover;border-radius:0}
 .proc__text .h2{margin:0 0 .35em}
 .proc__text .lede{margin:0 0 1.4em}
-.proc__spec{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 1.6em}
+.proc__spec{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 1.6em}
 .proc__spec div{padding:14px 16px;background:var(--surface);
   border:1px solid var(--line-soft);border-radius:var(--r)}
 .proc__spec dt{font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;
@@ -1263,7 +1270,7 @@ button{font:inherit;color:inherit}
 @media (max-width:1140px){
   .foot__in{grid-template-columns:1.6fr 1fr 1fr;}
   .foot__brand{grid-column:1/-1}
-  .plates{grid-template-columns:repeat(3,1fr)}
+  .plates{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:1000px){
   .pgrid{grid-template-columns:repeat(2,1fr)}
@@ -1293,7 +1300,7 @@ button{font:inherit;color:inherit}
   .pgrid,.qgrid,.indgrid,.inds{grid-template-columns:1fr}
   .feats,.feats--3{grid-template-columns:1fr}
   .form__row{grid-template-columns:1fr}
-  .plates{grid-template-columns:repeat(3,1fr)}
+  .plates{grid-template-columns:repeat(2,minmax(0,1fr))}
   .brand__sub{display:none}
   .map{aspect-ratio:4/3}
   .temp__mark{font-size:.6rem}

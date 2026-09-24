@@ -51,13 +51,15 @@ PHOTOS = {
     "safety.jpeg": "g-safety",
     "office.jpeg": "g-office",
     "business_meeting.jpeg": "g-meeting",
-    "team.jpeg": "g-team",
     "team2.jpeg": "g-team-2",
     "iv1.jpeg": "g-iv-group",
     "iv2.jpeg": "g-iv-group-2",
     "iv1.webp": "g-iv-furnace",
     "iv3.webp": "g-iv-pit",
     "ivexplaining.jpeg": "g-iv-explaining",
+    # sent in chat on 24 Sep 2026; kept in build_src/photos (not committed)
+    os.path.join(ROOT, "build_src", "photos", "heat_exchanger.webp"): "g-heat-exchanger",
+    os.path.join(ROOT, "build_src", "photos", "cooling_tower.webp"): "g-cooling-tower",
 }
 
 VIDEOS = {
@@ -65,6 +67,7 @@ VIDEOS = {
     "oil_agitations.mp4": "v-oil-agitation",
     "oil and water.mp4": "v-quench-tanks",
     "IVvideo.mp4": "v-industrial-visit",
+    "~/Downloads/agitation_flow.mp4": "v-agitation-flow",
 }
 
 LONG_EDGE = 1600
@@ -81,7 +84,7 @@ def save_webp(im, dest, budget=BUDGET):
 
 def photos():
     for name, slug in PHOTOS.items():
-        src = os.path.join(SRC, name)
+        src = os.path.join(SRC, os.path.expanduser(name))
         if not os.path.exists(src):
             print(f"  MISSING {name}")
             continue
@@ -94,7 +97,7 @@ def photos():
 
 def videos():
     for name, slug in VIDEOS.items():
-        src = os.path.join(SRC, name)
+        src = os.path.join(SRC, os.path.expanduser(name))
         if not os.path.exists(src):
             print(f"  MISSING {name}")
             continue

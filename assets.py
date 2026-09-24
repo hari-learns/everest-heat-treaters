@@ -110,7 +110,7 @@ def main():
     stems = {os.path.splitext(n)[0] for n in names}
     for f in sorted(os.listdir(OUT)):
         stem = os.path.splitext(f)[0]
-        if stem.startswith("plate-"):      # derived by tiles.py, no source file
+        if stem.startswith("plate-"):      # retired plate tiles, no source file
             continue
         if stem in GENERATED:              # rendered by hero.py, no source file
             continue

@@ -43,9 +43,11 @@ DESCRIPTION = (
 
 # Who a customer deals with, in order: the managing director first, then
 # the metallurgist. Shown in the footer, on About and on Contact.
+# (name, role, qualifications, phone as shown, phone for tel: links)
 CONTACTS = [
-    ("R. Sathyamoorthy", "Managing Director", ""),
-    ("S. Aravindth", "Metallurgist", "B.E., M.E."),
+    ("R. Sathyamoorthy", "Managing Director", "", "+91 80561 58579",
+     "+918056158579"),
+    ("S. Aravindth", "Metallurgist", "B.E., M.E.", "", ""),
 ]
 
 PHONE = "+91 6379 547 322"
@@ -184,15 +186,17 @@ PROCESSES = [
         slug="hardening-tempering",
         name="Hardening &amp; Tempering",
         short="Heat, quench in oil, then temper back to the hardness the part "
-              "needs. The temperature is set by the material.",
-        temp="Set by grade. EN24 hardens at 840&ndash;860&deg;C",
+              "needs. The cycle is set by the material.",
+        # temp is kept for the record only; the client asked (Sep 2026) that
+        # no process temperatures appear on the site
+        temp="Set by grade. EN24 hardens at 840&ndash;880&deg;C",
         result="The hardness your drawing specifies",
         image="g-oil-quench",
         body=[
             "Hardening makes steel hard and strong. The part is heated above its critical temperature until the whole section has changed structure, then cooled fast in a quench. That locks the steel into its hardest form. Hardened steel on its own is brittle, so it is always tempered: heated again to a lower temperature that trades a little hardness for toughness, until it lands at the hardness the part needs.",
         ],
-        example="Take EN24. We harden it at 840&ndash;860&deg;C, hold until the full section is at temperature, and quench it in oil. It is then tempered at the temperature that brings it to the hardness on your drawing, and checked before it leaves.",
-        points=["Hardening temperature set by grade",
+        example="Take EN24. We bring it up to its hardening temperature, hold until the full section is through, and quench it in oil. It is then tempered to the hardness on your drawing, and checked before it leaves.",
+        points=["Cycle set by the grade",
                 "Oil quenching",
                 "Tempered to the hardness you ask for",
                 "Hardness checked before dispatch"],
@@ -201,18 +205,18 @@ PROCESSES = [
     dict(
         slug="case-hardening",
         name="Case Hardening &amp; Tempering",
-        short="A hard, wear-resistant case over a tough core. Carburised at "
-              "940&deg;C, then hardened from 840&deg;C.",
+        short="A hard, wear-resistant case over a tough core. Carbon goes "
+              "into the surface first, then the part is hardened.",
         temp="Carburise at 940&deg;C, harden from 840&deg;C",
         result="1.5&ndash;2 mm case from a six-hour soak",
         image="p-case-lift",
         body=[
             "Case hardening gives a part two properties at once: a hard, wear-resistant surface and a tough core that takes shock. Low-carbon steel cannot harden much on its own, so carbon is diffused into the surface first (carburising). The part is then hardened and tempered, and only the carbon-rich case becomes hard.",
         ],
-        example="Take EN1A. We carburise it at 940&deg;C; a six-hour soak builds a case about 1.5 to 2 mm deep. For case hardening and tempering, the charge comes down to 840&deg;C, soaks for an hour and is quenched in oil or water, depending on the grade. When only the case is wanted, the parts cool inside the furnace and come out ready for machining.",
-        points=["Carburised at 940&deg;C",
+        example="Take EN1A. We carburise it in the pit furnace; a six-hour soak builds a case about 1.5 to 2 mm deep. For case hardening and tempering, the charge is brought down to its hardening temperature, soaked for an hour and quenched in oil or water, depending on the grade. When only the case is wanted, the parts cool inside the furnace and come out ready for machining.",
+        points=["Gas carburised in the pit furnace",
                 "Six-hour soak for a 1.5&ndash;2 mm case",
-                "Hardened from 840&deg;C, one-hour soak",
+                "Hardened after a one-hour soak",
                 "Oil or water quench, or furnace cooled for case only"],
         suits=["EN1A", "EN36", "EN353", "SAE 8620", "16MnCr5", "20MnCr5"],
     ),
@@ -227,8 +231,8 @@ PROCESSES = [
         body=[
             "Annealing makes a material soft. It relieves the hardness left by forging, cold work or an earlier treatment, so the part machines and forms easily. The material is heated to its annealing temperature, held until it is even all the way through, and then cooled very slowly. That slow cool is what leaves it soft.",
         ],
-        example="Take 410 stainless. We anneal it at 880&ndash;900&deg;C, soak it for its section, then let it cool inside the furnace and take it out only once it has cooled.",
-        points=["Temperature set by grade",
+        example="Take 410 stainless. We bring it to its annealing temperature, soak it for its section, then let it cool inside the furnace and take it out only once it has cooled.",
+        points=["Cycle set by the grade",
                 "Soaked through the full section",
                 "Cooled inside the furnace",
                 "Taken out after cooling"],
@@ -237,16 +241,16 @@ PROCESSES = [
     dict(
         slug="normalising",
         name="Normalising &amp; Tempering",
-        short="The step after forging. Heated to 900&ndash;940&deg;C, held for "
-              "the section thickness, cooled in air.",
-        temp="900&ndash;940&deg;C, as the standard sets",
+        short="The step after forging. Heated, held for the section "
+              "thickness, and cooled in air.",
+        temp="920&ndash;1000&deg;C",
         result="A refined, even grain after forging",
         image="g-normalising",
         body=[
             "Normalising refines the coarse, uneven grain left by forging or casting, so the metal is uniform and behaves predictably in machining and in any later treatment. The part is heated above its critical range, held for its thickness and cooled in still air, then tempered where the specification asks.",
         ],
-        example="Most of our normalising is forgings. The standard puts most grades at 900&ndash;940&deg;C, and holding time follows thickness: a 50 mm section holds about two hours. For example, a charge held at 1000&deg;C for two hours comes out and cools in air.",
-        points=["900&ndash;940&deg;C as per standard",
+        example="Most of our normalising is forgings. The temperature follows the grade and the standard, and the holding time follows thickness: a 50 mm section holds about two hours, then comes out and cools in air.",
+        points=["Temperature as per standard",
                 "Holding time set by section thickness",
                 "About two hours for a 50 mm section",
                 "Air cooled, then tempered"],
@@ -266,23 +270,23 @@ PROCESSES = [
         example="Most of our stress relieving is welded work. A cast valve body with weld built up on top, for example, carries different stresses in the base metal and the weld. We hold the whole part at the temperature its grade and welding procedure call for, then cool it slowly so both relax evenly.",
         points=["Welded components and fabrications",
                 "Base metal and weld relieved together",
-                "Temperature set by grade and welding procedure",
+                "Cycle set by grade and welding procedure",
                 "Slow, even cooling"],
         suits=["Weldments", "Valve bodies", "Castings", "Fabrications"],
     ),
     dict(
         slug="solution-annealing",
         name="Solution Annealing",
-        short="For non-magnetic stainless steels. Heated to "
-              "1040&ndash;1080&deg;C, then quenched within 20 seconds.",
+        short="For non-magnetic stainless steels. Heated high, then "
+              "quenched within 20 seconds.",
         temp="1040&ndash;1080&deg;C, time by thickness",
         result="Corrosion resistance restored, magnetism relieved",
         image="p-water-quench",
         body=[
             "Solution annealing is for austenitic, non-magnetic stainless steels. Heating to a high temperature dissolves carbides and other phases back into the metal, and a fast liquid quench keeps them dissolved. It restores corrosion resistance and toughness, and relieves the magnetism that welding or cold work can bring in.",
         ],
-        example="We heat stainless charges to 1040&ndash;1080&deg;C and hold for a time set by thickness, often around two hours. The parts then go from the furnace into the quench within 20 seconds, which is what fixes the structure.",
-        points=["1040&ndash;1080&deg;C",
+        example="We heat stainless charges to their solution temperature and hold for a time set by thickness, often around two hours. The parts then go from the furnace into the quench within 20 seconds, which is what fixes the structure.",
+        points=["Solution temperature for the grade",
                 "Soak time by thickness, around two hours",
                 "Into the quench within 20 seconds",
                 "Relieves induced magnetism"],
@@ -299,10 +303,10 @@ PROCESSES = [
         body=[
             "Age hardening, or precipitation hardening, strengthens special alloys that do not harden by quenching. After solution treatment, the metal is held for long periods at lower temperatures, and fine particles precipitate inside it. Those particles are what raise the strength and hardness.",
         ],
-        example="Take 718. After solution treatment it soaks for ten hours at the first ageing temperature, is furnace cooled to 620&deg;C, held there for eight hours, and then air cooled.",
+        example="Take 718. After solution treatment it soaks for ten hours at the first ageing temperature, is furnace cooled to the second, held there for eight hours, and then air cooled.",
         points=["Solution treated first",
                 "Ten-hour soak at the first ageing step",
-                "Furnace cooled to 620&deg;C, eight-hour hold",
+                "Furnace cooled to the second step, eight-hour hold",
                 "Air cooled"],
         suits=["718", "17-4 PH", "PH stainless"],
     ),
@@ -362,11 +366,11 @@ MATERIALS = [
     ("EN19 / 709M40", "Cr-Mo alloy", "Harden &amp; temper", "28&ndash;40 HRC",
      "Good through-hardening in section"),
     ("EN24 / 817M40", "Ni-Cr-Mo alloy", "Harden &amp; temper", "32&ndash;45 HRC",
-     "Hardened at 840&ndash;860&deg;C, oil quenched"),
+     "Hardened and oil quenched"),
     ("EN31 / 534A99", "Bearing steel", "Harden, temper &amp; stabilise",
      "58&ndash;63 HRC", "Spheroidise anneal before machining"),
     ("EN1A", "Free-cutting low carbon", "Case harden &amp; temper",
-     "1.5&ndash;2 mm case", "Carburised at 940&deg;C for six hours"),
+     "1.5&ndash;2 mm case", "Six-hour carburising soak"),
     ("EN36 / 655M13", "Case hardening", "Case harden &amp; temper",
      "58&ndash;62 HRC case", "Tough core, hard case"),
     ("SAE 8620", "Case hardening", "Case harden &amp; temper",
@@ -379,36 +383,18 @@ MATERIALS = [
      "58&ndash;62 HRC", "Blanking and forming dies"),
     ("D3", "Cold work tool", "Harden &amp; temper", "58&ndash;62 HRC",
      "High wear, lower toughness"),
-    ("O1", "Oil hardening tool", "Harden, temper &amp; stabilise",
-     "58&ndash;62 HRC", "Low distortion, gauges and cutters"),
     ("H13 / X40CrMoV5-1", "Hot work tool", "Harden &amp; temper",
      "44&ndash;52 HRC", "Die casting and extrusion dies"),
-    ("M2 HSS", "High speed steel", "Harden &amp; triple temper",
-     "62&ndash;65 HRC", "Tight control through the cycle"),
-    ("S7", "Shock resisting", "Harden &amp; temper", "54&ndash;58 HRC",
-     "Punches and chisels"),
-    ("SG Iron / Ductile", "Cast iron", "Normalise &amp; temper", "Varies",
-     "Austemper available on enquiry"),
-    ("Grey cast iron", "Cast iron", "Stress relieve", "Hardness unchanged",
-     "Machine bed and housing stability"),
     ("304 / 316", "Austenitic stainless", "Solution anneal", "Soft, ~80 HRB",
      "Restores corrosion resistance after welding"),
     ("F321 / F347", "Stabilised stainless", "Solution anneal / stabilise",
      "Soft, ~80 HRB", "For high-temperature service"),
     ("410 / 420", "Martensitic stainless", "Harden &amp; temper / anneal",
-     "40&ndash;50 HRC", "410 anneals at 880&ndash;900&deg;C"),
+     "40&ndash;50 HRC", "Annealed and furnace cooled"),
     ("718", "Nickel alloy", "Solution + age", "To specification",
-     "Two-step ageing, second hold at 620&deg;C"),
+     "Two-step ageing, ten and eight hours"),
     ("17-4 PH", "PH stainless", "Solution + age", "40&ndash;44 HRC",
      "Condition H900 to H1150"),
-    ("Al 6061 / 6082", "Aluminium", "Solution + age (T6)", "~95 HB",
-     "Most common structural temper"),
-    ("Al 7075", "Aluminium", "Solution + age (T6)", "~150 HB",
-     "High strength, quench sensitive"),
-    ("Al 2014", "Aluminium", "Solution + age (T6)", "~135 HB",
-     "Aerospace and tooling plate"),
-    ("Brass &amp; bronze", "Copper alloy", "Anneal / stress relieve", "Softened",
-     "Prevents season cracking"),
 ]
 
 MATERIALS_INTRO = (
@@ -476,6 +462,17 @@ H_PROCESSES = "The process of transformation."
 H_PROOF = "We measure the treatment"
 H_QUALITY = "Every batch has a solid test report."
 H_QUALITY_SYSTEM = "How it is controlled"
+# The four structures the lab mostly sees (client, Sep 2026). Reference
+# micrographs, credited in CREDITS.md: (slug, structure, one line).
+MICROSTRUCTURES = [
+    ("micro-ferrite-pearlite", "Ferrite + pearlite",
+     "As forged, normalised or annealed"),
+    ("micro-stainless2", "Austenite", "Solution annealed stainless"),
+    ("micro-martensite", "Martensite", "As quenched, before tempering"),
+    ("micro-tempered", "Tempered martensite",
+     "Quenched and tempered to hardness"),
+]
+
 H_MICRO = "The evidence is in the grain."
 H_MICRO_TEXT = ("Etched cross-sections under the microscope at up to "
                 "500&times; &mdash; a direct look at what the process did to "
@@ -645,6 +642,8 @@ PLANT = [
     ("Pit furnace, tempering", "700 dia &times; 1200 mm", "Tempering"),
     ("Deep pit furnace", "700 dia &times; 2000 mm", "Long shafts and bars"),
     ("Quench tanks", "Oil and water", "Impeller agitated"),
+    ("Heat exchanger", "Oil quench", "Keeps the quench oil at temperature"),
+    ("Cooling tower", "Water circuit", "Cools the quench water"),
     ("Power backup", "125 kVA + 45 kVA",
      "Kirloskar GenLight and Powerica gensets"),
 ]
@@ -791,6 +790,9 @@ GALLERY = [
     ("g-quench-tanks", "Oil and water quench tanks beside the pit furnaces"),
     ("v-oil-agitation", "Oil quench tank, agitated by its impeller", "video"),
     ("v-quench-tanks", "The oil and water quench tanks", "video"),
+    ("v-agitation-flow", "Agitation flow in the quench tank", "video"),
+    ("g-heat-exchanger", "Heat exchanger for the quench oil"),
+    ("g-cooling-tower", "Cooling tower"),
     ("g-rockwell-floor", "Rockwell hardness tester and furnace control "
      "panels"),
     ("g-lab", "Metallurgical laboratory"),
@@ -810,7 +812,6 @@ GALLERY = [
     ("g-safety", "Safety board at the factory entrance"),
     ("g-office", "Office"),
     ("g-meeting", "A customer meeting"),
-    ("g-team", "The Everest Heat Treaters team"),
     ("g-team-2", "The team outside the works"),
     ("g-iv-explaining", "Industrial visit: explaining the process"),
     ("v-industrial-visit", "Industrial visit", "video"),

@@ -235,7 +235,9 @@ def footer():
     </div>
     <div class="foot__col">
       <h2 class="foot__h">Contact</h2>
-      {"".join(f'<p>{n}{", " + q if q else ""}<br><span class="foot__role">{r}</span></p>' for n, r, q in C.CONTACTS)}
+      {"".join(f'<p>{n}{", " + q if q else ""}<br><span class="foot__role">{r}</span>'
+               f'{f"""<br><a href="tel:{tl}">{ph}</a>""" if ph else ""}</p>'
+               for n, r, q, ph, tl in C.CONTACTS)}
       <p><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
       <p><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
     </div>
@@ -350,8 +352,9 @@ def people():
     return "".join(
         f'<div class="person"><p class="person__name">{n}</p>'
         f'{f"<p class=person__quals>{q}</p>" if q else ""}'
-        f'<p class="person__role">{r}</p></div>'
-        for n, r, q in C.CONTACTS)
+        f'<p class="person__role">{r}</p>'
+        f'{f"""<p class="person__tel"><a class="link" href="tel:{tl}">{ph}</a></p>""" if ph else ""}</div>'
+        for n, r, q, ph, tl in C.CONTACTS)
 
 
 def process_line(p, i=0):
@@ -374,7 +377,6 @@ def process_section(p, i=0):
     <h2 class="h2">{p["name"]}</h2>
     <p class="lede">{p["short"]}</p>
     <dl class="proc__spec">
-      <div><dt>Temperature</dt><dd>{p["temp"]}</dd></div>
       <div><dt>Result</dt><dd>{p["result"]}</dd></div>
     </dl>
     <div class="prose">{prose}</div>
@@ -449,9 +451,10 @@ def build_home():
     gallery = "".join(tile(by_slug[s], i) for i, s in enumerate(C.GALLERY_HOME))
 
     plates = "".join(
-        f'<div class="plate" data-reveal style="--i:{i}">'
-        f'{img(f"plate-{n}", "Etched microstructure of an engineering alloy", sizes="(max-width:800px) 33vw, 16vw")}</div>'
-        for i, n in enumerate([1, 2, 3, 4, 5, 6]))
+        f'<figure class="plate" data-reveal style="--i:{i}">'
+        f'{img(slug, f"{name} micrograph", sizes="(max-width:800px) 50vw, 25vw")}'
+        f'<figcaption><b>{name}</b><span>{note}</span></figcaption></figure>'
+        for i, (slug, name, note) in enumerate(C.MICROSTRUCTURES))
 
     body = f'''
 <section class="hero hero--chart hero--mark">

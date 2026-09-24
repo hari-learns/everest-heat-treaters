@@ -79,13 +79,13 @@ python3 verify.py     # links, contrast, alt text, noindex, temperature data
 ```bash
 python3 fetch_media.py   # download images + self-hosted fonts
 python3 assets.py        # -> assets/img/*.webp  (45 MB -> 5 MB)
-python3 tiles.py         # slice the metallography plate into plate-1..9
+python3 media.py         # the client's own photos and videos -> assets/
 ```
 
 Photography is used sparingly and on purpose: the open-licence pool for modern
 heat-treatment shops is poor, so the visual language is generative instead.
-The vivid squares are real colour metallography — etched alloys under the
-microscope — sliced from a single Commons plate.
+The four micrographs on the homepage (ferrite + pearlite, austenite,
+martensite, tempered martensite) are credited reference images from Commons.
 
 **Every image is a placeholder.** Credits and licences in
 [CREDITS.md](CREDITS.md). Replace with the company's own photographs of their
@@ -117,4 +117,4 @@ Push and it is live.
 | `styles.css` | Dark palette, layout, the temperature bar |
 | `script.js` | Temperature engine, materials filter, nav, reveals |
 | `verify.py` | Pre-flight checks — run before sending the link |
-| `fetch_media.py` / `assets.py` / `tiles.py` | Image and font pipeline |
+| `fetch_media.py` / `assets.py` / `media.py` | Image and font pipeline |
