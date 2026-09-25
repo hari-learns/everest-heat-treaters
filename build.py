@@ -533,7 +533,7 @@ def build_home():
 </section>
 
 {cta()}'''
-    return page("index.html", f"{C.TAB_NAME} — Heat treatment in Chennai",
+    return page("index.html", C.TAB_NAME,
                 C.DESCRIPTION, body, "index.html")
 
 
