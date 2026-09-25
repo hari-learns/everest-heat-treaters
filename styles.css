@@ -1221,6 +1221,12 @@ button{font:inherit;color:inherit}
   font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--heat-2)}
 .proc__how p{margin:0;color:var(--ink);line-height:1.65}
 
+.form__status{margin:0;padding:12px 14px;border-radius:var(--r);font-size:.92rem;
+  color:var(--ink);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.4)}
+.form__status.is-fail,.ask__done.is-fail{color:var(--ink);background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.45);padding:10px 12px;border-radius:var(--r)}
+.form button[disabled]{opacity:.7;cursor:progress}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get

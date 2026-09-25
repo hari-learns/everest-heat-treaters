@@ -853,16 +853,28 @@ CONTACT_INTRO = (
 )
 
 # ----------------------------------------------------------- form wiring ---
-# Where enquiries go. Leave empty and everything falls back to WhatsApp, which
-# is what ships today. Set this to an endpoint (Formspree, a Worker, your own
-# mailer) and both the quote form and the one-tap grade enquiry POST JSON to
-# it as well, so nothing has to be rewired later.
-#
-# The POST body is flat JSON: source, grade, phone, name, email, company,
-# process, weight, size, hardness, message, page. When a drawing is attached
-# it goes as multipart form data instead, with the file under "drawing".
-FORM_ENDPOINT = ""
-FORM_EMAIL = "everest_heattreaters@yahoo.co.in"
+# Enquiries are emailed through FormSubmit (formsubmit.co): no account, no
+# server. The first address receives, the rest are copied. FormSubmit sent a
+# one-time "Activate Form" link to the first address; nothing arrives until
+# it is clicked.
+ENQUIRY_TO = "everest_heattreaters@yahoo.co.in"
+ENQUIRY_CC = ["sathyaaravindth03@gmail.com"]
+FORM_ENDPOINT = "https://formsubmit.co/ajax/" + ENQUIRY_TO
+FORM_EMAIL = ENQUIRY_TO
+
+# Email links open the visitor's mail app addressed to both inboxes.
+MAILTO = ("mailto:" + ",".join([ENQUIRY_TO] + ENQUIRY_CC)
+          + "?subject=Heat%20treatment%20enquiry")
+
+# The WhatsApp button opens a chat with this message already written.
+WHATSAPP_TEXT = ("Hello Everest Heat Treaters, I would like to enquire about "
+                 "heat treatment for our components. Please let me know a "
+                 "convenient time to discuss.")
+
+# What a visitor sees after sending, and if sending fails.
+SENT_TEXT = "Thank you. Your enquiry has reached us, and we will reach out to you soon."
+FAIL_TEXT = ("We could not send that just now. Please call or WhatsApp us on "
+             "+91 6379 547 322.")
 
 RFQ_FIELDS_NOTE = "We will reach out to you soon."
 

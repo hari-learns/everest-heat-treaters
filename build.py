@@ -12,6 +12,7 @@ import html
 import json
 import os
 import re
+from urllib.parse import quote
 
 import content as C
 import mark_paths as MARK
@@ -205,7 +206,7 @@ def header(current):
   <a class="btn btn--block" href="contact.html">Contact</a>
   <div class="drawer__meta">
     <a href="tel:{C.PHONE_LINK}">{C.PHONE}</a>
-    <a href="mailto:{C.EMAIL}">{C.EMAIL}</a>
+    <a href="{esc(C.MAILTO)}">{C.EMAIL}</a>
   </div>
 </div>'''
 
@@ -239,7 +240,7 @@ def footer():
                f'{f"""<br><a href="tel:{tl}">{ph}</a>""" if ph else ""}</p>'
                for n, r, q, ph, tl in C.CONTACTS)}
       <p><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
-      <p><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
+      <p><a href="{esc(C.MAILTO)}">{C.EMAIL}</a></p>
     </div>
     <div class="foot__col">
       <h2 class="foot__h">Processes</h2>
@@ -255,7 +256,7 @@ def footer():
     {note}
   </div>
 </footer>
-<a class="wa" href="https://wa.me/{C.WHATSAPP}" target="_blank" rel="noopener"
+<a class="wa" href="https://wa.me/{C.WHATSAPP}?text={quote(C.WHATSAPP_TEXT)}" target="_blank" rel="noopener"
    aria-label="Message us on WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.69 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
 </a>'''
@@ -326,7 +327,7 @@ def cta():
     <p class="lede">{C.CTA_TEXT}</p>
     <div class="band__act">
       <a class="btn" href="contact.html#enquire">Contact us</a>
-      <a class="btn btn--ghost" href="https://wa.me/{C.WHATSAPP}"
+      <a class="btn btn--ghost" href="https://wa.me/{C.WHATSAPP}?text={quote(C.WHATSAPP_TEXT)}"
          target="_blank" rel="noopener">WhatsApp {C.PHONE}</a>
     </div>
   </div>
@@ -393,7 +394,8 @@ def process_section(p, i=0):
 def enquiry_form():
     opts = "".join(f'<option>{p["name"]}</option>' for p in C.PROCESSES)
     return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}"
-      data-endpoint="{esc(C.FORM_ENDPOINT)}" id="enquire" novalidate>
+      data-endpoint="{esc(C.FORM_ENDPOINT)}" data-cc="{esc(",".join(C.ENQUIRY_CC))}"
+      data-sent="{esc(C.SENT_TEXT)}" data-fail="{esc(C.FAIL_TEXT)}" id="enquire" novalidate>
   <div class="form__row">
     <label><span class="form__lbl">Your name <i class="req">required</i></span><input type="text" name="name" required autocomplete="name"></label>
     <label><span class="form__lbl">Company</span><input type="text" name="company" autocomplete="organization"></label>
@@ -418,7 +420,8 @@ def enquiry_form():
   </div>
   <label><span class="form__lbl">Part description or problem</span><textarea name="message" rows="4"
     placeholder="What the part does, what it runs against, how it is failing&hellip;"></textarea></label>
-  <button class="btn btn--block" type="submit">Send enquiry</button>
+  <button class="btn btn--block" type="submit" data-send>Send enquiry</button>
+  <p class="form__status" data-status role="status" aria-live="polite" hidden></p>
   <p class="form__note">Name and phone are all we need. Everything else is optional. {C.RFQ_FIELDS_NOTE}</p>
 </form>'''
 
@@ -572,7 +575,8 @@ def build_materials():
       <p class="mat__count" data-mat-count aria-live="polite"></p>
     </div>
     <div class="tablewrap" data-reveal>
-      <table class="mat" data-endpoint="{esc(C.FORM_ENDPOINT)}" data-wa="{C.WHATSAPP}">
+      <table class="mat" data-endpoint="{esc(C.FORM_ENDPOINT)}" data-cc="{esc(",".join(C.ENQUIRY_CC))}"
+             data-fail="{esc(C.FAIL_TEXT)}">
         <thead><tr>
           <th scope="col">Grade</th><th scope="col">Family</th>
           <th scope="col">Usual process</th><th scope="col">Typical result</th>
@@ -668,7 +672,7 @@ def build_about():
       {people()}
       <hr>
       <p><a class="link" href="tel:{C.PHONE_LINK}">{C.PHONE}</a></p>
-      <p><a class="link" href="mailto:{C.EMAIL}">{C.EMAIL}</a></p>
+      <p><a class="link" href="{esc(C.MAILTO)}">{C.EMAIL}</a></p>
       <a class="btn btn--block" href="contact.html#enquire">Talk to us</a>
     </aside>
   </div>
@@ -822,7 +826,7 @@ def build_contact():
       <address>{addr}</address>
       <dl class="cinfo__list">
         <dt>Phone</dt><dd><a href="tel:{C.PHONE_LINK}">{C.PHONE}</a></dd>
-        <dt>Email</dt><dd><a href="mailto:{C.EMAIL}">{C.EMAIL}</a></dd>
+        <dt>Email</dt><dd><a href="{esc(C.MAILTO)}">{C.EMAIL}</a></dd>
         <dt>GSTIN</dt><dd class="mono">{C.GSTIN}</dd>
       </dl>
       <h3 class="h4">Opening hours</h3>

@@ -208,44 +208,37 @@
   })();
 
   /* --------------------------------------------------------- delivery --- */
-  /* One place that knows how an enquiry leaves the site. Today that is
-     WhatsApp. The moment an endpoint is set in content.py the same payload is
-     POSTed as JSON too, so wiring email up later needs no changes here. */
+  /* One place that knows how an enquiry leaves the site: an email through
+     FormSubmit to the company inbox, copied to the metallurgist. Resolves
+     true when FormSubmit confirms it, false otherwise, so the page can say
+     which. */
+  var LABELS = {
+    name: "Name", company: "Company", phone: "Phone", email: "Email",
+    grade: "Material grade", process: "Treatment", weight: "Weight",
+    size: "Size", hardness: "Hardness required", message: "Details",
+    page: "Sent from"
+  };
   function deliver(payload, opts) {
     opts = opts || {};
-    var endpoint = opts.endpoint;
-    var sent = Promise.resolve();
-    if (endpoint) {
-      var req = { method: "POST", headers: { "Accept": "application/json" } };
-      if (opts.file) {
-        // a drawing cannot ride in JSON, so send the lot as a form
-        var fd = new FormData();
-        Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
-        fd.append("drawing", opts.file, opts.file.name);
-        req.body = fd;
-      } else {
-        req.headers["Content-Type"] = "application/json";
-        req.body = JSON.stringify(payload);
-      }
-      sent = fetch(endpoint, req)
-        .catch(function () { /* never block the handover on a bad endpoint */ });
-    }
-    if (opts.whatsapp !== false && opts.wa) {
-      var labels = {
-        name: "Name", company: "Company", phone: "Phone", email: "Email",
-        grade: "Material", process: "Treatment", weight: "Weight",
-        size: "Size", hardness: "Hardness required", drawing: "Drawing",
-        message: "Details"
-      };
-      var lines = ["Heat treatment enquiry", ""];
-      Object.keys(labels).forEach(function (k) {
-        var v = (payload[k] || "").toString().trim();
-        if (v) lines.push(labels[k] + ": " + v);
-      });
-      window.open("https://wa.me/" + opts.wa + "?text=" +
-        encodeURIComponent(lines.join("\n")), "_blank", "noopener");
-    }
-    return sent;
+    if (!opts.endpoint) return Promise.resolve(false);
+    var fd = new FormData();
+    var who = payload.name || payload.phone || "website visitor";
+    fd.append("_subject", (payload.grade ? payload.grade + " enquiry" :
+      "Heat treatment enquiry") + " from " + who);
+    fd.append("_template", "table");
+    fd.append("_captcha", "false");
+    if (opts.cc) fd.append("_cc", opts.cc);
+    if (payload.email) fd.append("_replyto", payload.email);
+    Object.keys(LABELS).forEach(function (k) {
+      var v = (payload[k] || "").toString().trim();
+      if (v) fd.append(LABELS[k], v);
+    });
+    if (opts.file) fd.append("attachment", opts.file, opts.file.name);
+    return fetch(opts.endpoint, {
+      method: "POST", headers: { "Accept": "application/json" }, body: fd
+    }).then(function (r) { return r.json(); })
+      .then(function (j) { return j && (j.success === true || j.success === "true"); })
+      .catch(function () { return false; });
   }
 
   /* ------------------------------------------------ reviews, one up --- */
@@ -302,7 +295,7 @@
     // read at send time, not at load, so the endpoint can be swapped in
     // without caring when the script happened to run
     var endpoint = function () { return table.getAttribute("data-endpoint") || ""; };
-    var wa = function () { return table.getAttribute("data-wa") || ""; };
+    var cc = function () { return table.getAttribute("data-cc") || ""; };
     var COLS = $$("thead th", table).length || 5;
     var open = null;
 
@@ -352,13 +345,19 @@
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (!form.checkValidity()) { form.reportValidity(); return; }
+        var btn = $('button[type="submit"]', form);
+        btn.disabled = true;
+        btn.textContent = "Sending\u2026";
         deliver({
-          source: "grade-row", grade: grade,
+          grade: grade,
           phone: $("input", form).value.trim(),
-          page: location.pathname
-        }, { endpoint: endpoint(), wa: wa() });
-        form.hidden = true;
-        done.hidden = false;
+          page: location.href
+        }, { endpoint: endpoint(), cc: cc() }).then(function (ok) {
+          if (!ok) done.textContent = table.getAttribute("data-fail") || "";
+          done.classList.toggle("is-fail", !ok);
+          form.hidden = true;
+          done.hidden = false;
+        });
       });
     };
 
@@ -489,28 +488,35 @@
     say(rows.length);
   }
 
-  /* ---------------------------------------------- enquiry -> WhatsApp --- */
-  /* A static site has no backend. Rather than a form that silently does
-     nothing, hand the details to WhatsApp already filled in. */
+  /* ------------------------------------------------ enquiry -> email --- */
   var form = $("[data-enquiry]");
   if (form) {
+    var send = $("[data-send]", form), status = $("[data-status]", form);
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
       var d = new FormData(form);
-      var payload = { source: "quote-form", page: location.pathname };
+      var payload = { page: location.href };
       ["name", "company", "phone", "email", "grade", "process", "weight",
        "size", "hardness", "message"].forEach(function (k) {
         payload[k] = (d.get(k) || "").toString().trim();
       });
       var file = d.get("drawing");
       if (!(file && file.size)) file = null;
-      // WhatsApp links carry text only, so name the file and ask for it there
-      if (file) payload.drawing = file.name + " (I will send it in this chat)";
+      send.disabled = true;
+      send.textContent = "Sending\u2026";
+      status.hidden = true;
       deliver(payload, {
         endpoint: form.getAttribute("data-endpoint") || "",
-        wa: form.getAttribute("data-wa"),
+        cc: form.getAttribute("data-cc") || "",
         file: file
+      }).then(function (ok) {
+        send.disabled = false;
+        send.textContent = "Send enquiry";
+        status.textContent = form.getAttribute(ok ? "data-sent" : "data-fail");
+        status.classList.toggle("is-fail", !ok);
+        status.hidden = false;
+        if (ok) form.reset();
       });
     });
   }
