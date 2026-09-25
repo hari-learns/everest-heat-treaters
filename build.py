@@ -393,7 +393,8 @@ def process_section(p, i=0):
 
 def enquiry_form():
     opts = "".join(f'<option>{p["name"]}</option>' for p in C.PROCESSES)
-    return f'''<form class="form" data-enquiry data-wa="{C.WHATSAPP}"
+    return f'''<div class="enq" data-enq>
+<form class="form" data-enquiry data-wa="{C.WHATSAPP}"
       data-endpoint="{esc(C.FORM_ENDPOINT)}" data-cc="{esc(",".join(C.ENQUIRY_CC))}"
       data-sent="{esc(C.SENT_TEXT)}" data-fail="{esc(C.FAIL_TEXT)}" id="enquire" novalidate>
   <div class="form__row">
@@ -423,7 +424,18 @@ def enquiry_form():
   <button class="btn btn--block" type="submit" data-send>Send enquiry</button>
   <p class="form__status" data-status role="status" aria-live="polite" hidden></p>
   <p class="form__note">Name and phone are all we need. Everything else is optional. {C.RFQ_FIELDS_NOTE}</p>
-</form>'''
+</form>
+<div class="thanks" data-thanks hidden tabindex="-1">
+  <svg class="thanks__tick" viewBox="0 0 96 96" aria-hidden="true">
+    <circle class="thanks__glow" cx="48" cy="48" r="40"/>
+    <circle class="thanks__ring" cx="48" cy="48" r="40" pathLength="1"/>
+    <path class="thanks__check" d="M30 49 L43 62 L67 36" pathLength="1"/>
+  </svg>
+  <h3 class="thanks__h">{C.THANKS_TITLE}</h3>
+  <p class="thanks__p">{C.THANKS_TEXT}</p>
+  <button class="link thanks__again" type="button" data-again>{C.THANKS_AGAIN}</button>
+</div>
+</div>'''
 
 
 # ---------------------------------------------------------------- pages ----

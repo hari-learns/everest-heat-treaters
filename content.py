@@ -872,6 +872,10 @@ WHATSAPP_TEXT = ("Hello Everest Heat Treaters, I would like to enquire about "
                  "convenient time to discuss.")
 
 # What a visitor sees after sending, and if sending fails.
+THANKS_TITLE = "Thanks for reaching out"
+THANKS_TEXT = ("We have your details and will get back to you soon. For anything "
+               "urgent, call +91 6379 547 322.")
+THANKS_AGAIN = "Send another enquiry"
 SENT_TEXT = "Thank you. Your enquiry has reached us, and we will reach out to you soon."
 FAIL_TEXT = ("We could not send that just now. Please call or WhatsApp us on "
              "+91 6379 547 322.")

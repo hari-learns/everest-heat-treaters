@@ -570,6 +570,15 @@
   if (form) {
     var send = $("[data-send]", form), status = $("[data-status]", form);
     guard(form);
+    var thanks = $("[data-thanks]");
+    $("[data-again]", thanks).addEventListener("click", function () {
+      thanks.hidden = true;
+      thanks.classList.remove("is-on");
+      status.hidden = true;
+      form.hidden = false;
+      var n = $('input[name="name"]', form);
+      if (n) n.focus();
+    });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (!validate(form)) return;
@@ -591,10 +600,24 @@
       }).then(function (ok) {
         send.disabled = false;
         send.textContent = "Send enquiry";
-        status.textContent = form.getAttribute(ok ? "data-sent" : "data-fail");
-        status.classList.toggle("is-fail", !ok);
+        if (ok) {
+          // close the form and show the thank-you with its drawn tick
+          form.reset();
+          form.hidden = true;
+          thanks.hidden = false;
+          thanks.classList.remove("is-on");
+          void thanks.offsetWidth;
+          thanks.classList.add("is-on");
+          thanks.focus({ preventScroll: true });
+          var top = thanks.getBoundingClientRect().top;
+          if (top < 80 || top > window.innerHeight - 200) {
+            thanks.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+          }
+          return;
+        }
+        status.textContent = form.getAttribute("data-fail");
+        status.classList.add("is-fail");
         status.hidden = false;
-        if (ok) form.reset();
       });
     });
   }
