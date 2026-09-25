@@ -395,10 +395,19 @@
               '<button class="btn btn--sm" type="submit">Enquire</button>' +
               '<button class="btn btn--ghost btn--sm" type="button" data-ask-cancel>Cancel</button>' +
             '</form>' +
-            '<p class="ask__done" data-ask-done hidden>Thank you. We will reach out to you soon.</p>' +
+            '<div class="thanks thanks--mini ask__done" data-ask-done hidden tabindex="-1">' +
+              '<svg class="thanks__tick" viewBox="0 0 96 96" aria-hidden="true">' +
+                '<circle class="thanks__glow" cx="48" cy="48" r="40"/>' +
+                '<circle class="thanks__ring" cx="48" cy="48" r="40" pathLength="1"/>' +
+                '<path class="thanks__check" d="M30 49 L43 62 L67 36" pathLength="1"/>' +
+              '</svg>' +
+              '<div><p class="thanks__h">Thanks for reaching out</p>' +
+              '<p class="thanks__p">We have your number and will call you about <b></b> soon.</p></div>' +
+            '</div>' +
           '</div>' +
         '</td>';
       $("b", $(".ask__lead", tr)).textContent = grade;
+      $("b", $(".thanks__p", tr)).textContent = grade;
       return tr;
     };
 
@@ -430,10 +439,21 @@
           phone: $("input", form).value.trim(),
           page: location.href
         }, { endpoint: endpoint(), cc: cc() }).then(function (ok) {
-          if (!ok) done.textContent = table.getAttribute("data-fail") || "";
-          done.classList.toggle("is-fail", !ok);
+          if (!ok) {
+            // keep the form, say what to do instead
+            btn.disabled = false;
+            btn.textContent = "Enquire";
+            var e = errFor($("input", form));
+            e.textContent = table.getAttribute("data-fail") || "";
+            e.hidden = false;
+            return;
+          }
           form.hidden = true;
+          $(".ask__lead", open).hidden = true;
           done.hidden = false;
+          void done.offsetWidth;
+          done.classList.add("is-on");
+          done.focus({ preventScroll: true });
         });
       });
     };

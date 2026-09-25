@@ -1270,6 +1270,15 @@ input.is-bad{border-color:#F87171!important;background:rgba(239,68,68,.06)!impor
   .thanks__ring{transform:rotate(-90deg)!important}
 }
 
+/* the same thank-you, sized for a table row */
+.thanks--mini{display:flex;align-items:center;gap:16px;max-width:none;width:100%;
+  padding:6px 4px;text-align:left;border:0;background:none;border-radius:0}
+.thanks--mini .thanks__tick{width:52px;height:52px;flex:0 0 52px;margin:0}
+.thanks--mini .thanks__h{font-size:1.08rem;margin:0 0 .2em}
+.thanks--mini .thanks__p{margin:0;max-width:none;font-size:.9rem}
+.thanks--mini .thanks__p b{color:var(--ink)}
+.ask__lead[hidden],.thanks--mini[hidden]{display:none!important}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get
