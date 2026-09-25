@@ -397,12 +397,12 @@ def enquiry_form():
       data-endpoint="{esc(C.FORM_ENDPOINT)}" data-cc="{esc(",".join(C.ENQUIRY_CC))}"
       data-sent="{esc(C.SENT_TEXT)}" data-fail="{esc(C.FAIL_TEXT)}" id="enquire" novalidate>
   <div class="form__row">
-    <label><span class="form__lbl">Your name <i class="req">required</i></span><input type="text" name="name" required autocomplete="name"></label>
+    <label><span class="form__lbl">Your name <i class="req">required</i></span><input type="text" name="name" required autocomplete="name" maxlength="80"></label>
     <label><span class="form__lbl">Company</span><input type="text" name="company" autocomplete="organization"></label>
   </div>
   <div class="form__row">
-    <label><span class="form__lbl">Phone <i class="req">required</i></span><input type="tel" name="phone" required autocomplete="tel"></label>
-    <label><span class="form__lbl">Email</span><input type="email" name="email" autocomplete="email"></label>
+    <label><span class="form__lbl">Phone <i class="req">required</i></span><input type="tel" name="phone" required autocomplete="tel" inputmode="tel" maxlength="20" placeholder="e.g. 98400 12345"></label>
+    <label><span class="form__lbl">Email</span><input type="email" name="email" autocomplete="email" maxlength="120" placeholder="name@company.com"></label>
   </div>
   <div class="form__row">
     <label><span class="form__lbl">Material grade</span><input type="text" name="grade" placeholder="EN31, SAE 8620&hellip;"></label>

@@ -1227,6 +1227,13 @@ button{font:inherit;color:inherit}
   border:1px solid rgba(239,68,68,.45);padding:10px 12px;border-radius:var(--r)}
 .form button[disabled]{opacity:.7;cursor:progress}
 
+.field__err{display:block;margin-top:2px;font-family:var(--body);font-size:.8rem;
+  letter-spacing:0;text-transform:none;color:#FF8A80;line-height:1.4}
+.field__err[hidden]{display:none}
+input.is-bad{border-color:#F87171!important;background:rgba(239,68,68,.06)!important}
+.ask__form{flex-wrap:wrap}
+.ask__form .field__err{flex-basis:100%;order:3}
+
 /* ------------------------------------------------------------ tap size --- */
 /* Inline links collapse to the height of their text (~16px). That is fine on
    a desktop and awkward under a thumb, so the ones people actually tap get

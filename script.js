@@ -207,6 +207,82 @@
     });
   })();
 
+  /* -------------------------------------------------------- validation --- */
+  /* Phone numbers and emails are checked before anything is sent. Indian
+     numbers may be written as 10 digits, +91 and 10 digits, or 0 and 10
+     digits for a landline with its STD code; anything starting + is taken
+     as international and needs 8 to 15 digits. Only digits, spaces, + and -
+     can be typed into a phone field at all. */
+  var phoneOk = function (v) {
+    v = v.trim();
+    if (!/^\+?[\d\s-]+$/.test(v)) return false;
+    var d = v.replace(/\D/g, "");
+    if (v.charAt(0) === "+" && d.slice(0, 2) !== "91") return d.length >= 8 && d.length <= 15;
+    if (d.length === 12 && d.slice(0, 2) === "91") d = d.slice(2);
+    else if (d.length === 11 && d.charAt(0) === "0") d = d.slice(1);
+    return d.length === 10 && /^[2-9]/.test(d) && !/^(\d)\1{9}$/.test(d);
+  };
+  var emailOk = function (v) {
+    return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v.trim()) && !/\.\./.test(v);
+  };
+  var nameOk = function (v) { return (v.match(/[A-Za-z\u0B80-\u0BFF]/g) || []).length >= 2; };
+  var RULES = {
+    phone: [phoneOk, "Enter a valid phone number, e.g. 98400 12345 or +91 98400 12345."],
+    email: [emailOk, "Enter a valid email address, e.g. name@company.com."],
+    name: [nameOk, "Enter your name."]
+  };
+  var errFor = function (input) {
+    var host = input.closest("label") || input.parentNode;
+    var e = host.querySelector(".field__err");
+    if (!e) {
+      e = document.createElement("span");
+      e.className = "field__err";
+      e.id = "err-" + Math.random().toString(36).slice(2);
+      e.setAttribute("role", "alert");
+      host.appendChild(e);
+      input.setAttribute("aria-describedby", e.id);
+    }
+    return e;
+  };
+  // true when the field is fine; shows or clears the message either way
+  var check = function (input, loud) {
+    var rule = RULES[input.name];
+    var v = input.value;
+    var bad = "";
+    if (!v.trim()) { if (input.required) bad = rule ? rule[1] : "This field is required."; }
+    else if (rule && !rule[0](v)) bad = rule[1];
+    input.setCustomValidity(bad);
+    input.classList.toggle("is-bad", !!bad && loud);
+    input.setAttribute("aria-invalid", bad && loud ? "true" : "false");
+    var e = errFor(input);
+    e.textContent = loud ? bad : "";
+    e.hidden = !(bad && loud);
+    return !bad;
+  };
+  var guard = function (root) {
+    $$('input[name="phone"],input[name="email"],input[name="name"]', root).forEach(function (input) {
+      if (input.name === "phone") {
+        input.addEventListener("input", function () {
+          var c = input.value.replace(/[^\d\s+-]/g, "").replace(/(?!^)\+/g, "");
+          if (c !== input.value) input.value = c;
+        });
+      }
+      input.addEventListener("blur", function () { if (input.value) check(input, true); });
+      input.addEventListener("input", function () {
+        if (input.classList.contains("is-bad")) check(input, true);
+      });
+    });
+  };
+  // checks every rule-bound field; focuses the first that fails
+  var validate = function (root) {
+    var first = null;
+    $$('input[name="phone"],input[name="email"],input[name="name"]', root).forEach(function (input) {
+      if (!check(input, true) && !first) first = input;
+    });
+    if (first) first.focus();
+    return !first;
+  };
+
   /* --------------------------------------------------------- delivery --- */
   /* One place that knows how an enquiry leaves the site: an email through
      FormSubmit to the company inbox, copied to the metallurgist. Resolves
@@ -314,7 +390,7 @@
             '<p class="ask__lead">Enquire about <b></b></p>' +
             '<form class="ask__form" data-ask-form novalidate>' +
               '<input type="tel" name="phone" required autocomplete="tel" ' +
-                'inputmode="tel" placeholder="Your phone number" ' +
+                'inputmode="tel" maxlength="20" placeholder="Your phone number" ' +
                 'aria-label="Your phone number">' +
               '<button class="btn btn--sm" type="submit">Enquire</button>' +
               '<button class="btn btn--ghost btn--sm" type="button" data-ask-cancel>Cancel</button>' +
@@ -340,11 +416,12 @@
       var done = $("[data-ask-done]", open);
       // one step: the phone field and Enquire are there as soon as the row
       // opens. Focus only with a mouse, so a phone keyboard does not jump up.
+      guard(form);
       if (window.matchMedia("(hover:hover)").matches) $("input", form).focus();
       $("[data-ask-cancel]", form).addEventListener("click", close);
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        if (!form.checkValidity()) { form.reportValidity(); return; }
+        if (!validate(form)) return;
         var btn = $('button[type="submit"]', form);
         btn.disabled = true;
         btn.textContent = "Sending\u2026";
@@ -492,9 +569,10 @@
   var form = $("[data-enquiry]");
   if (form) {
     var send = $("[data-send]", form), status = $("[data-status]", form);
+    guard(form);
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!validate(form)) return;
       var d = new FormData(form);
       var payload = { page: location.href };
       ["name", "company", "phone", "email", "grade", "process", "weight",
